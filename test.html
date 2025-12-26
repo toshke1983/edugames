@@ -94,7 +94,7 @@
     let score = 0;
     let streak = 0;
     let maxStreak = 0;
-    let failureMade = False;
+    let failureMade = false;
 
     // Initialize weights
     Object.keys(countryData).forEach(id => weights[id] = 1.0);
@@ -155,7 +155,7 @@
         document.getElementById('streak').innerText = streak;
         
         // Boost probability of the missed country
-        failureMade = True; // setting so we don't bring the probability distor back to 1.0
+        failureMade = true; // setting so we don't bring the probability distor back to 1.0
         weights[currentID] *= 1.25; 
 
         document.getElementById('game-container').classList.add('shake');
@@ -202,7 +202,7 @@
         document.getElementById('target-country').innerHTML = `${info.flag} ${promptText}`;
         document.getElementById('message').innerText = "";
         
-        failureMade = False; // resetting the failure for the next step
+        failureMade = false; // resetting the failure for the next step
     }
 
     function skipCountry() {
