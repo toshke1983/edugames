@@ -114,8 +114,6 @@ const countryNames = {
         "AM": "Armenia",
         "TR": "Turkey"
     };
-    let currentID = ""; 
-    let score = 0;
 
     // 2. FETCH AND INJECT THE SVG
     fetch('europe.svg')
@@ -129,6 +127,7 @@ const countryNames = {
             console.error(err);
         });
 
+    let currentID = ""; 
     let score = 0;
     let streak = 0;
     let maxStreak = 0;
