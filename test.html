@@ -6,17 +6,8 @@
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background-color: #f4f7f6; margin: 0; padding: 20px; }
         #game-container { margin: 0 auto; max-width: 1000px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-
-        #streak {
-            color: #e67e22; /* Orange for fire */
-            transition: all 0.2s;
-        }
-        
-        /* A simple animation for when the streak resets */
-        .shake {
-            animation: shake 0.5s;
-        }
-        
+        #streak { color: #e67e22; transition: all 0.2s; }
+        .shake { animation: shake 0.5s; }
         @keyframes shake {
             0% { transform: translateX(0); }
             25% { transform: translateX(-5px); }
@@ -24,21 +15,14 @@
             75% { transform: translateX(-5px); }
             100% { transform: translateX(0); }
         }
-        
-        /* This styles your SVG automatically once it loads */
-        svg { width: 100%; height: auto; max-height: 70vh; }
-        svg path {
-            fill: #d1d8e0;
-            stroke: #ffffff;
-            stroke-width: 0.5;
-            cursor: pointer;
-            transition: fill 0.2s, transform 0.2s;
-        }
+        svg { width: 100%; height: auto; max-height: 65vh; border: 1px solid #eee; border-radius: 10px; margin-top: 10px;}
+        svg path { fill: #d1d8e0; stroke: #ffffff; stroke-width: 0.5; cursor: pointer; transition: fill 0.2s; }
         svg path:hover { fill: #45aaf2 !important; }
-        
-        #target-country { color: #2d3436; font-size: 2.5em; margin: 15px 0; }
+        #target-country { color: #2d3436; font-size: 2.2em; margin: 10px 0; min-height: 1.2em; display: flex; align-items: center; justify-content: center; gap: 15px; }
         #score-board { font-size: 1.5em; color: #20bf6b; font-weight: bold; }
         #message { height: 40px; margin-top: 10px; font-size: 1.3em; font-weight: bold; }
+        .btn { margin-top: 5px; padding: 10px 20px; cursor: pointer; border-radius: 5px; border: none; background: #dfe6e9; font-weight: bold; }
+        .btn:hover { background: #b2bec3; }
     </style>
 </head>
 <body>
@@ -46,184 +30,189 @@
 <div id="game-container">
     <h1>Europe Map Explorer 🌍</h1>
     <div id="score-board">
-    Score: <span id="score">0</span> | 
-    Streak: <span id="streak">0</span> 🔥 | 
-    Best: <span id="best-streak">0</span> 🏆
+        Score: <span id="score">0</span> | 
+        Streak: <span id="streak">0</span> 🔥 | 
+        Best: <span id="best-streak">0</span> 🏆
     </div>
-    <div id="target-country">Loading Map...</div>
-    <button onclick="skipCountry()" style="margin-top: 10px; padding: 10px; cursor: pointer;">Skip Country ⏭️</button>
+    
+    <div id="target-country">Loading...</div>
+    
+    <button class="btn" onclick="skipCountry()">Skip Country ⏭️</button>
     <div id="message"></div>
 
-    <div id="map-placeholder">
-        </div>
+    <div id="map-placeholder"></div>
 </div>
 
 <script>
-    // 1. THE DICTIONARY: Maps the SVG IDs to real names
-    // Add more codes here based on what's in your file!
-const countryNames = {
-        // Western Europe
-        "AT": "Austria",
-        "BE": "Belgium",
-        "FR": "France",
-        "DE": "Germany",
-        "LU": "Luxembourg",
-        "NL": "Netherlands",
-        "CH": "Switzerland",
-
-        // Northern Europe
-        "DK": "Denmark",
-        "EE": "Estonia",
-        "FI": "Finland",
-        "IS": "Iceland",
-        "IE": "Ireland",
-        "LV": "Latvia",
-        "LT": "Lithuania",
-        "NO": "Norway",
-        "SE": "Sweden",
-        "GB": "United Kingdom",
-
-        // Southern Europe
-        "AL": "Albania",
-        "BA": "Bosnia and Herzegovina",
-        "HR": "Croatia",
-        "GR": "Greece",
-        "IT": "Italy",
-        "ME": "Montenegro",
-        "MK": "North Macedonia",
-        "PT": "Portugal",
-        "RS": "Serbia",
-        "ES": "Spain",
-        "CY": "Cyprus",
-        "XK": "Kosovo",
-
-        // Eastern Europe & Central
-        "BY": "Belarus",
-        "BG": "Bulgaria",
-        "CZ": "Czech Republic",
-        "HU": "Hungary",
-        "MD": "Moldova",
-        "PL": "Poland",
-        "RO": "Romania",
-        "SK": "Slovakia",
-        "SI": "Slovenia",
-        "UA": "Ukraine",
-
-        // Transcontinental (Usually on Europe maps)
-        "GE": "Georgia",
-        "AZ": "Azerbaijan",
-        "AM": "Armenia",
-        "TR": "Turkey"
+    // Expanded Data Structure: Name, Capital, and Emoji Flag
+    const countryData = {
+        "AT": { name: "Austria", cap: "Vienna", flag: "🇦🇹" },
+        "BE": { name: "Belgium", cap: "Brussels", flag: "🇧🇪" },
+        "FR": { name: "France", cap: "Paris", flag: "🇫🇷" },
+        "DE": { name: "Germany", cap: "Berlin", flag: "🇩🇪" },
+        "LU": { name: "Luxembourg", cap: "Luxembourg", flag: "🇱🇺" },
+        "NL": { name: "Netherlands", cap: "Amsterdam", flag: "🇳🇱" },
+        "CH": { name: "Switzerland", cap: "Bern", flag: "🇨🇭" },
+        "DK": { name: "Denmark", cap: "Copenhagen", flag: "🇩🇰" },
+        "EE": { name: "Estonia", cap: "Tallinn", flag: "🇪🇪" },
+        "FI": { name: "Finland", cap: "Helsinki", flag: "🇫🇮" },
+        "IS": { name: "Iceland", cap: "Reykjavik", flag: "🇮🇸" },
+        "IE": { name: "Ireland", cap: "Dublin", flag: "🇮🇪" },
+        "LV": { name: "Latvia", cap: "Riga", flag: "🇱🇻" },
+        "LT": { name: "Lithuania", cap: "Vilnius", flag: "🇱🇹" },
+        "NO": { name: "Norway", cap: "Oslo", flag: "🇳🇴" },
+        "SE": { name: "Sweden", cap: "Stockholm", flag: "🇸🇪" },
+        "GB": { name: "United Kingdom", cap: "London", flag: "🇬🇧" },
+        "AL": { name: "Albania", cap: "Tirana", flag: "🇦🇱" },
+        "BA": { name: "Bosnia and Herzegovina", cap: "Sarajevo", flag: "🇧🇦" },
+        "HR": { name: "Croatia", cap: "Zagreb", flag: "🇭🇷" },
+        "GR": { name: "Greece", cap: "Athens", flag: "🇬🇷" },
+        "IT": { name: "Italy", cap: "Rome", flag: "🇮🇹" },
+        "ME": { name: "Montenegro", cap: "Podgorica", flag: "🇲🇪" },
+        "MK": { name: "North Macedonia", cap: "Skopje", flag: "🇲🇰" },
+        "PT": { name: "Portugal", cap: "Lisbon", flag: "🇵🇹" },
+        "RS": { name: "Serbia", cap: "Belgrade", flag: "🇷🇸" },
+        "ES": { name: "Spain", cap: "Madrid", flag: "🇪🇸" },
+        "CY": { name: "Cyprus", cap: "Nicosia", flag: "🇨🇾" },
+        "XK": { name: "Kosovo", cap: "Pristina", flag: "🇽🇰" },
+        "BY": { name: "Belarus", cap: "Minsk", flag: "🇧🇾" },
+        "BG": { name: "Bulgaria", cap: "Sofia", flag: "🇧🇬" },
+        "CZ": { name: "Czech Republic", cap: "Prague", flag: "🇨🇿" },
+        "HU": { name: "Hungary", cap: "Budapest", flag: "🇭🇺" },
+        "MD": { name: "Moldova", cap: "Chisinau", flag: "🇲🇩" },
+        "PL": { name: "Poland", cap: "Warsaw", flag: "🇵🇱" },
+        "RO": { name: "Romania", cap: "Bucharest", flag: "🇷🇴" },
+        "SK": { name: "Slovakia", cap: "Bratislava", flag: "🇸🇰" },
+        "SI": { name: "Slovenia", cap: "Ljubljana", flag: "🇸🇮" },
+        "UA": { name: "Ukraine", cap: "Kyiv", flag: "🇺🇦" },
+        "TR": { name: "Turkey", cap: "Ankara", flag: "🇹🇷" }
     };
 
-    // 2. FETCH AND INJECT THE SVG
+    let weights = {}; 
+    let currentID = ""; 
+    let previousID = "";
+    let score = 0;
+    let streak = 0;
+    let maxStreak = 0;
+
+    // Initialize weights
+    Object.keys(countryData).forEach(id => weights[id] = 1.0);
+
     fetch('europe.svg')
         .then(response => response.text())
         .then(svgData => {
             document.getElementById('map-placeholder').innerHTML = svgData;
             setupGame();
-        })
-        .catch(err => {
-            document.getElementById('target-country').innerText = "Error: Check your server!";
-            console.error(err);
         });
-
-    let currentID = ""; 
-    let score = 0;
-    let streak = 0;
-    let maxStreak = 0;
 
     function setupGame() {
         const paths = document.querySelectorAll('svg path');
-        
         paths.forEach(path => {
             path.addEventListener('click', function() {
                 const clickedID = this.id.toUpperCase();
-                const clickedName = countryNames[clickedID] || clickedID;
+                const clickedInfo = countryData[clickedID];
 
                 if (clickedID === currentID) {
-                    // --- SUCCESS ---
-                    score++;
-                    streak++;
-                    
-                    // Update Best Streak
-                    if (streak > maxStreak) {
-                        maxStreak = streak;
-                        document.getElementById('best-streak').innerText = maxStreak;
-                    }
-
-                    document.getElementById('score').innerText = score;
-                    document.getElementById('streak').innerText = streak;
-
-                    if (streak > 0 && streak % 5 === 0) {
-                        launchCelebration();
-                    }
-                    
-                    document.getElementById('message').innerText = `Perfect! Streak: ${streak} 🔥`;
-                    document.getElementById('message').style.color = "#20bf6b";
-                    
-                    this.style.fill = "#2ecc71"; 
-                    setTimeout(() => {
-                        this.style.fill = ""; 
-                        nextQuestion();
-                    }, 800);
-
+                    handleSuccess(this);
                 } else {
-                    // --- MISTAKE ---
-                    streak = 0; // Reset streak!
-                    document.getElementById('streak').innerText = streak;
-                    
-                    // Visual feedback for breaking the streak
-                    document.getElementById('game-container').classList.add('shake');
-                    setTimeout(() => document.getElementById('game-container').classList.remove('shake'), 500);
-
-                    document.getElementById('message').innerText = `Oops! That was ${clickedName}. Streak lost! 🧊`;
-                    document.getElementById('message').style.color = "#eb4d4b";
+                    handleFailure(clickedID, clickedInfo);
                 }
             });
         });
         nextQuestion();
     }
 
-    function nextQuestion() {
-        // Pick a random ID from our dictionary
-        const keys = Object.keys(countryNames);
-        currentID = keys[Math.floor(Math.random() * keys.length)];
+    function handleSuccess(element) {
+        score++;
+        streak++;
+        weights[currentID] = 1.0; // Reset weight on success
         
-        // Display the friendly Name, not the ID
-        document.getElementById('target-country').innerText = "Find: " + countryNames[currentID];
+        if (streak > maxStreak) {
+            maxStreak = streak;
+            document.getElementById('best-streak').innerText = maxStreak;
+        }
+
+        document.getElementById('score').innerText = score;
+        document.getElementById('streak').innerText = streak;
+        
+        if (streak % 5 === 0) launchCelebration();
+
+        document.getElementById('message').innerText = `Perfect! Streak: ${streak} 🔥`;
+        document.getElementById('message').style.color = "#20bf6b";
+        
+        element.style.fill = "#2ecc71"; 
+        setTimeout(() => {
+            element.style.fill = ""; 
+            nextQuestion();
+        }, 800);
+    }
+
+    function handleFailure(clickedID, clickedInfo) {
+        streak = 0;
+        document.getElementById('streak').innerText = streak;
+        
+        // Boost probability of the missed country
+        weights[currentID] *= 1.25; 
+
+        document.getElementById('game-container').classList.add('shake');
+        setTimeout(() => document.getElementById('game-container').classList.remove('shake'), 500);
+
+        const wrongName = clickedInfo ? clickedInfo.name : "another area";
+        document.getElementById('message').innerText = `Oops! That's ${wrongName}. Streak lost! 🧊`;
+        document.getElementById('message').style.color = "#eb4d4b";
+    }
+
+    function nextQuestion() {
+        previousID = currentID;
+        const keys = Object.keys(countryData);
+        
+        // Weighted random selection
+        let totalWeight = 0;
+        keys.forEach(key => totalWeight += weights[key]);
+
+        let random;
+        let selectedKey;
+
+        // Ensure no immediate repeats
+        do {
+            random = Math.random() * totalWeight;
+            let sum = 0;
+            for (let i = 0; i < keys.length; i++) {
+                sum += weights[keys[i]];
+                if (random <= sum) {
+                    selectedKey = keys[i];
+                    break;
+                }
+            }
+        } while (selectedKey === previousID && keys.length > 1);
+
+        currentID = selectedKey;
+        const info = countryData[currentID];
+
+        // Randomly decide to ask for Country or Capital (50/50 chance)
+        const askForCapital = Math.random() > 0.5;
+        const promptText = askForCapital 
+            ? `Find the country with capital: <b>${info.cap}</b>` 
+            : `Find: <b>${info.name}</b>`;
+        
+        document.getElementById('target-country').innerHTML = `${info.flag} ${promptText}`;
         document.getElementById('message').innerText = "";
     }
+
     function skipCountry() {
+        weights[currentID] *= 1.25; // Small boost if skipped
         streak = 0;
         document.getElementById('streak').innerText = streak;
         nextQuestion();
     }
+
     function launchCelebration() {
-        const duration = 3 * 1000; // 3 seconds
+        const duration = 2000;
         const end = Date.now() + duration;
-    
         (function frame() {
-            // Left side cannon
-            confetti({
-                particleCount: 3,
-                angle: 60,
-                spread: 55,
-                origin: { x: 0 },
-                colors: ['#2ecc71', '#3498db', '#f1c40f']
-            });
-            // Right side cannon
-            confetti({
-                particleCount: 3,
-                angle: 120,
-                spread: 55,
-                origin: { x: 1 },
-                colors: ['#2ecc71', '#3498db', '#f1c40f']
-            });
-    
-            if (Date.now() < end) {
-                requestAnimationFrame(frame);
-            }
+            confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0 } });
+            confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1 } });
+            if (Date.now() < end) requestAnimationFrame(frame);
         }());
     }
 </script>
