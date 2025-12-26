@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Europe Map Quiz</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background-color: #f4f7f6; margin: 0; padding: 20px; }
         #game-container { margin: 0 auto; max-width: 1000px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
@@ -153,6 +154,10 @@ const countryNames = {
 
                     document.getElementById('score').innerText = score;
                     document.getElementById('streak').innerText = streak;
+
+                    if (streak > 0 && streak % 5 === 0) {
+                        launchCelebration();
+                    }
                     
                     document.getElementById('message').innerText = `Perfect! Streak: ${streak} 🔥`;
                     document.getElementById('message').style.color = "#20bf6b";
@@ -193,6 +198,33 @@ const countryNames = {
         streak = 0;
         document.getElementById('streak').innerText = streak;
         nextQuestion();
+    }
+    function launchCelebration() {
+        const duration = 3 * 1000; // 3 seconds
+        const end = Date.now() + duration;
+    
+        (function frame() {
+            // Left side cannon
+            confetti({
+                particleCount: 3,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 },
+                colors: ['#2ecc71', '#3498db', '#f1c40f']
+            });
+            // Right side cannon
+            confetti({
+                particleCount: 3,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 },
+                colors: ['#2ecc71', '#3498db', '#f1c40f']
+            });
+    
+            if (Date.now() < end) {
+                requestAnimationFrame(frame);
+            }
+        }());
     }
 </script>
 </body>
