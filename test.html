@@ -5,6 +5,24 @@
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background-color: #f4f7f6; margin: 0; padding: 20px; }
         #game-container { margin: 0 auto; max-width: 1000px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+
+        #streak {
+            color: #e67e22; /* Orange for fire */
+            transition: all 0.2s;
+        }
+        
+        /* A simple animation for when the streak resets */
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
         
         /* This styles your SVG automatically once it loads */
         svg { width: 100%; height: auto; max-height: 70vh; }
@@ -26,9 +44,13 @@
 
 <div id="game-container">
     <h1>Europe Map Explorer 🌍</h1>
-    <div id="score-board">Score: <span id="score">0</span></div>
+    <div id="score-board">
+    Score: <span id="score">0</span> | 
+    Streak: <span id="streak">0</span> 🔥 | 
+    Best: <span id="best-streak">0</span> 🏆
+    </div>
     <div id="target-country">Loading Map...</div>
-    <button onclick="nextQuestion()" style="margin-top: 10px; padding: 10px; cursor: pointer;">Skip Country ⏭️</button>
+    <button onclick="skipCountry()" style="margin-top: 10px; padding: 10px; cursor: pointer;">Skip Country ⏭️</button>
     <div id="message"></div>
 
     <div id="map-placeholder">
@@ -106,29 +128,51 @@ const countryNames = {
             console.error(err);
         });
 
+    let score = 0;
+    let streak = 0;
+    let maxStreak = 0;
+
     function setupGame() {
         const paths = document.querySelectorAll('svg path');
         
         paths.forEach(path => {
             path.addEventListener('click', function() {
-                const clickedID = this.id.toUpperCase(); // Ensure it matches our list
-                
+                const clickedID = this.id.toUpperCase();
+                const clickedName = countryNames[clickedID] || clickedID;
+
                 if (clickedID === currentID) {
-                    // Success!
+                    // --- SUCCESS ---
                     score++;
+                    streak++;
+                    
+                    // Update Best Streak
+                    if (streak > maxStreak) {
+                        maxStreak = streak;
+                        document.getElementById('best-streak').innerText = maxStreak;
+                    }
+
                     document.getElementById('score').innerText = score;
-                    document.getElementById('message').innerText = "Correct! That's " + countryNames[clickedID] + " ✅";
+                    document.getElementById('streak').innerText = streak;
+                    
+                    document.getElementById('message').innerText = `Perfect! Streak: ${streak} 🔥`;
                     document.getElementById('message').style.color = "#20bf6b";
                     
-                    this.style.fill = "#2ecc71"; // Turn it green briefly
+                    this.style.fill = "#2ecc71"; 
                     setTimeout(() => {
-                        this.style.fill = ""; // Reset color
+                        this.style.fill = ""; 
                         nextQuestion();
                     }, 800);
+
                 } else {
-                    // Wrong
-                    const wrongName = countryNames[clickedID] || "another country";
-                    document.getElementById('message').innerText = "Nope, that's " + wrongName + ". Try again!";
+                    // --- MISTAKE ---
+                    streak = 0; // Reset streak!
+                    document.getElementById('streak').innerText = streak;
+                    
+                    // Visual feedback for breaking the streak
+                    document.getElementById('game-container').classList.add('shake');
+                    setTimeout(() => document.getElementById('game-container').classList.remove('shake'), 500);
+
+                    document.getElementById('message').innerText = `Oops! That was ${clickedName}. Streak lost! 🧊`;
                     document.getElementById('message').style.color = "#eb4d4b";
                 }
             });
@@ -144,6 +188,11 @@ const countryNames = {
         // Display the friendly Name, not the ID
         document.getElementById('target-country').innerText = "Find: " + countryNames[currentID];
         document.getElementById('message').innerText = "";
+    }
+    function skipCountry() {
+        streak = 0;
+        document.getElementById('streak').innerText = streak;
+        nextQuestion();
     }
 </script>
 </body>
