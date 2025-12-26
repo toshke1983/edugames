@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Europe Map Quiz</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; text-align: center; background-color: #f4f7f6; }
+        #game-container { margin: 20px auto; max-width: 900px; background: white; padding: 20px; border-radius: 15px; }
+        
+        /* This targets paths inside the SVG once it's loaded */
+        svg path {
+            fill: #cccccc;
+            stroke: #ffffff;
+            stroke-width: 0.5;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        svg path:hover { fill: #3498db !important; }
+        
+        #target-country { color: #2c3e50; font-size: 2.5em; margin: 10px 0; font-weight: bold; }
+        #message { height: 30px; margin-top: 10px; font-size: 1.2em; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <h1>Europe Map Explorer 🌍</h1>
+    <div id="score-board">Score: <span id="score">0</span></div>
+    <div id="target-country">Loading Map...</div>
+    <div id="message"></div>
+
+    <div id="map-placeholder"></div>
+</div>
+
+<script>
+    let currentTarget = "";
+    let score = 0;
+    // Add all 50 country IDs here (must match the IDs in your SVG file)
+    const countries = ["France", "Germany", "Italy", "Spain", "Norway", "Sweden", "Poland", "Ukraine"]; 
+
+    // 1. FETCH THE SVG FILE
+    fetch('europe.svg')
+        .then(response => response.text())
+        .then(svgData => {
+            // Pour the SVG code into the placeholder
+            document.getElementById('map-placeholder').innerHTML = svgData;
+            // Now that the SVG is on the page, start the game logic
+            setupGame();
+        })
+        .catch(err => {
+            console.error("Error loading SVG:", err);
+            document.getElementById('target-country').innerText = "Error loading map!";
+        });
+
+    function setupGame() {
+        // Find all paths inside the newly injected SVG
+        const paths = document.querySelectorAll('svg path');
+        
+        paths.forEach(path => {
+            path.addEventListener('click', function() {
+                if (this.id === currentTarget) {
+                    score++;
+                    document.getElementById('score').innerText = score;
+                    document.getElementById('message').innerText = "Correct! ✅";
+                    document.getElementById('message').style.color = "green";
+                    this.style.fill = "#2ecc71"; 
+                    setTimeout(() => { this.style.fill = ""; nextQuestion(); }, 1000);
+                } else {
+                    document.getElementById('message').innerText = "That's " + (this.id || "not labeled") + ". Try again!";
+                    document.getElementById('message').style.color = "red";
+                }
+            });
+        });
+        nextQuestion();
+    }
+
+    function nextQuestion() {
+        currentTarget = countries[Math.floor(Math.random() * countries.length)];
+        document.getElementById('target-country').innerText = "Find: " + currentTarget;
+        document.getElementById('message').innerText = "";
+    }
+</script>
+</body>
+</html>
