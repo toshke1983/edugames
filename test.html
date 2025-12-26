@@ -28,6 +28,7 @@
     <h1>Europe Map Explorer 🌍</h1>
     <div id="score-board">Score: <span id="score">0</span></div>
     <div id="target-country">Loading Map...</div>
+    <button onclick="nextQuestion()" style="margin-top: 10px; padding: 10px; cursor: pointer;">Skip Country ⏭️</button>
     <div id="message"></div>
 
     <div id="map-placeholder">
@@ -37,24 +38,67 @@
 <script>
     // 1. THE DICTIONARY: Maps the SVG IDs to real names
     // Add more codes here based on what's in your file!
-    const countryNames = {
-        "FR": "France",
-        "DE": "Germany",
-        "GB": "United Kingdom",
-        "IT": "Italy",
-        "ES": "Spain",
-        "PT": "Portugal",
-        "NO": "Norway",
-        "SE": "Sweden",
-        "FI": "Finland",
-        "PL": "Poland",
-        "UA": "Ukraine",
-        "CH": "Switzerland",
+const countryNames = {
+        // Western Europe
         "AT": "Austria",
         "BE": "Belgium",
-        "NL": "Netherlands"
-    };
+        "FR": "France",
+        "DE": "Germany",
+        "LI": "Liechtenstein",
+        "LU": "Luxembourg",
+        "MC": "Monaco",
+        "NL": "Netherlands",
+        "CH": "Switzerland",
 
+        // Northern Europe
+        "DK": "Denmark",
+        "EE": "Estonia",
+        "FI": "Finland",
+        "IS": "Iceland",
+        "IE": "Ireland",
+        "LV": "Latvia",
+        "LT": "Lithuania",
+        "NO": "Norway",
+        "SE": "Sweden",
+        "GB": "United Kingdom",
+
+        // Southern Europe
+        "AL": "Albania",
+        "AD": "Andorra",
+        "BA": "Bosnia and Herzegovina",
+        "HR": "Croatia",
+        "GR": "Greece",
+        "IT": "Italy",
+        "MT": "Malta",
+        "ME": "Montenegro",
+        "MK": "North Macedonia",
+        "PT": "Portugal",
+        "SM": "San Marino",
+        "RS": "Serbia",
+        "ES": "Spain",
+        "VA": "Vatican City",
+        "CY": "Cyprus",
+        "XK": "Kosovo"
+
+        // Eastern Europe & Central
+        "BY": "Belarus",
+        "BG": "Bulgaria",
+        "CZ": "Czech Republic",
+        "HU": "Hungary",
+        "MD": "Moldova",
+        "PL": "Poland",
+        "RO": "Romania",
+        "RU": "Russia",
+        "SK": "Slovakia",
+        "UA": "Ukraine",
+
+        // Transcontinental (Usually on Europe maps)
+        "GE": "Georgia",
+        "AZ": "Azerbaijan",
+        "AM": "Armenia",
+        "TR": "Turkey",
+        "KZ": "Kazakhstan",
+    };
     let currentID = ""; 
     let score = 0;
 
