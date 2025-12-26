@@ -3,21 +3,23 @@
 <head>
     <title>Europe Map Quiz</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; text-align: center; background-color: #f4f7f6; }
-        #game-container { margin: 20px auto; max-width: 900px; background: white; padding: 20px; border-radius: 15px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background-color: #f4f7f6; margin: 0; padding: 20px; }
+        #game-container { margin: 0 auto; max-width: 1000px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         
-        /* This targets paths inside the SVG once it's loaded */
+        /* This styles your SVG automatically once it loads */
+        svg { width: 100%; height: auto; max-height: 70vh; }
         svg path {
-            fill: #cccccc;
+            fill: #d1d8e0;
             stroke: #ffffff;
             stroke-width: 0.5;
             cursor: pointer;
-            transition: 0.2s;
+            transition: fill 0.2s, transform 0.2s;
         }
-        svg path:hover { fill: #3498db !important; }
+        svg path:hover { fill: #45aaf2 !important; }
         
-        #target-country { color: #2c3e50; font-size: 2.5em; margin: 10px 0; font-weight: bold; }
-        #message { height: 30px; margin-top: 10px; font-size: 1.2em; font-weight: bold; }
+        #target-country { color: #2d3436; font-size: 2.5em; margin: 15px 0; }
+        #score-board { font-size: 1.5em; color: #20bf6b; font-weight: bold; }
+        #message { height: 40px; margin-top: 10px; font-size: 1.3em; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -28,45 +30,70 @@
     <div id="target-country">Loading Map...</div>
     <div id="message"></div>
 
-    <div id="map-placeholder"></div>
+    <div id="map-placeholder">
+        </div>
 </div>
 
 <script>
-    let currentTarget = "";
-    let score = 0;
-    // Add all 50 country IDs here (must match the IDs in your SVG file)
-    const countries = ["France", "Germany", "Italy", "Spain", "Norway", "Sweden", "Poland", "Ukraine"]; 
+    // 1. THE DICTIONARY: Maps the SVG IDs to real names
+    // Add more codes here based on what's in your file!
+    const countryNames = {
+        "FR": "France",
+        "DE": "Germany",
+        "GB": "United Kingdom",
+        "IT": "Italy",
+        "ES": "Spain",
+        "PT": "Portugal",
+        "NO": "Norway",
+        "SE": "Sweden",
+        "FI": "Finland",
+        "PL": "Poland",
+        "UA": "Ukraine",
+        "CH": "Switzerland",
+        "AT": "Austria",
+        "BE": "Belgium",
+        "NL": "Netherlands"
+    };
 
-    // 1. FETCH THE SVG FILE
+    let currentID = ""; 
+    let score = 0;
+
+    // 2. FETCH AND INJECT THE SVG
     fetch('europe.svg')
         .then(response => response.text())
         .then(svgData => {
-            // Pour the SVG code into the placeholder
             document.getElementById('map-placeholder').innerHTML = svgData;
-            // Now that the SVG is on the page, start the game logic
             setupGame();
         })
         .catch(err => {
-            console.error("Error loading SVG:", err);
-            document.getElementById('target-country').innerText = "Error loading map!";
+            document.getElementById('target-country').innerText = "Error: Check your server!";
+            console.error(err);
         });
 
     function setupGame() {
-        // Find all paths inside the newly injected SVG
         const paths = document.querySelectorAll('svg path');
         
         paths.forEach(path => {
             path.addEventListener('click', function() {
-                if (this.id === currentTarget) {
+                const clickedID = this.id.toUpperCase(); // Ensure it matches our list
+                
+                if (clickedID === currentID) {
+                    // Success!
                     score++;
                     document.getElementById('score').innerText = score;
-                    document.getElementById('message').innerText = "Correct! ✅";
-                    document.getElementById('message').style.color = "green";
-                    this.style.fill = "#2ecc71"; 
-                    setTimeout(() => { this.style.fill = ""; nextQuestion(); }, 1000);
+                    document.getElementById('message').innerText = "Correct! That's " + countryNames[clickedID] + " ✅";
+                    document.getElementById('message').style.color = "#20bf6b";
+                    
+                    this.style.fill = "#2ecc71"; // Turn it green briefly
+                    setTimeout(() => {
+                        this.style.fill = ""; // Reset color
+                        nextQuestion();
+                    }, 800);
                 } else {
-                    document.getElementById('message').innerText = "That's " + (this.id || "not labeled") + ". Try again!";
-                    document.getElementById('message').style.color = "red";
+                    // Wrong
+                    const wrongName = countryNames[clickedID] || "another country";
+                    document.getElementById('message').innerText = "Nope, that's " + wrongName + ". Try again!";
+                    document.getElementById('message').style.color = "#eb4d4b";
                 }
             });
         });
@@ -74,8 +101,12 @@
     }
 
     function nextQuestion() {
-        currentTarget = countries[Math.floor(Math.random() * countries.length)];
-        document.getElementById('target-country').innerText = "Find: " + currentTarget;
+        // Pick a random ID from our dictionary
+        const keys = Object.keys(countryNames);
+        currentID = keys[Math.floor(Math.random() * keys.length)];
+        
+        // Display the friendly Name, not the ID
+        document.getElementById('target-country').innerText = "Find: " + countryNames[currentID];
         document.getElementById('message').innerText = "";
     }
 </script>
