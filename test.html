@@ -156,7 +156,7 @@
         
         // Boost probability of the missed country
         failureMade = true; // setting so we don't bring the probability distor back to 1.0
-        weights[currentID] *= 1.25; 
+        weights[currentID] *= 1.5; 
 
         document.getElementById('game-container').classList.add('shake');
         setTimeout(() => document.getElementById('game-container').classList.remove('shake'), 500);
