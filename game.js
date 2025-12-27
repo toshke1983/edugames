@@ -112,6 +112,7 @@ function handleSuccess(element) {
 
     element.style.fill = "#2ecc71"; 
     setTimeout(() => {
+        overlay.style.display = 'none';
         element.style.fill = ""; 
         nextQuestion();
     }, 3000);
