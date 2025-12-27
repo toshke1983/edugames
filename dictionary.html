@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uči Engleski - Memorija</title>
+    <title>Uči Engleski</title>
     <style>
         :root {
             --bg-color: #f0f2f5;
@@ -11,6 +11,8 @@
             --card-front: #ffffff;
             --text-color: #2c3e50;
             --match-color: #2ecc71;
+            --error-color: #e74c3c;
+            --quiz-btn-color: #ffffff;
         }
 
         body {
@@ -27,7 +29,7 @@
 
         h1 { color: #333; margin-bottom: 5px; }
         
-        /* Modal / Start Screen Overlay */
+        /* --- START SCREEN --- */
         #startScreen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -37,46 +39,66 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            padding: 20px;
+        }
+
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 320px;
         }
 
         .btn-mode {
-            padding: 20px 40px;
-            margin: 10px;
-            font-size: 1.5rem;
+            padding: 20px;
+            font-size: 1.3rem;
             border: none;
             border-radius: 12px;
             cursor: pointer;
-            width: 80%;
-            max-width: 300px;
+            width: 100%;
             transition: transform 0.2s;
             color: white;
             font-weight: bold;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        .btn-easy { background-color: #3498db; }
-        .btn-hard { background-color: #9b59b6; }
+        .btn-easy { background-color: #3498db; } /* Blue */
+        .btn-hard { background-color: #9b59b6; } /* Purple */
+        .btn-quiz { background-color: #e67e22; } /* Orange */
 
         .btn-mode:active { transform: scale(0.95); }
 
+        /* --- SHARED UI --- */
         .status-bar {
             margin-bottom: 15px;
             font-size: 1.2rem;
             color: #444;
             display: flex;
             gap: 20px;
+            justify-content: center;
         }
 
+        .btn-back {
+            margin-top: 30px;
+            padding: 10px 20px;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        /* --- MEMORY GAME STYLES --- */
         .grid-container {
-            display: grid;
+            display: none; /* Hidden by default */
             gap: 10px;
             width: 100%;
             max-width: 600px;
             perspective: 1000px; 
             margin: 0 auto;
         }
-
-        /* Dynamic Grid Classes */
         .grid-4x3 { grid-template-columns: repeat(3, 1fr); }
         .grid-5x6 { grid-template-columns: repeat(5, 1fr); }
 
@@ -117,7 +139,7 @@
             box-sizing: border-box; 
             overflow: hidden;
             word-wrap: break-word;
-            flex-direction: column; /* Allows icon above text */
+            flex-direction: column;
         }
 
         .card-back { background-color: var(--card-back); color: white; font-size: 2rem;}
@@ -133,79 +155,118 @@
             color: white;
             border-color: var(--match-color);
         }
+        
+        .speaker-icon { font-size: 0.8rem; color: #3498db; margin-bottom: 2px; }
+        .lang-label { font-size: 0.6rem; color: #999; margin-bottom: 4px; text-transform: uppercase; }
 
-        .btn-restart {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: #e74c3c;
-            color: white;
-            border: none;
-            border-radius: 50px;
+        @media (max-height: 700px) { .grid-5x6 .card { aspect-ratio: 1/1; } }
+
+
+        /* --- NEW QUIZ GAME STYLES --- */
+        #quizContainer {
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            width: 100%;
+            max-width: 500px;
+            gap: 20px;
+        }
+
+        .quiz-question-card {
+            background: white;
+            padding: 40px 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            border-bottom: 5px solid #3498db;
+        }
+
+        .quiz-options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2x2 grid */
+            gap: 15px;
+        }
+
+        .quiz-btn {
+            background: white;
+            border: 2px solid #ddd;
+            padding: 20px 10px;
+            border-radius: 12px;
+            font-size: 1.2rem;
             cursor: pointer;
-            font-size: 1rem;
-        }
-        
-        .lang-label {
-            font-size: 0.6rem;
-            color: #999;
-            margin-bottom: 4px;
-            text-transform: uppercase;
-        }
-        
-        .speaker-icon {
-            font-size: 0.8rem;
-            color: #3498db;
-            margin-bottom: 2px;
+            color: #444;
+            transition: all 0.2s;
+            font-weight: 600;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        @media (max-height: 700px) {
-            .grid-5x6 .card { aspect-ratio: 1/1; }
+        .quiz-btn:active { transform: scale(0.98); }
+        
+        /* Feedback States */
+        .quiz-btn.correct { background-color: var(--match-color); color: white; border-color: var(--match-color); }
+        .quiz-btn.wrong { background-color: var(--error-color); color: white; border-color: var(--error-color); animation: shake 0.4s; }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
         }
+
     </style>
 </head>
 <body>
 
     <div id="startScreen">
-        <h1 style="font-size: 2.5rem; margin-bottom: 40px;">Uči Engleski</h1>
-        <p style="margin-bottom: 30px; font-size: 1.2rem;">Izaberi težinu / Select Difficulty</p>
+        <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Uči Engleski</h1>
+        <p style="margin-bottom: 30px; font-size: 1.2rem; color: #666;">Izaberi igru / Choose Game</p>
         
-        <button class="btn-mode btn-easy" onclick="startGame(6, 'grid-4x3')">
-            Lako (Easy)<br><span style="font-size:1rem">6 parova</span>
-        </button>
-        
-        <button class="btn-mode btn-hard" onclick="startGame(15, 'grid-5x6')">
-            Teško (Hard)<br><span style="font-size:1rem">15 parova</span>
-        </button>
+        <div class="menu-container">
+            <button class="btn-mode btn-easy" onclick="initMemory(6, 'grid-4x3')">
+                Memorija (Lako)<br><span style="font-size:1rem">12 karata</span>
+            </button>
+            
+            <button class="btn-mode btn-hard" onclick="initMemory(15, 'grid-5x6')">
+                Memorija (Teško)<br><span style="font-size:1rem">30 karata</span>
+            </button>
+
+            <button class="btn-mode btn-quiz" onclick="initQuiz()">
+                Kviz (4 Odgovora)<br><span style="font-size:1rem">Pogodi pravu reč</span>
+            </button>
+        </div>
     </div>
 
-    <h1>Memorija</h1>
-    <div class="status-bar">
-        <span>Parovi: <span id="pairsCount">0</span>/<span id="totalPairs">0</span></span>
-        <span>Potezi: <span id="moves">0</span></span>
-    </div>
+    <h1 id="gameTitle">Igra</h1>
+    <div class="status-bar" id="statusBar">
+        </div>
 
     <div class="grid-container" id="gameGrid"></div>
 
-    <button class="btn-restart" onclick="location.reload()">Nazad na meni</button>
+    <div id="quizContainer">
+        <div class="quiz-question-card" id="questionText">
+            </div>
+        <div class="quiz-options-grid" id="optionsGrid">
+            </div>
+    </div>
+
+    <button class="btn-back" onclick="location.reload()">Nazad na meni</button>
 
     <script src="words.js"></script>
 
     <script>
-        // Game State Variables
-        let firstCard = null;
-        let secondCard = null;
-        let lockBoard = false;
-        let moves = 0;
-        let pairsFound = 0;
-        let totalPairsGame = 0;
-
-        const grid = document.getElementById('gameGrid');
-        const movesDisplay = document.getElementById('moves');
-        const pairsDisplay = document.getElementById('pairsCount');
-        const totalPairsDisplay = document.getElementById('totalPairs');
+        // --- SHARED VARS ---
         const startScreen = document.getElementById('startScreen');
-
-        // Only speak English
+        const statusBar = document.getElementById('statusBar');
+        const gameGrid = document.getElementById('gameGrid');
+        const quizContainer = document.getElementById('quizContainer');
+        const gameTitle = document.getElementById('gameTitle');
+        
+        // --- AUDIO ENGINE ---
         function speakEnglish(text) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
@@ -216,49 +277,43 @@
             }
         }
 
-        function startGame(pairsNeeded, gridClass) {
+        // ==========================================
+        // GAME LOGIC: MEMORY (Card Game)
+        // ==========================================
+        let memoryState = { first: null, second: null, lock: false, moves: 0, pairs: 0, total: 0 };
+
+        function initMemory(pairsNeeded, gridClass) {
             startScreen.style.display = 'none';
-            grid.className = 'grid-container ' + gridClass;
+            gameGrid.style.display = 'grid';
+            quizContainer.style.display = 'none';
+            gameGrid.className = 'grid-container ' + gridClass;
+            gameTitle.innerText = "Memorija";
             
             // Randomly select words
             let availableWords = [...dictionary]; 
             availableWords.sort(() => 0.5 - Math.random());
             const selectedWords = availableWords.slice(0, pairsNeeded);
 
-            moves = 0;
-            pairsFound = 0;
-            totalPairsGame = pairsNeeded;
-            movesDisplay.innerText = 0;
-            pairsDisplay.innerText = 0;
-            totalPairsDisplay.innerText = totalPairsGame;
+            memoryState = { first: null, second: null, lock: false, moves: 0, pairs: 0, total: pairsNeeded };
+            updateMemoryStats();
 
-            createBoard(selectedWords);
+            createMemoryBoard(selectedWords);
         }
 
-        function createBoard(words) {
-            grid.innerHTML = '';
-            [firstCard, secondCard, lockBoard] = [null, null, false];
+        function updateMemoryStats() {
+            statusBar.innerHTML = `
+                <span>Parovi: ${memoryState.pairs}/${memoryState.total}</span>
+                <span>Potezi: ${memoryState.moves}</span>
+            `;
+        }
 
+        function createMemoryBoard(words) {
+            gameGrid.innerHTML = '';
             const gamePairs = [];
             words.forEach(item => {
-                // English Card (Has speaker icon logic)
-                gamePairs.push({ 
-                    text: item.en, 
-                    pairId: item.en, 
-                    lang: 'en', 
-                    label: 'ENG',
-                    hasAudio: true 
-                });
-                // Serbian Card (No audio)
-                gamePairs.push({ 
-                    text: item.sr, 
-                    pairId: item.en, 
-                    lang: 'sr', 
-                    label: 'SRB',
-                    hasAudio: false 
-                });
+                gamePairs.push({ text: item.en, pairId: item.en, lang: 'en', label: 'ENG', hasAudio: true });
+                gamePairs.push({ text: item.sr, pairId: item.en, lang: 'sr', label: 'SRB', hasAudio: false });
             });
-
             gamePairs.sort(() => 0.5 - Math.random());
 
             gamePairs.forEach(item => {
@@ -268,101 +323,196 @@
                 card.dataset.text = item.text;
                 card.dataset.lang = item.lang;
 
-                const inner = document.createElement('div');
-                inner.classList.add('card-inner');
-
-                const front = document.createElement('div');
-                front.classList.add('card-front');
-                
-                // Add Speaker Icon only for English
+                // Inner HTML structure
                 let iconHtml = item.hasAudio ? '<div class="speaker-icon">🔈</div>' : '';
-                
-                front.innerHTML = `
-                    ${iconHtml}
-                    <span style="display:block">${item.text}</span>
-                    <span class="lang-label">${item.label}</span>
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-front">
+                            ${iconHtml}<span style="display:block">${item.text}</span>
+                            <span class="lang-label">${item.label}</span>
+                        </div>
+                        <div class="card-back">?</div>
+                    </div>
                 `;
-
-                const back = document.createElement('div');
-                back.classList.add('card-back');
-                back.innerHTML = "?";
-
-                inner.appendChild(front);
-                inner.appendChild(back);
-                card.appendChild(inner);
-
-                card.addEventListener('click', flipCard);
-                grid.appendChild(card);
+                
+                card.addEventListener('click', flipMemoryCard);
+                gameGrid.appendChild(card);
             });
         }
 
-        function flipCard() {
-            if (lockBoard) return;
-            if (this === firstCard) return;
+        function flipMemoryCard() {
+            if (memoryState.lock) return;
+            if (this === memoryState.first) return;
 
             this.classList.add('flipped');
-            
-            // ONLY Speak if the card is English
-            if (this.dataset.lang === 'en') {
-                speakEnglish(this.dataset.text);
-            }
+            if (this.dataset.lang === 'en') speakEnglish(this.dataset.text);
 
-            if (!firstCard) {
-                firstCard = this;
+            if (!memoryState.first) {
+                memoryState.first = this;
                 return;
             }
 
-            secondCard = this;
-            moves++;
-            movesDisplay.innerText = moves;
-            checkForMatch();
-        }
-
-        function checkForMatch() {
-            let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
-            if (isMatch) {
-                disableCards();
-            } else {
-                unflipCards();
-            }
-        }
-
-        function disableCards() {
-            firstCard.classList.add('matched');
-            secondCard.classList.add('matched');
+            memoryState.second = this;
+            memoryState.moves++;
+            updateMemoryStats();
             
-            pairsFound++;
-            pairsDisplay.innerText = pairsFound;
-
-            // Reinforcement: Speak the ENGLISH word again
-            // We find which card has lang='en'
-            let enCard = firstCard.dataset.lang === 'en' ? firstCard : secondCard;
-            setTimeout(() => {
-                speakEnglish("Correct! " + enCard.dataset.text);
-            }, 600);
-
-            if (pairsFound === totalPairsGame) {
-                setTimeout(() => {
-                    alert("Bravo! Game Over.");
-                    location.reload();
-                }, 2000);
+            // Match Check
+            if (memoryState.first.dataset.pairId === memoryState.second.dataset.pairId) {
+                disableMemoryCards();
+            } else {
+                unflipMemoryCards();
             }
-
-            resetBoard();
         }
 
-        function unflipCards() {
-            lockBoard = true;
+        function disableMemoryCards() {
+            memoryState.first.classList.add('matched');
+            memoryState.second.classList.add('matched');
+            memoryState.pairs++;
+            updateMemoryStats();
+
+            let enText = memoryState.first.dataset.lang === 'en' ? memoryState.first.dataset.text : memoryState.second.dataset.text;
+            setTimeout(() => speakEnglish("Correct! " + enText), 600);
+
+            if (memoryState.pairs === memoryState.total) {
+                setTimeout(() => { alert("Bravo!"); location.reload(); }, 2000);
+            }
+            resetMemoryBoard();
+        }
+
+        function unflipMemoryCards() {
+            memoryState.lock = true;
             setTimeout(() => {
-                firstCard.classList.remove('flipped');
-                secondCard.classList.remove('flipped');
-                resetBoard();
+                memoryState.first.classList.remove('flipped');
+                memoryState.second.classList.remove('flipped');
+                resetMemoryBoard();
             }, 1200);
         }
 
-        function resetBoard() {
-            [firstCard, secondCard, lockBoard] = [null, null, false];
+        function resetMemoryBoard() {
+            [memoryState.first, memoryState.second, memoryState.lock] = [null, null, false];
         }
+
+
+        // ==========================================
+        // GAME LOGIC: QUIZ (Multiple Choice)
+        // ==========================================
+        let quizState = { score: 0, currentQuestion: 0, currentTarget: null };
+
+        function initQuiz() {
+            startScreen.style.display = 'none';
+            gameGrid.style.display = 'none';
+            quizContainer.style.display = 'flex';
+            gameTitle.innerText = "Kviz";
+            
+            quizState.score = 0;
+            quizState.currentQuestion = 0;
+            
+            nextQuizQuestion();
+        }
+
+        function nextQuizQuestion() {
+            quizState.currentQuestion++;
+            statusBar.innerHTML = `<span>Pitanje: ${quizState.currentQuestion}</span> <span>Poeni: ${quizState.score}</span>`;
+
+            // 1. Pick a random word from dictionary
+            const target = dictionary[Math.floor(Math.random() * dictionary.length)];
+            quizState.currentTarget = target;
+
+            // 2. Decide direction (50% chance En->Sr, 50% chance Sr->En)
+            const isEnglishQuestion = Math.random() > 0.5;
+            const questionText = isEnglishQuestion ? target.en : target.sr;
+            const correctText = isEnglishQuestion ? target.sr : target.en;
+            
+            // If question is English, speak it
+            if (isEnglishQuestion) speakEnglish(target.en);
+
+            // 3. Find Distractors (Wrong answers)
+            // Strategy: Filter dictionary for same category, exclude target
+            let sameCategoryWords = dictionary.filter(w => w.category === target.category && w.en !== target.en);
+            
+            // Shuffle them
+            sameCategoryWords.sort(() => 0.5 - Math.random());
+            
+            // Take 3. If not enough, take random words from dictionary
+            let distractors = sameCategoryWords.slice(0, 3);
+            
+            while (distractors.length < 3) {
+                let randomWord = dictionary[Math.floor(Math.random() * dictionary.length)];
+                if (randomWord.en !== target.en && !distractors.includes(randomWord)) {
+                    distractors.push(randomWord);
+                }
+            }
+
+            // 4. Create Options Array (1 correct + 3 wrong)
+            let options = [
+                { text: correctText, isCorrect: true },
+                { text: isEnglishQuestion ? distractors[0].sr : distractors[0].en, isCorrect: false },
+                { text: isEnglishQuestion ? distractors[1].sr : distractors[1].en, isCorrect: false },
+                { text: isEnglishQuestion ? distractors[2].sr : distractors[2].en, isCorrect: false }
+            ];
+
+            // Shuffle options so correct isn't always first
+            options.sort(() => 0.5 - Math.random());
+
+            // 5. Render UI
+            const qCard = document.getElementById('questionText');
+            qCard.innerHTML = `
+                <div style="font-size:1rem; color:#999; text-transform:uppercase; margin-bottom:5px">
+                    ${isEnglishQuestion ? 'Prevedi na srpski' : 'Translate to English'}
+                </div>
+                ${questionText}
+            `;
+            
+            const optGrid = document.getElementById('optionsGrid');
+            optGrid.innerHTML = ''; // Clear old buttons
+
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-btn';
+                btn.innerText = opt.text;
+                btn.onclick = () => handleQuizAnswer(btn, opt.isCorrect, target);
+                optGrid.appendChild(btn);
+            });
+        }
+
+        function handleQuizAnswer(btn, isCorrect, targetWord) {
+            // Prevent double clicking
+            const allBtns = document.querySelectorAll('.quiz-btn');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                quizState.score++;
+                
+                // AUDIO: Always speak the English variant on success
+                speakEnglish("Correct! " + targetWord.en);
+
+                setTimeout(() => {
+                    nextQuizQuestion();
+                }, 1500);
+            } else {
+                btn.classList.add('wrong');
+                // Highlight the correct one
+                allBtns.forEach(b => {
+                    // Logic to find the correct text button to highlight it green
+                    // Simplified: We assume text match or we could store logic in dataset
+                    // For now, let's just wait and let user try again? 
+                    // No, better to show answer and move on.
+                    if (b.innerText === (targetWord.en === quizState.currentTarget.en ? targetWord.sr : targetWord.en) 
+                        || b.innerText === targetWord.en 
+                        || b.innerText === targetWord.sr) {
+                        b.classList.add('correct');
+                    }
+                });
+
+                speakEnglish("The answer is " + targetWord.en);
+
+                setTimeout(() => {
+                    nextQuizQuestion();
+                }, 2000);
+            }
+        }
+
     </script>
 </body>
 </html>
