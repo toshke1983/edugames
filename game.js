@@ -106,7 +106,7 @@ function handleSuccess(element) {
 
     document.getElementById('score').innerText = score;
     document.getElementById('streak').innerText = streak;
-    successPopup()
+    successPopup();
     
     if (streak % 5 === 0) launchCelebration();
 
