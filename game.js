@@ -106,6 +106,7 @@ function handleSuccess(element) {
 
     document.getElementById('score').innerText = score;
     document.getElementById('streak').innerText = streak;
+    successPopup()
     
     if (streak % 5 === 0) launchCelebration();
 
@@ -113,7 +114,25 @@ function handleSuccess(element) {
     setTimeout(() => {
         element.style.fill = ""; 
         nextQuestion();
-    }, 800);
+    }, 3000);
+}
+
+function successPopup() {
+    // 1. Get the info for the popup
+    const modeData = gameData[currentGameMode].items;
+    const info = modeData[currentID];
+    const ui = uiStrings[currentLang];
+
+    // 2. Fill the popup with data
+    document.getElementById('win-name').innerText = info[currentLang];
+    
+    // Create a nice meta string like "Capital: London" translated
+    const capLabel = ui.capital.split(' ').pop(); // Extracts just the word for "Capital/Hauptort"
+    document.getElementById('win-meta').innerText = `${capLabel}: ${info.cap[currentLang]}`;
+    
+    // 3. Show the popup and trigger celebration
+    const overlay = document.getElementById('success-overlay');
+    overlay.style.display = 'flex';
 }
 
 function handleFailure(clickedID) {
