@@ -106,19 +106,22 @@ function handleSuccess(element) {
 
     document.getElementById('score').innerText = score;
     document.getElementById('streak').innerText = streak;
-    successPopup();
+    preparePopup();
     
-    if (streak % 5 === 0) launchCelebration();
-
+    // Show the popup and trigger celebration
+    const overlay = document.getElementById('success-overlay');
+    overlay.style.display = 'flex';
     element.style.fill = "#2ecc71"; 
     setTimeout(() => {
         overlay.style.display = 'none';
         element.style.fill = ""; 
         nextQuestion();
     }, 3000);
+    
+    if (streak % 5 === 0) launchCelebration();
 }
 
-function successPopup() {
+function preparePopup() {
     // 1. Get the info for the popup
     const modeData = gameData[currentGameMode].items;
     const info = modeData[currentID];
@@ -130,10 +133,6 @@ function successPopup() {
     // Create a nice meta string like "Capital: London" translated
     const capLabel = ui.capital.split(' ').pop(); // Extracts just the word for "Capital/Hauptort"
     document.getElementById('win-meta').innerText = `${capLabel}: ${info.cap[currentLang]}`;
-    
-    // 3. Show the popup and trigger celebration
-    const overlay = document.getElementById('success-overlay');
-    overlay.style.display = 'flex';
 }
 
 function handleFailure(clickedID) {
