@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Geo Quiz Master</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="style.css"> </head>
+<body>
+
+<div id="setup-menu">
+    <h1>🌍 Geo Quiz Master</h1>
+    <h3>Choose Language / Jezik / Sprache:</h3>
+    <button onclick="setLang('en')">English 🇬🇧</button>
+    <button onclick="setLang('de')">Deutsch 🇩🇪</button>
+    <button onclick="setLang('sr')">Srpski 🇷🇸</button>
+    
+    <div id="map-select" style="display:none; margin-top:20px;">
+        <h3>Choose Map:</h3>
+        <button onclick="startGame('europe')">Europe 🇪🇺</button>
+        <button onclick="startGame('switzerland')">Switzerland 🇨🇭</button>
+    </div>
+</div>
+
+<div id="game-container" style="display:none;">
+    <div id="score-board">
+        <span id="label-score">Score</span>: <span id="score">0</span> | 
+        <span id="label-streak">Streak</span>: <span id="streak">0</span> 🔥
+    </div>
+    <div id="target-display"></div>
+    <button id="skip-btn" onclick="skipItem()">Skip</button>
+    <div id="message"></div>
+    <div id="map-placeholder"></div>
+</div>
+
+<script type="module">
+    import { gameData, uiStrings } from './data.js';
+    
+    let currentLang = 'en';
+    let currentGameMode = 'europe';
+    let currentID = '';
+    let weights = {};
+    let score = 0;
+    let streak = 0;
+
+    // Expose functions to the buttons
+    window.setLang = (lang) => {
+        currentLang = lang;
+        document.getElementById('map-select').style.display = 'block';
+    };
+
+    window.startGame = (mode) => {
+        currentGameMode = mode;
+        document.getElementById('setup-menu').style.display = 'none';
+        document.getElementById('game-container').style.display = 'block';
+        
+        // Initialize weights for this map
+        weights = {};
+        Object.keys(gameData[mode].items).forEach(id => weights[id] = 1.0);
+        
+        loadMap(gameData[mode].svg);
+    };
+
+    function loadMap(file) {
+        fetch(file).then(r => r.text()).then(svg => {
+            document.getElementById('map-placeholder').innerHTML = svg;
+            setupClickEvents();
+            nextQuestion();
+        });
+    }
+
+    function setupClickEvents() {
+        document.querySelectorAll('svg path').forEach(path => {
+            path.addEventListener('click', function() {
+                const id = this.id.toUpperCase();
+                if (id === currentID) {
+                    handleWin(this);
+                } else {
+                    handleLoss(id);
+                }
+            });
+        });
+    }
+
+    function nextQuestion() {
+        const modeData = gameData[currentGameMode].items;
+        const keys = Object.keys(modeData);
+        
+        // Weighted random selection logic (from previous step)
+        let totalWeight = 0;
+        keys.forEach(k => totalWeight += weights[k]);
+        let random = Math.random() * totalWeight;
+        let sum = 0;
+        for (let key of keys) {
+            sum += weights[key];
+            if (random <= sum) { currentID = key; break; }
+        }
+
+        const info = modeData[currentID];
+        const ui = uiStrings[currentLang];
+        const isCapQuest = Math.random() > 0.5;
+
+        const questionText = isCapQuest 
+            ? `${ui.capital}: <b>${info.cap[currentLang]}</b>` 
+            : `${ui.find}: <b>${info[currentLang]}</b>`;
+
+        document.getElementById('target-display').innerHTML = `${info.flag} ${questionText}`;
+        document.getElementById('label-score').innerText = ui.score;
+        document.getElementById('label-streak').innerText = ui.streak;
+        document.getElementById('skip-btn').innerText = ui.skip;
+    }
+
+    function handleWin(el) {
+        score++; streak++;
+        weights[currentID] = 1.0;
+        document.getElementById('score').innerText = score;
+        document.getElementById('streak').innerText = streak;
+        el.style.fill = "#2ecc71";
+        if (streak % 5 === 0) confetti();
+        setTimeout(() => { el.style.fill = ""; nextQuestion(); }, 800);
+    }
+
+    function handleLoss(id) {
+        streak = 0;
+        weights[currentID] *= 1.5;
+        document.getElementById('streak').innerText = 0;
+        document.getElementById('message').innerText = "❌";
+        setTimeout(() => document.getElementById('message').innerText = "", 1000);
+    }
+
+    window.skipItem = () => { streak = 0; weights[currentID] *= 1.2; nextQuestion(); };
+</script>
+
+<style>
+    /* Add your existing CSS here */
+    body { font-family: sans-serif; text-align: center; background: #f0f4f8; }
+    button { padding: 15px 25px; margin: 10px; font-size: 1.1em; cursor: pointer; border-radius: 8px; border: 1px solid #ccc; }
+    #target-display { font-size: 2em; margin: 20px; }
+    svg path { fill: #d1d8e0; stroke: white; cursor: pointer; }
+    svg path:hover { fill: #3498db; }
+</style>
+</body>
+</html>
