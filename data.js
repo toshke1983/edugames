@@ -3,7 +3,7 @@ export const gameData = {
         svg: 'europe.svg',
         items: {
             "AL": { en: "Albania", de: "Albanien", sr: "Albanija", cap: { en: "Tirana", de: "Tirana", sr: "Tirana" }, flag: "🇦🇱" },
-            "AD": { en: "Andorra", de: "Andorra", sr: "Andora", cap: { en: "Andorra la Vella", de: "Andorra la Vella", sr: "Andora la Velja" }, flag: "🇦🇩" },
+//            "AD": { en: "Andorra", de: "Andorra", sr: "Andora", cap: { en: "Andorra la Vella", de: "Andorra la Vella", sr: "Andora la Velja" }, flag: "🇦🇩" },
             "AT": { en: "Austria", de: "Österreich", sr: "Austrija", cap: { en: "Vienna", de: "Wien", sr: "Beč" }, flag: "🇦🇹" },
             "BY": { en: "Belarus", de: "Belarus", sr: "Belorusija", cap: { en: "Minsk", de: "Minsk", sr: "Minsk" }, flag: "🇧🇾" },
             "BE": { en: "Belgium", de: "Belgien", sr: "Belgija", cap: { en: "Brussels", de: "Brüssel", sr: "Brisel" }, flag: "🇧🇪" },
@@ -26,10 +26,10 @@ export const gameData = {
             "LV": { en: "Latvia", de: "Lettland", sr: "Letonija", cap: { en: "Riga", de: "Riga", sr: "Riga" }, flag: "🇱🇻" },
             "LI": { en: "Liechtenstein", de: "Liechtenstein", sr: "Lihtenštajn", cap: { en: "Vaduz", de: "Vaduz", sr: "Vaduc" }, flag: "🇱🇮" },
             "LT": { en: "Lithuania", de: "Litauen", sr: "Litvanija", cap: { en: "Vilnius", de: "Vilnius", sr: "Vilnjus" }, flag: "🇱🇹" },
-            "LU": { en: "Luxembourg", de: "Luxemburg", sr: "Luksemburg", cap: { en: "Luxembourg", de: "Luxemburg", sr: "Luksemburg" }, flag: "🇱🇺" },
-            "MT": { en: "Malta", de: "Malta", sr: "Malta", cap: { en: "Valletta", de: "Valletta", sr: "Valeta" }, flag: "🇲🇹" },
+//            "LU": { en: "Luxembourg", de: "Luxemburg", sr: "Luksemburg", cap: { en: "Luxembourg", de: "Luxemburg", sr: "Luksemburg" }, flag: "🇱🇺" },
+//            "MT": { en: "Malta", de: "Malta", sr: "Malta", cap: { en: "Valletta", de: "Valletta", sr: "Valeta" }, flag: "🇲🇹" },
             "MD": { en: "Moldova", de: "Moldau", sr: "Moldavija", cap: { en: "Chisinau", de: "Chișinău", sr: "Kišinjev" }, flag: "🇲🇩" },
-            "MC": { en: "Monaco", de: "Monaco", sr: "Monako", cap: { en: "Monaco", de: "Monaco", sr: "Monako" }, flag: "🇲🇨" },
+//            "MC": { en: "Monaco", de: "Monaco", sr: "Monako", cap: { en: "Monaco", de: "Monaco", sr: "Monako" }, flag: "🇲🇨" },
             "ME": { en: "Montenegro", de: "Montenegro", sr: "Crna Gora", cap: { en: "Podgorica", de: "Podgorica", sr: "Podgorica" }, flag: "🇲🇪" },
             "NL": { en: "Netherlands", de: "Niederlande", sr: "Holandija", cap: { en: "Amsterdam", de: "Amsterdam", sr: "Amsterdam" }, flag: "🇳🇱" },
             "MK": { en: "North Macedonia", de: "Nordmazedonien", sr: "Severna Makedonija", cap: { en: "Skopje", de: "Skopje", sr: "Skoplje" }, flag: "🇲🇰" },
@@ -81,7 +81,7 @@ export const gameData = {
 };
 
 export const uiStrings = {
-    en: { score: "Score", streak: "Streak", best: "Best", find: "Find", capital: "Find the place with capital", skip: "Skip" },
-    de: { score: "Punktzahl", streak: "Serie", best: "Bestleistung", find: "Suche", capital: "Suche den Ort mit Hauptort", skip: "Überspringen" },
-    sr: { score: "Poeni", streak: "Niz", best: "Najbolje", find: "Pronađi", capital: "Pronađi mesto čiji je glavni grad", skip: "Preskoči" }
+    en: { score: "Score", streak: "Streak", best: "Best", find: "Find the country", capital: "Find the country with capital", skip: "Skip" },
+    de: { score: "Punktzahl", streak: "Serie", best: "Bestleistung", find: "Suche das Land", capital: "Suche das Land mit Hauptort", skip: "Überspringen" },
+    sr: { score: "Poeni", streak: "Niz", best: "Najbolje", find: "Pronađi državu", capital: "Pronađi državu čiji je glavni grad", skip: "Preskoči" }
 };
