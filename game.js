@@ -8,6 +8,13 @@ let weights = {};
 let score = 0;
 let streak = 0;
 let maxStreak = 0;
+// Pre-load sounds
+const soundSuccess = new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3');
+const soundError = new Audio('https://assets.mixkit.co/active_storage/sfx/2020/2020-preview.mp3');
+
+// Lower the volume a bit so it's not startling (0.0 to 1.0)
+soundSuccess.volume = 0.5;
+soundError.volume = 0.4;
 
 export function setLang(lang) {
     currentLang = lang;
@@ -108,6 +115,9 @@ function handleSuccess(element) {
     document.getElementById('streak').innerText = streak;
     preparePopup();
     
+    soundSuccess.currentTime = 0; // Reset sound if clicked rapidly
+    soundSuccess.play();
+    
     // Show the popup and trigger celebration
     const overlay = document.getElementById('success-overlay');
     overlay.style.display = 'flex';
@@ -140,6 +150,9 @@ function handleFailure(clickedID) {
     document.getElementById('streak').innerText = streak;
     weights[currentID] *= 1.5; 
 
+    soundError.currentTime = 0;
+    soundError.play();
+    
     document.getElementById('game-container').classList.add('shake');
     setTimeout(() => document.getElementById('game-container').classList.remove('shake'), 500);
 
