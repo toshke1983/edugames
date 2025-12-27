@@ -142,15 +142,6 @@ function launchCelebration() {
 }
 
 export function goHome() {
-    // Hide game, show menu
-    document.getElementById('game-container').style.display = 'none';
-    document.getElementById('setup-menu').style.display = 'block';
-    
-    // Optional: Hide the map selection until a language is clicked again
-    // If you want them to keep their language, leave this line out.
-    // document.getElementById('map-select').style.display = 'none';
-
-    // Clear the map and message so it's fresh for next time
-    document.getElementById('map-placeholder').innerHTML = "";
-    document.getElementById('message').innerText = "";
+    // relauch everything
+    window.location.reload();
 }
