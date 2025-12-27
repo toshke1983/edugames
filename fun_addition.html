@@ -207,11 +207,11 @@
 
     function generateQuestion() {
         let n1, n2;
-        const isHard = Math.random() > 0.9; 
+        const isHard = Math.random() > 0.93; 
         const selectedFruit = fruits[Math.floor(Math.random() * fruits.length)];
 
         if (!isHard) {
-            currentAnswer = Math.floor(Math.random() * 9) + 2; 
+            currentAnswer = Math.floor(Math.random() * 9) + 4;  // leave it up to 12
             n1 = Math.floor(Math.random() * (currentAnswer - 1)) + 1;
             n2 = currentAnswer - n1;
         } else {
