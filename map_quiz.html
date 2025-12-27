@@ -18,8 +18,8 @@
         .shake { animation: shake 0.5s; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
         /* The Success Popup Background */
-    `   #success-overlay { display: none; /* Hidden by default */ position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); /* Dim the background */ z-index: 1000;\
-                           justify-content: center; align-items: center;}
+    `   #success-overlay { display: none; /* Hidden by default */ position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); /* Dim the background */ z-index: 9999;\
+                           justify-content: center; align-items: center; backdrop-filter: blur(4px); /* Adds a nice frosted glass effect */}
         /* The Success Card */
         .success-card { background: white; padding: 40px; border-radius: 30px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.3); animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
                         max-width: 80%;}
@@ -30,13 +30,6 @@
     </style>
 </head>
 <body>
-<div id="success-overlay">
-    <div class="success-card">
-        <span class="big-thumb">👍</span>
-        <h2 id="win-name"></h2>
-        <p id="win-meta"></p>
-    </div>
-</div>
     
 <div id="setup-menu">
     <h1>🌍 Geo Quiz Master</h1>
@@ -65,6 +58,14 @@
     <button class="menu-btn" id="skip-btn" onclick="UI.skipItem()" style="background:#95a5a6">Skip</button>
     <div id="message"></div>
     <div id="map-placeholder"></div>
+</div>
+
+<div id="success-overlay" style="display: none;">
+    <div class="success-card">
+        <span class="big-thumb">👍</span>
+        <h2 id="win-name">---</h2>
+        <p id="win-meta">---</p>
+    </div>
 </div>
 
 <script type="module">
