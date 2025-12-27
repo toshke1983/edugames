@@ -24,7 +24,7 @@ export const gameData = {
             "IT": { en: "Italy", de: "Italien", sr: "Italija", cap: { en: "Rome", de: "Rom", sr: "Rim" }, flag: "🇮🇹" },
             "XK": { en: "Kosovo", de: "Kosovo", sr: "Kosovo", cap: { en: "Pristina", de: "Pristina", sr: "Priština" }, flag: "🇽🇰" },
             "LV": { en: "Latvia", de: "Lettland", sr: "Letonija", cap: { en: "Riga", de: "Riga", sr: "Riga" }, flag: "🇱🇻" },
-            "LI": { en: "Liechtenstein", de: "Liechtenstein", sr: "Lihtenštajn", cap: { en: "Vaduz", de: "Vaduz", sr: "Vaduc" }, flag: "🇱🇮" },
+//            "LI": { en: "Liechtenstein", de: "Liechtenstein", sr: "Lihtenštajn", cap: { en: "Vaduz", de: "Vaduz", sr: "Vaduc" }, flag: "🇱🇮" },
             "LT": { en: "Lithuania", de: "Litauen", sr: "Litvanija", cap: { en: "Vilnius", de: "Vilnius", sr: "Vilnjus" }, flag: "🇱🇹" },
 //            "LU": { en: "Luxembourg", de: "Luxemburg", sr: "Luksemburg", cap: { en: "Luxembourg", de: "Luxemburg", sr: "Luksemburg" }, flag: "🇱🇺" },
 //            "MT": { en: "Malta", de: "Malta", sr: "Malta", cap: { en: "Valletta", de: "Valletta", sr: "Valeta" }, flag: "🇲🇹" },
