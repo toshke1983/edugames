@@ -13,8 +13,8 @@ const soundSuccess = new Audio('https://assets.mixkit.co/active_storage/sfx/2000
 const soundError = new Audio('https://assets.mixkit.co/active_storage/sfx/2020/2020-preview.mp3');
 
 // Lower the volume a bit so it's not startling (0.0 to 1.0)
-soundSuccess.volume = 0.6;
-soundError.volume = 0.6;
+soundSuccess.volume = 0.5;
+soundError.volume = 0.3;
 
 export function setLang(lang) {
     currentLang = lang;
