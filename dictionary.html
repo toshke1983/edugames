@@ -7,10 +7,10 @@
     <style>
         :root {
             --bg-color: #f0f2f5;
-            --card-back: #4a90e2; /* Blue for back of card */
+            --card-back: #4a90e2; 
             --card-front: #ffffff;
             --text-color: #2c3e50;
-            --match-color: #2ecc71; /* Green */
+            --match-color: #2ecc71;
         }
 
         body {
@@ -26,32 +26,67 @@
         }
 
         h1 { color: #333; margin-bottom: 5px; }
-        p { color: #666; margin-bottom: 20px; }
+        
+        /* Modal / Start Screen Overlay */
+        #startScreen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255, 0.95);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-mode {
+            padding: 20px 40px;
+            margin: 10px;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 80%;
+            max-width: 300px;
+            transition: transform 0.2s;
+            color: white;
+            font-weight: bold;
+        }
+
+        .btn-easy { background-color: #3498db; } /* Blue */
+        .btn-hard { background-color: #9b59b6; } /* Purple */
+
+        .btn-mode:active { transform: scale(0.95); }
 
         .status-bar {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-size: 1.2rem;
             color: #444;
-            font-weight: bold;
+            display: flex;
+            gap: 20px;
         }
 
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+            gap: 10px;
             width: 100%;
-            max-width: 400px;
-            perspective: 1000px; /* Essential for 3D effect */
+            max-width: 600px;
+            perspective: 1000px; 
+            margin: 0 auto;
         }
+
+        /* Dynamic Grid Classes */
+        .grid-4x3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-5x6 { grid-template-columns: repeat(5, 1fr); }
 
         .card {
             background-color: transparent;
-            aspect-ratio: 3/4;
+            aspect-ratio: 3/4; /* Keeps cards rectangular */
             perspective: 1000px;
             cursor: pointer;
+            position: relative;
         }
 
-        /* This inner container does the actual flipping */
         .card-inner {
             position: relative;
             width: 100%;
@@ -59,39 +94,31 @@
             text-align: center;
             transition: transform 0.6s;
             transform-style: preserve-3d;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
         }
 
-        /* Logic for flipping */
-        .card.flipped .card-inner {
-            transform: rotateY(180deg);
-        }
+        .card.flipped .card-inner { transform: rotateY(180deg); }
 
-        /* Common style for front and back faces */
         .card-front, .card-back {
             position: absolute;
             width: 100%;
             height: 100%;
-            -webkit-backface-visibility: hidden; /* Safari */
+            -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 12px;
+            border-radius: 8px;
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: clamp(0.8rem, 2.5vw, 1.2rem); /* Dynamic font size */
             padding: 5px;
             box-sizing: border-box; 
+            overflow: hidden;
+            word-wrap: break-word;
         }
 
-        /* The blue back (what you see initially) */
-        .card-back {
-            background-color: var(--card-back);
-            color: white;
-        }
-
-        /* The white front (revealed text) - Rotated 180 so it matches the flip */
+        .card-back { background-color: var(--card-back); color: white; }
         .card-front {
             background-color: var(--card-front);
             color: var(--text-color);
@@ -99,7 +126,6 @@
             border: 2px solid #ddd;
         }
 
-        /* Matched State */
         .card.matched .card-inner .card-front {
             background-color: var(--match-color);
             color: white;
@@ -107,124 +133,143 @@
         }
 
         .btn-restart {
-            margin-top: 30px;
-            padding: 15px 40px;
-            font-size: 1.1rem;
-            background-color: #e74c3c;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #e74c3c;
             color: white;
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+            font-size: 1rem;
         }
-
-        /* Flag/Label styles */
+        
         .lang-label {
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             position: absolute;
-            top: 5px;
-            right: 5px;
-            color: #999;
-            text-transform: uppercase;
+            top: 2px; right: 4px;
+            color: #ccc;
+        }
+        
+        /* For 5x6 grid on small phones, make cards shorter to fit screen */
+        @media (max-height: 700px) {
+            .grid-5x6 .card { aspect-ratio: 1/1; }
         }
     </style>
 </head>
 <body>
 
+    <div id="startScreen">
+        <h1 style="font-size: 2.5rem; margin-bottom: 40px;">Uči Engleski</h1>
+        <p style="margin-bottom: 30px; font-size: 1.2rem;">Izaberi težinu / Select Difficulty</p>
+        
+        <button class="btn-mode btn-easy" onclick="startGame(6, 'grid-4x3')">
+            Lako (Easy)<br><span style="font-size:1rem">6 parova</span>
+        </button>
+        
+        <button class="btn-mode btn-hard" onclick="startGame(15, 'grid-5x6')">
+            Teško (Hard)<br><span style="font-size:1rem">15 parova</span>
+        </button>
+    </div>
+
     <h1>Memorija</h1>
-    <p>Spoji reči / Match the words</p>
-    <div class="status-bar">Potezi: <span id="moves">0</span></div>
+    <div class="status-bar">
+        <span>Parovi: <span id="pairsCount">0</span>/<span id="totalPairs">0</span></span>
+        <span>Potezi: <span id="moves">0</span></span>
+    </div>
 
-    <div class="grid-container" id="gameGrid">
-        </div>
+    <div class="grid-container" id="gameGrid"></div>
 
-    <button class="btn-restart" onclick="initGame()">Nova Igra</button>
+    <button class="btn-restart" onclick="location.reload()">Nazad na meni</button>
+
+    <script src="words.js"></script>
 
     <script>
-        // --- DATASET ---
-        const vocabulary = [
-            { en: "Apple", sr: "Jabuka" },
-            { en: "Game", sr: "Igra" },
-            { en: "Beach", sr: "Plaža" },
-            { en: "Sun", sr: "Sunce" },
-            { en: "Water", sr: "Voda" },
-            { en: "House", sr: "Kuća" },
-            { en: "Love", sr: "Ljubav" },
-            { en: "Bread", sr: "Hleb" }
-        ];
-
+        // Game State Variables
         let cardsArray = [];
         let firstCard = null;
         let secondCard = null;
         let lockBoard = false;
         let moves = 0;
+        let pairsFound = 0;
+        let totalPairsGame = 0;
 
         const grid = document.getElementById('gameGrid');
         const movesDisplay = document.getElementById('moves');
+        const pairsDisplay = document.getElementById('pairsCount');
+        const totalPairsDisplay = document.getElementById('totalPairs');
+        const startScreen = document.getElementById('startScreen');
 
-        // --- UPDATED SPEECH FUNCTION ---
         function speak(text, langCode) {
             if ('speechSynthesis' in window) {
-                // Cancel any currently playing audio so they don't overlap
                 window.speechSynthesis.cancel();
-
                 const utterance = new SpeechSynthesisUtterance(text);
-                
-                // Set language based on the card type
-                // 'sr-RS' is Serbian, 'en-US' is English
                 utterance.lang = langCode; 
                 utterance.rate = 0.9; 
-
                 window.speechSynthesis.speak(utterance);
             }
         }
 
-        function initGame() {
-            grid.innerHTML = '';
+        // --- CORE LOGIC: RANDOM SELECTION ---
+        function startGame(pairsNeeded, gridClass) {
+            // 1. Hide start screen
+            startScreen.style.display = 'none';
+
+            // 2. Set Grid Size
+            grid.className = 'grid-container ' + gridClass;
+            
+            // 3. Select Random Words from 'dictionary' (loaded from words.js)
+            // We use a spread operator to copy the array so we don't destroy the original
+            let availableWords = [...dictionary]; 
+            
+            // Fisher-Yates shuffle for the dictionary
+            availableWords.sort(() => 0.5 - Math.random());
+            
+            // Slice the first N words we need
+            const selectedWords = availableWords.slice(0, pairsNeeded);
+
+            // 4. Reset Stats
             moves = 0;
-            movesDisplay.innerText = moves;
+            pairsFound = 0;
+            totalPairsGame = pairsNeeded;
+            movesDisplay.innerText = 0;
+            pairsDisplay.innerText = 0;
+            totalPairsDisplay.innerText = totalPairsGame;
+
+            // 5. Build the Game Deck
+            createBoard(selectedWords);
+        }
+
+        function createBoard(words) {
+            grid.innerHTML = '';
             [firstCard, secondCard, lockBoard] = [null, null, false];
 
-            // Create pairs
             const gamePairs = [];
-            vocabulary.forEach(item => {
+            words.forEach(item => {
                 gamePairs.push({ text: item.en, pairId: item.en, lang: 'en-US', label: 'ENG' });
                 gamePairs.push({ text: item.sr, pairId: item.en, lang: 'sr-RS', label: 'SRB' });
             });
 
-            // Shuffle
+            // Shuffle the specific game cards
             gamePairs.sort(() => 0.5 - Math.random());
 
-            // Build HTML
             gamePairs.forEach(item => {
-                // Main Container
                 const card = document.createElement('div');
                 card.classList.add('card');
-                
-                // Metadata
                 card.dataset.pairId = item.pairId;
                 card.dataset.text = item.text;
                 card.dataset.lang = item.lang;
 
-                // Inner Wrapper (for the flip effect)
                 const inner = document.createElement('div');
                 inner.classList.add('card-inner');
 
-                // Front Face (Text) - Note: In CSS this is rotated 180deg
                 const front = document.createElement('div');
                 front.classList.add('card-front');
-                front.innerHTML = `
-                    <span class="lang-label">${item.label}</span>
-                    <span>${item.text}</span>
-                `;
+                front.innerHTML = `<span class="lang-label">${item.label}</span><span>${item.text}</span>`;
 
-                // Back Face (Blue cover)
                 const back = document.createElement('div');
                 back.classList.add('card-back');
-                // Optional: Question mark icon on back
                 back.innerHTML = "?";
 
-                // Assemble
                 inner.appendChild(front);
                 inner.appendChild(back);
                 card.appendChild(inner);
@@ -238,10 +283,7 @@
             if (lockBoard) return;
             if (this === firstCard) return;
 
-            // Visual Flip
             this.classList.add('flipped');
-
-            // Speak immediately on flip (Both Serbian and English)
             speak(this.dataset.text, this.dataset.lang);
 
             if (!firstCard) {
@@ -257,7 +299,6 @@
 
         function checkForMatch() {
             let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
-
             if (isMatch) {
                 disableCards();
             } else {
@@ -266,17 +307,24 @@
         }
 
         function disableCards() {
-            // Apply matched style to both
             firstCard.classList.add('matched');
             secondCard.classList.add('matched');
-
-            // Reinforcement: Speak the ENGLISH word again to celebrate
-            // Find which card was the English one
-            let enCard = firstCard.dataset.lang === 'en-US' ? firstCard : secondCard;
             
+            pairsFound++;
+            pairsDisplay.innerText = pairsFound;
+
+            let enCard = firstCard.dataset.lang === 'en-US' ? firstCard : secondCard;
             setTimeout(() => {
                 speak("Correct! " + enCard.dataset.text, 'en-US');
             }, 800);
+
+            // Check for Win
+            if (pairsFound === totalPairsGame) {
+                setTimeout(() => {
+                    alert("Bravo! Game Over.");
+                    location.reload(); // Simple reload to go back to menu
+                }, 2000);
+            }
 
             resetBoard();
         }
@@ -287,16 +335,12 @@
                 firstCard.classList.remove('flipped');
                 secondCard.classList.remove('flipped');
                 resetBoard();
-            }, 1200); // 1.2s delay
+            }, 1200);
         }
 
         function resetBoard() {
             [firstCard, secondCard, lockBoard] = [null, null, false];
         }
-
-        // Start
-        initGame();
-
     </script>
 </body>
 </html>
