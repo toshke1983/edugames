@@ -116,7 +116,7 @@ function handleSuccess(element) {
         overlay.style.display = 'none';
         element.style.fill = ""; 
         nextQuestion();
-    }, 3000);
+    }, 1800);
     
     if (streak % 5 === 0) launchCelebration();
 }
