@@ -44,7 +44,11 @@ export const gameData = {
             "SE": { en: "Sweden", de: "Schweden", sr: "Švedska", cap: { en: "Stockholm", de: "Stockholm", sr: "Stokholm" }, flag: "🇸🇪" },
             "CH": { en: "Switzerland", de: "Schweiz", sr: "Švajcarska", cap: { en: "Bern", de: "Bern", sr: "Bern" }, flag: "🇨🇭" },
             "UA": { en: "Ukraine", de: "Ukraine", sr: "Ukrajina", cap: { en: "Kyiv", de: "Kiew", sr: "Kijev" }, flag: "🇺🇦" },
-            "GB": { en: "United Kingdom", de: "Vereinigtes Königreich", sr: "Ujedinjeno Kraljevstvo", cap: { en: "London", de: "London", sr: "London" }, flag: "🇬🇧" }
+            "GB": { en: "United Kingdom", de: "Vereinigtes Königreich", sr: "Ujedinjeno Kraljevstvo", cap: { en: "London", de: "London", sr: "London" }, flag: "🇬🇧" },
+            "TR": { en: "Turkey", de: "Türkei", sr: "Turska", cap: { en: "Ankara", de: "Ankara", sr: "Ankara" }, flag: "🇹🇷" },
+            "GE": { en: "Georgia", de: "Georgien", sr: "Gruzija", cap: { en: "Tbilisi", de: "Tiflis", sr: "Tbilisi" }, flag: "🇬🇪" },
+//            "AZ": { en: "Azerbaijan", de: "Aserbaidschan", sr: "Azerbejdžan", cap: { en: "Baku", de: "Baku", sr: "Baku" }, flag: "🇦🇿" },
+            "AM": { en: "Armenia", de: "Armenien", sr: "Jermenija", cap: { en: "Yerevan", de: "Jerewan", sr: "Jerevan" }, flag: "🇦🇲" }
         }
     },
     switzerland: {
