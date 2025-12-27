@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uči Engleski - Memorija</title>
+    <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --card-back: #4a90e2;
+            --card-text: #2c3e50;
+            --match-color: #2ecc71;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .status-bar {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 cards per row */
+            gap: 10px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .card {
+            background-color: white;
+            aspect-ratio: 3/4; /* Nice card shape */
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: transparent; /* Text hidden when flipped down */
+            background-color: var(--card-back);
+            cursor: pointer;
+            transition: transform 0.3s, background-color 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            user-select: none;
+            text-align: center;
+            padding: 5px;
+        }
+
+        /* State: Flipped Up */
+        .card.flipped {
+            background-color: white;
+            color: var(--card-text);
+            transform: rotateY(180deg); /* Visual effect */
+            border: 2px solid #ddd;
+        }
+
+        /* State: Matched */
+        .card.matched {
+            background-color: var(--match-color);
+            color: white;
+            border-color: var(--match-color);
+            animation: pulse 0.5s;
+        }
+
+        .btn-restart {
+            margin-top: 30px;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Mobile adjustments */
+        @media (max-width: 400px) {
+            .grid-container {
+                grid-template-columns: repeat(3, 1fr); 
+            }
+            .card {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Memorija</h1>
+    <div class="status-bar">Potezi: <span id="moves">0</span></div>
+
+    <div class="grid-container" id="gameGrid">
+        </div>
+
+    <button class="btn-restart" onclick="initGame()">Nova Igra</button>
+
+    <script>
+        // --- 1. THE DATASET (Add words here) ---
+        const vocabulary = [
+            { en: "Apple", sr: "Jabuka" },
+            { en: "Sun", sr: "Sunce" },
+            { en: "Water", sr: "Voda" },
+            { en: "House", sr: "Kuća" },
+            { en: "Love", sr: "Ljubav" },
+            { en: "Cat", sr: "Mačka" } 
+        ];
+
+        let cardsArray = [];
+        let firstCard = null;
+        let secondCard = null;
+        let lockBoard = false;
+        let moves = 0;
+
+        const grid = document.getElementById('gameGrid');
+        const movesDisplay = document.getElementById('moves');
+
+        // Text to Speech Function
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US'; // Forces English pronunciation
+                utterance.rate = 0.9; // Slightly slower for seniors
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Initialize Game
+        function initGame() {
+            grid.innerHTML = '';
+            moves = 0;
+            movesDisplay.innerText = moves;
+            firstCard = null;
+            secondCard = null;
+            lockBoard = false;
+
+            // 1. Double the array (one for EN, one for SR)
+            const gamePairs = [];
+            vocabulary.forEach(item => {
+                // English Card
+                gamePairs.push({ 
+                    text: item.en, 
+                    pairId: item.en, 
+                    lang: 'en' 
+                });
+                // Serbian Card
+                gamePairs.push({ 
+                    text: item.sr, 
+                    pairId: item.en, // The 'pairId' links them
+                    lang: 'sr' 
+                });
+            });
+
+            // 2. Shuffle
+            gamePairs.sort(() => 0.5 - Math.random());
+
+            // 3. Create HTML elements
+            gamePairs.forEach(item => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.pairId = item.pairId;
+                card.dataset.text = item.text;
+                card.dataset.lang = item.lang;
+                
+                // Content is inside a span so we can hide/show it
+                card.innerHTML = `<span>${item.text}</span>`;
+                
+                card.addEventListener('click', flipCard);
+                grid.appendChild(card);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add('flipped');
+
+            if (!firstCard) {
+                // First card clicked
+                firstCard = this;
+                
+                // If she flips the English card first, speak it immediately? 
+                // Let's only speak on match to not overwhelm, or...
+                // Option: Speak only English cards on flip
+                if (this.dataset.lang === 'en') {
+                   speak(this.dataset.text);
+                }
+                return;
+            }
+
+            // Second card clicked
+            secondCard = this;
+            if (this.dataset.lang === 'en') {
+                speak(this.dataset.text);
+            }
+            
+            moves++;
+            movesDisplay.innerText = moves;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            // Compare the hidden 'pairId' (which is the English word for both)
+            let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
+
+            if (isMatch) {
+                disableCards();
+            } else {
+                unflipCards();
+            }
+        }
+
+        function disableCards() {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            
+            // Audio Reinforcement on Match!
+            // We find which one was the English word and speak it again clearly
+            let englishWord = firstCard.dataset.lang === 'en' ? firstCard.dataset.text : secondCard.dataset.text;
+            setTimeout(() => speak("Correct! " + englishWord), 300);
+
+            resetBoard();
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove('flipped');
+                secondCard.classList.remove('flipped');
+                resetBoard();
+            }, 1000); // 1 second delay to see the mistake
+        }
+
+        function resetBoard() {
+            [firstCard, secondCard, lockBoard] = [null, null, false];
+        }
+
+        // Start immediately
+        initGame();
+
+    </script>
+</body>
+</html>
