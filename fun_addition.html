@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Fruit Math Garden</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #f0fdf4;
+            --primary-color: #4ade80;
+            --secondary-color: #fbbf24;
+            --text-color: #166534;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            touch-action: manipulation;
+            overflow: hidden;
+        }
+
+        #game-container {
+            width: 90%;
+            max-width: 850px;
+            text-align: center;
+            background: white;
+            padding: 25px;
+            border-radius: 40px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: 8px solid var(--primary-color);
+        }
+
+        .equation-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .box {
+            background: #f9fafb;
+            border: 3px dashed #cbd5e1;
+            padding: 15px;
+            border-radius: 25px;
+            flex: 1;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .number-display {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .fruit-display {
+            font-size: 1.4rem;
+            min-height: 60px;
+            line-height: 1.2;
+            word-wrap: break-word;
+            padding: 5px;
+        }
+
+        .operator {
+            font-size: 3rem;
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        #answer-slot {
+            font-size: 4rem;
+            width: 110px;
+            height: 110px;
+            border: 6px solid var(--secondary-color);
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            color: var(--secondary-color);
+            transition: all 0.3s;
+        }
+
+        .number-pad {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .num-btn {
+            aspect-ratio: 1;
+            font-size: 1.8rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 15px;
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #16a34a;
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        .num-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #16a34a;
+        }
+
+        .feedback {
+            height: 60px;
+            font-size: 1.8rem;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #64748b;
+        }
+
+        @media (max-width: 700px) {
+            .number-pad { grid-template-columns: repeat(5, 1fr); }
+            .number-display { font-size: 2.5rem; }
+            .fruit-display { font-size: 1.1rem; }
+            .equation-row { gap: 5px; }
+            #answer-slot { width: 80px; height: 80px; font-size: 2.5rem; }
+        }
+
+        .pulse { animation: pulse-animation 0.5s ease-out; }
+        @keyframes pulse-animation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <h1 style="margin:0; color: #059669;">🌈 Orchard Math 🍓</h1>
+    
+    <div class="equation-row">
+        <div class="box">
+            <div id="num1" class="number-display">0</div>
+            <div id="fruits1" class="fruit-display"></div>
+        </div>
+        
+        <div class="operator">+</div>
+        
+        <div class="box">
+            <div id="num2" class="number-display">0</div>
+            <div id="fruits2" class="fruit-display"></div>
+        </div>
+        
+        <div class="operator">=</div>
+        
+        <div id="answer-slot">?</div>
+    </div>
+
+    <div id="feedback" class="feedback">Count the snacks!</div>
+
+    <div class="number-pad" id="pad"></div>
+</div>
+
+<script>
+    let currentAnswer = 0;
+    const fruits = ['🍎', '🍊', '🍓', '🍐', '🫐', '🍋', '🍒', '🦒', '🧸'];
+    let audioCtx = null;
+
+    // Helper for a "Happy Beep" sound without needing a file
+    function playWinSound() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        oscillator.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+        oscillator.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 0.3); // C6
+        
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.3);
+    }
+
+    function initGame() {
+        const pad = document.getElementById('pad');
+        for (let i = 1; i <= 20; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'num-btn';
+            btn.innerText = i;
+            btn.onclick = () => checkAnswer(i);
+            pad.appendChild(btn);
+        }
+        generateQuestion();
+    }
+
+    function generateQuestion() {
+        let n1, n2;
+        const isHard = Math.random() > 0.75; 
+        const selectedFruit = fruits[Math.floor(Math.random() * fruits.length)];
+
+        if (!isHard) {
+            currentAnswer = Math.floor(Math.random() * 9) + 2; 
+            n1 = Math.floor(Math.random() * (currentAnswer - 1)) + 1;
+            n2 = currentAnswer - n1;
+        } else {
+            currentAnswer = Math.floor(Math.random() * 10) + 11;
+            n1 = Math.floor(Math.random() * 9) + 2;
+            n2 = currentAnswer - n1;
+        }
+
+        document.getElementById('num1').innerText = n1;
+        document.getElementById('num2').innerText = n2;
+        document.getElementById('fruits1').innerText = selectedFruit.repeat(n1);
+        document.getElementById('fruits2').innerText = selectedFruit.repeat(n2);
+        
+        const slot = document.getElementById('answer-slot');
+        slot.innerText = '?';
+        slot.style.borderColor = '#fbbf24';
+        slot.style.backgroundColor = '#fff';
+        
+        document.getElementById('feedback').innerText = "Count the " + selectedFruit + "!";
+        document.getElementById('feedback').style.color = "#64748b";
+    }
+
+    function checkAnswer(val) {
+        const feedback = document.getElementById('feedback');
+        const slot = document.getElementById('answer-slot');
+
+        if (val === currentAnswer) {
+            // Sound and Confetti
+            playWinSound();
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#4ade80', '#fbbf24', '#f87171', '#60a5fa']
+            });
+
+            slot.innerText = val;
+            slot.style.backgroundColor = '#dcfce7';
+            slot.style.borderColor = '#22c55e';
+            slot.classList.add('pulse');
+            
+            feedback.innerText = "🌟 WOW! You did it! 🌟";
+            feedback.style.color = "#059669";
+            
+            setTimeout(() => {
+                slot.classList.remove('pulse');
+                generateQuestion();
+            }, 2500);
+        } else {
+            feedback.innerText = "Oops! Try counting again! 😊";
+            feedback.style.color = "#ef4444";
+        }
+    }
+
+    initGame();
+</script>
+
+</body>
+</html>
