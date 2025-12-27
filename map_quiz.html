@@ -3,139 +3,54 @@
 <head>
     <title>Geo Quiz Master</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <link rel="stylesheet" href="style.css"> </head>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; text-align: center; background: #f4f7f6; padding: 20px; }
+        #setup-menu { background: white; padding: 40px; border-radius: 20px; max-width: 600px; margin: 50px auto; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        #game-container { margin: 0 auto; max-width: 1000px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .menu-btn { padding: 15px 30px; margin: 10px; font-size: 1.2em; cursor: pointer; border-radius: 10px; border: none; background: #3498db; color: white; transition: 0.2s; }
+        .menu-btn:hover { background: #2980b9; transform: translateY(-2px); }
+        svg { width: 100%; height: auto; max-height: 65vh; margin-top: 15px; }
+        svg path { fill: #d1d8e0; stroke: #fff; stroke-width: 0.5; cursor: pointer; transition: 0.2s; }
+        svg path:hover { fill: #45aaf2 !important; }
+        #target-display { font-size: 2.2em; margin: 20px 0; min-height: 1.5em; }
+        #score-board { font-size: 1.5em; font-weight: bold; color: #2ecc71; margin-bottom: 10px; }
+        .shake { animation: shake 0.5s; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+    </style>
+</head>
 <body>
 
 <div id="setup-menu">
     <h1>🌍 Geo Quiz Master</h1>
-    <h3>Choose Language / Jezik / Sprache:</h3>
-    <button onclick="setLang('en')">English 🇬🇧</button>
-    <button onclick="setLang('de')">Deutsch 🇩🇪</button>
-    <button onclick="setLang('sr')">Srpski 🇷🇸</button>
+    <p>Select Language / Jezik / Sprache:</p>
+    <button class="menu-btn" onclick="UI.setLang('en')">English 🇬🇧</button>
+    <button class="menu-btn" onclick="UI.setLang('de')">Deutsch 🇩🇪</button>
+    <button class="menu-btn" onclick="UI.setLang('sr')">Srpski 🇷🇸</button>
     
-    <div id="map-select" style="display:none; margin-top:20px;">
-        <h3>Choose Map:</h3>
-        <button onclick="startGame('europe')">Europe 🇪🇺</button>
-        <button onclick="startGame('switzerland')">Switzerland 🇨🇭</button>
+    <div id="map-select" style="display:none; margin-top:30px; border-top: 1px solid #eee; padding-top: 20px;">
+        <p>Select Map:</p>
+        <button class="menu-btn" style="background:#2ecc71" onclick="UI.startGame('europe')">Europe 🇪🇺</button>
+        <button class="menu-btn" style="background:#e74c3c" onclick="UI.startGame('switzerland')">Switzerland 🇨🇭</button>
     </div>
 </div>
 
 <div id="game-container" style="display:none;">
     <div id="score-board">
         <span id="label-score">Score</span>: <span id="score">0</span> | 
-        <span id="label-streak">Streak</span>: <span id="streak">0</span> 🔥
+        <span id="label-streak">Streak</span>: <span id="streak">0</span> 🔥 |
+        Best: <span id="best-streak">0</span> 🏆
     </div>
     <div id="target-display"></div>
-    <button id="skip-btn" onclick="skipItem()">Skip</button>
+    <button class="menu-btn" id="skip-btn" onclick="UI.skipItem()" style="background:#95a5a6">Skip</button>
     <div id="message"></div>
     <div id="map-placeholder"></div>
 </div>
 
 <script type="module">
-    import { gameData, uiStrings } from './data.js';
-    
-    let currentLang = 'en';
-    let currentGameMode = 'europe';
-    let currentID = '';
-    let weights = {};
-    let score = 0;
-    let streak = 0;
-
-    // Expose functions to the buttons
-    window.setLang = (lang) => {
-        currentLang = lang;
-        document.getElementById('map-select').style.display = 'block';
-    };
-
-    window.startGame = (mode) => {
-        currentGameMode = mode;
-        document.getElementById('setup-menu').style.display = 'none';
-        document.getElementById('game-container').style.display = 'block';
-        
-        // Initialize weights for this map
-        weights = {};
-        Object.keys(gameData[mode].items).forEach(id => weights[id] = 1.0);
-        
-        loadMap(gameData[mode].svg);
-    };
-
-    function loadMap(file) {
-        fetch(file).then(r => r.text()).then(svg => {
-            document.getElementById('map-placeholder').innerHTML = svg;
-            setupClickEvents();
-            nextQuestion();
-        });
-    }
-
-    function setupClickEvents() {
-        document.querySelectorAll('svg path').forEach(path => {
-            path.addEventListener('click', function() {
-                const id = this.id.toUpperCase();
-                if (id === currentID) {
-                    handleWin(this);
-                } else {
-                    handleLoss(id);
-                }
-            });
-        });
-    }
-
-    function nextQuestion() {
-        const modeData = gameData[currentGameMode].items;
-        const keys = Object.keys(modeData);
-        
-        // Weighted random selection logic (from previous step)
-        let totalWeight = 0;
-        keys.forEach(k => totalWeight += weights[k]);
-        let random = Math.random() * totalWeight;
-        let sum = 0;
-        for (let key of keys) {
-            sum += weights[key];
-            if (random <= sum) { currentID = key; break; }
-        }
-
-        const info = modeData[currentID];
-        const ui = uiStrings[currentLang];
-        const isCapQuest = Math.random() > 0.5;
-
-        const questionText = isCapQuest 
-            ? `${ui.capital}: <b>${info.cap[currentLang]}</b>` 
-            : `${ui.find}: <b>${info[currentLang]}</b>`;
-
-        document.getElementById('target-display').innerHTML = `${info.flag} ${questionText}`;
-        document.getElementById('label-score').innerText = ui.score;
-        document.getElementById('label-streak').innerText = ui.streak;
-        document.getElementById('skip-btn').innerText = ui.skip;
-    }
-
-    function handleWin(el) {
-        score++; streak++;
-        weights[currentID] = 1.0;
-        document.getElementById('score').innerText = score;
-        document.getElementById('streak').innerText = streak;
-        el.style.fill = "#2ecc71";
-        if (streak % 5 === 0) confetti();
-        setTimeout(() => { el.style.fill = ""; nextQuestion(); }, 800);
-    }
-
-    function handleLoss(id) {
-        streak = 0;
-        weights[currentID] *= 1.5;
-        document.getElementById('streak').innerText = 0;
-        document.getElementById('message').innerText = "❌";
-        setTimeout(() => document.getElementById('message').innerText = "", 1000);
-    }
-
-    window.skipItem = () => { streak = 0; weights[currentID] *= 1.2; nextQuestion(); };
+    import * as GameEngine from './game.js';
+    // We attach the functions to a global object so the HTML buttons can see them
+    window.UI = GameEngine;
 </script>
 
-<style>
-    /* Add your existing CSS here */
-    body { font-family: sans-serif; text-align: center; background: #f0f4f8; }
-    button { padding: 15px 25px; margin: 10px; font-size: 1.1em; cursor: pointer; border-radius: 8px; border: 1px solid #ccc; }
-    #target-display { font-size: 2em; margin: 20px; }
-    svg path { fill: #d1d8e0; stroke: white; cursor: pointer; }
-    svg path:hover { fill: #3498db; }
-</style>
 </body>
 </html>
