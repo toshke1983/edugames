@@ -10,7 +10,7 @@ let streak = 0;
 let maxStreak = 0;
 // Pre-load sounds
 const soundSuccess = new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3');
-const soundError = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
+const soundError = new Audio('https://assets.mixkit.co/active_storage/sfx/2020/2020-preview.mp3');
 
 // Lower the volume a bit so it's not startling (0.0 to 1.0)
 soundSuccess.volume = 0.6;
