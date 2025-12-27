@@ -7,9 +7,10 @@
     <style>
         :root {
             --bg-color: #f0f2f5;
-            --card-back: #4a90e2;
-            --card-text: #2c3e50;
-            --match-color: #2ecc71;
+            --card-back: #4a90e2; /* Blue for back of card */
+            --card-front: #ffffff;
+            --text-color: #2c3e50;
+            --match-color: #2ecc71; /* Green */
         }
 
         body {
@@ -21,66 +22,94 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
+            text-align: center;
         }
 
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-        }
+        h1 { color: #333; margin-bottom: 5px; }
+        p { color: #666; margin-bottom: 20px; }
 
         .status-bar {
             margin-bottom: 20px;
             font-size: 1.2rem;
-            color: #666;
+            color: #444;
+            font-weight: bold;
         }
 
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 cards per row */
-            gap: 10px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
             width: 100%;
-            max-width: 500px;
+            max-width: 400px;
+            perspective: 1000px; /* Essential for 3D effect */
         }
 
         .card {
-            background-color: white;
-            aspect-ratio: 3/4; /* Nice card shape */
-            border-radius: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: transparent; /* Text hidden when flipped down */
-            background-color: var(--card-back);
+            background-color: transparent;
+            aspect-ratio: 3/4;
+            perspective: 1000px;
             cursor: pointer;
-            transition: transform 0.3s, background-color 0.3s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            user-select: none;
-            text-align: center;
-            padding: 5px;
         }
 
-        /* State: Flipped Up */
-        .card.flipped {
-            background-color: white;
-            color: var(--card-text);
-            transform: rotateY(180deg); /* Visual effect */
+        /* This inner container does the actual flipping */
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Logic for flipping */
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        /* Common style for front and back faces */
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden; /* Safari */
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 5px;
+            box-sizing: border-box; 
+        }
+
+        /* The blue back (what you see initially) */
+        .card-back {
+            background-color: var(--card-back);
+            color: white;
+        }
+
+        /* The white front (revealed text) - Rotated 180 so it matches the flip */
+        .card-front {
+            background-color: var(--card-front);
+            color: var(--text-color);
+            transform: rotateY(180deg);
             border: 2px solid #ddd;
         }
 
-        /* State: Matched */
-        .card.matched {
+        /* Matched State */
+        .card.matched .card-inner .card-front {
             background-color: var(--match-color);
             color: white;
             border-color: var(--match-color);
-            animation: pulse 0.5s;
         }
 
         .btn-restart {
             margin-top: 30px;
-            padding: 15px 30px;
-            font-size: 1.2rem;
+            padding: 15px 40px;
+            font-size: 1.1rem;
             background-color: #e74c3c;
             color: white;
             border: none;
@@ -89,26 +118,21 @@
             box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        /* Mobile adjustments */
-        @media (max-width: 400px) {
-            .grid-container {
-                grid-template-columns: repeat(3, 1fr); 
-            }
-            .card {
-                font-size: 0.9rem;
-            }
+        /* Flag/Label styles */
+        .lang-label {
+            font-size: 0.7rem;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            color: #999;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
 
     <h1>Memorija</h1>
+    <p>Spoji reči / Match the words</p>
     <div class="status-bar">Potezi: <span id="moves">0</span></div>
 
     <div class="grid-container" id="gameGrid">
@@ -117,14 +141,14 @@
     <button class="btn-restart" onclick="initGame()">Nova Igra</button>
 
     <script>
-        // --- 1. THE DATASET (Add words here) ---
+        // --- DATASET ---
         const vocabulary = [
             { en: "Apple", sr: "Jabuka" },
             { en: "Sun", sr: "Sunce" },
             { en: "Water", sr: "Voda" },
             { en: "House", sr: "Kuća" },
             { en: "Love", sr: "Ljubav" },
-            { en: "Cat", sr: "Mačka" } 
+            { en: "Bread", sr: "Hleb" }
         ];
 
         let cardsArray = [];
@@ -136,56 +160,73 @@
         const grid = document.getElementById('gameGrid');
         const movesDisplay = document.getElementById('moves');
 
-        // Text to Speech Function
-        function speak(text) {
+        // --- UPDATED SPEECH FUNCTION ---
+        function speak(text, langCode) {
             if ('speechSynthesis' in window) {
+                // Cancel any currently playing audio so they don't overlap
+                window.speechSynthesis.cancel();
+
                 const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'en-US'; // Forces English pronunciation
-                utterance.rate = 0.9; // Slightly slower for seniors
+                
+                // Set language based on the card type
+                // 'sr-RS' is Serbian, 'en-US' is English
+                utterance.lang = langCode; 
+                utterance.rate = 0.9; 
+
                 window.speechSynthesis.speak(utterance);
             }
         }
 
-        // Initialize Game
         function initGame() {
             grid.innerHTML = '';
             moves = 0;
             movesDisplay.innerText = moves;
-            firstCard = null;
-            secondCard = null;
-            lockBoard = false;
+            [firstCard, secondCard, lockBoard] = [null, null, false];
 
-            // 1. Double the array (one for EN, one for SR)
+            // Create pairs
             const gamePairs = [];
             vocabulary.forEach(item => {
-                // English Card
-                gamePairs.push({ 
-                    text: item.en, 
-                    pairId: item.en, 
-                    lang: 'en' 
-                });
-                // Serbian Card
-                gamePairs.push({ 
-                    text: item.sr, 
-                    pairId: item.en, // The 'pairId' links them
-                    lang: 'sr' 
-                });
+                gamePairs.push({ text: item.en, pairId: item.en, lang: 'en-US', label: 'ENG' });
+                gamePairs.push({ text: item.sr, pairId: item.en, lang: 'sr-RS', label: 'SRB' });
             });
 
-            // 2. Shuffle
+            // Shuffle
             gamePairs.sort(() => 0.5 - Math.random());
 
-            // 3. Create HTML elements
+            // Build HTML
             gamePairs.forEach(item => {
+                // Main Container
                 const card = document.createElement('div');
                 card.classList.add('card');
+                
+                // Metadata
                 card.dataset.pairId = item.pairId;
                 card.dataset.text = item.text;
                 card.dataset.lang = item.lang;
-                
-                // Content is inside a span so we can hide/show it
-                card.innerHTML = `<span>${item.text}</span>`;
-                
+
+                // Inner Wrapper (for the flip effect)
+                const inner = document.createElement('div');
+                inner.classList.add('card-inner');
+
+                // Front Face (Text) - Note: In CSS this is rotated 180deg
+                const front = document.createElement('div');
+                front.classList.add('card-front');
+                front.innerHTML = `
+                    <span class="lang-label">${item.label}</span>
+                    <span>${item.text}</span>
+                `;
+
+                // Back Face (Blue cover)
+                const back = document.createElement('div');
+                back.classList.add('card-back');
+                // Optional: Question mark icon on back
+                back.innerHTML = "?";
+
+                // Assemble
+                inner.appendChild(front);
+                inner.appendChild(back);
+                card.appendChild(inner);
+
                 card.addEventListener('click', flipCard);
                 grid.appendChild(card);
             });
@@ -195,34 +236,24 @@
             if (lockBoard) return;
             if (this === firstCard) return;
 
+            // Visual Flip
             this.classList.add('flipped');
 
+            // Speak immediately on flip (Both Serbian and English)
+            speak(this.dataset.text, this.dataset.lang);
+
             if (!firstCard) {
-                // First card clicked
                 firstCard = this;
-                
-                // If she flips the English card first, speak it immediately? 
-                // Let's only speak on match to not overwhelm, or...
-                // Option: Speak only English cards on flip
-                if (this.dataset.lang === 'en') {
-                   speak(this.dataset.text);
-                }
                 return;
             }
 
-            // Second card clicked
             secondCard = this;
-            if (this.dataset.lang === 'en') {
-                speak(this.dataset.text);
-            }
-            
             moves++;
             movesDisplay.innerText = moves;
             checkForMatch();
         }
 
         function checkForMatch() {
-            // Compare the hidden 'pairId' (which is the English word for both)
             let isMatch = firstCard.dataset.pairId === secondCard.dataset.pairId;
 
             if (isMatch) {
@@ -233,13 +264,17 @@
         }
 
         function disableCards() {
+            // Apply matched style to both
             firstCard.classList.add('matched');
             secondCard.classList.add('matched');
+
+            // Reinforcement: Speak the ENGLISH word again to celebrate
+            // Find which card was the English one
+            let enCard = firstCard.dataset.lang === 'en-US' ? firstCard : secondCard;
             
-            // Audio Reinforcement on Match!
-            // We find which one was the English word and speak it again clearly
-            let englishWord = firstCard.dataset.lang === 'en' ? firstCard.dataset.text : secondCard.dataset.text;
-            setTimeout(() => speak("Correct! " + englishWord), 300);
+            setTimeout(() => {
+                speak("Correct! " + enCard.dataset.text, 'en-US');
+            }, 800);
 
             resetBoard();
         }
@@ -250,14 +285,14 @@
                 firstCard.classList.remove('flipped');
                 secondCard.classList.remove('flipped');
                 resetBoard();
-            }, 1000); // 1 second delay to see the mistake
+            }, 1200); // 1.2s delay
         }
 
         function resetBoard() {
             [firstCard, secondCard, lockBoard] = [null, null, false];
         }
 
-        // Start immediately
+        // Start
         initGame();
 
     </script>
