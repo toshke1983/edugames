@@ -208,18 +208,21 @@
 
     function generateQuestion() {
         let n1, n2;
-        const isHard = Math.random() > 0.93; 
+        const level = Math.random(); 
         const selectedFruit = fruits[Math.floor(Math.random() * fruits.length)];
 
-        if (!isHard) {
-            currentAnswer = Math.floor(Math.random() * 9) + 4;  // leave it up to 12
-            n1 = Math.floor(Math.random() * (currentAnswer - 1)) + 1;
-            n2 = currentAnswer - n1;
+        if (level < 0.7) {
+            n1 = Math.floor(Math.random() * 4) + 1;
+            n2 = Math.floor(Math.random() * 4) + 1;
+            currentAnswer = n1 + n2;
+        } else if (level < 0.9) {
+            n1 = Math.floor(Math.random() * 7) + 1;
+            n2 = Math.floor(Math.random() * 7) + 1;
         } else {
-            currentAnswer = Math.floor(Math.random() * 10) + 11;
-            n1 = Math.floor(Math.random() * 9) + 2;
-            n2 = currentAnswer - n1;
+            n1 = Math.floor(Math.random() * 10) + 1;
+            n2 = Math.floor(Math.random() * 10) + 1;
         }
+        currentAnswer = n1 + n2;
 
         document.getElementById('num1').innerText = n1;
         document.getElementById('num2').innerText = n2;
