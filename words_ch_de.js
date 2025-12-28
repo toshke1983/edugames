@@ -162,5 +162,60 @@ const dictionary = [
     { de: "Wir sehen uns", ch: "Mir gsend eus", category: "Grammar" },
     // Note: "Gehen" often becomes "Gaa"
     { de: "Ich gehe nach Hause", ch: "Ich gaa hei", category: "Grammar" },
-    { de: "Kommst du?", ch: "Chunsch?", category: "Grammar" }
+    { de: "Kommst du?", ch: "Chunsch?", category: "Grammar" },
+
+    // --- FRUITS & VEGGIES (GRÜENZÜÜG) ---
+    { de: "Karotte", ch: "Rüebli", category: "Food" },
+    { de: "Kartoffel", ch: "Härdöpfel", category: "Food" },
+    { de: "Zwiebel", ch: "Bölle", category: "Food" },
+    { de: "Feldsalat", ch: "Nüsslisalat", category: "Food" },
+    { de: "Apfelgehäuse", ch: "Bütschgi", category: "Food" }, // The core you throw away
+    { de: "Erdbeere", ch: "Erdbeeri", category: "Food" },
+    { de: "Himbeere", ch: "Himbeeri", category: "Food" },
+    { de: "Aprikose", ch: "Barille", category: "Food" }, // Traditional Züri, slightly older generation
+    { de: "Mais", ch: "Türgge", category: "Food" }, // Very specific to this region
+    { de: "Kaugummi", ch: "Chaugummi", category: "Food" },
+
+    // --- ANIMALS (TIERLI) ---
+    { de: "Katze", ch: "Büsi", category: "Animals" },
+    { de: "Kater (Katze)", ch: "Moudi", category: "Animals" },
+    { de: "Hund", ch: "Hund / Hündli", category: "Animals" },
+    { de: "Kuh", ch: "Chue", category: "Animals" },
+    { de: "Pferd", ch: "Ross", category: "Animals" },
+    { de: "Schmetterling", ch: "Summervogel", category: "Animals" },
+    { de: "Marienkäfer", ch: "Himmugüegeli", category: "Animals" }, // Or 'Mariechäfer' in city, but this is a classic Swiss word
+    { de: "Fliege", ch: "Mugg / Flüüge", category: "Animals" },
+    { de: "Ameise", ch: "Ameisi", category: "Animals" },
+    { de: "Maus", ch: "Muus", category: "Animals" },
+
+    // --- COLORS (FARBE) - Only the distinct ones ---
+    { de: "Gelb", ch: "Gääl", category: "Colors" },
+    { de: "Rot", ch: "Root", category: "Colors" }, // Pronounced with long O
+    { de: "Grün", ch: "Grüen", category: "Colors" },
+    { de: "Weiss", ch: "Wiiss", category: "Colors" },
+    { de: "Braun", ch: "Bruu", category: "Colors" },
+    { de: "Blau", ch: "Blau", category: "Colors" },
+
+    // --- SLANG & EVERYDAY EXPRESSIONS (STRAASS) ---
+    { de: "Cool / Toll", ch: "Lässig", category: "Slang" },
+    { de: "Egal / Wie auch immer", ch: "Item", category: "Slang" }, // Used to change topic: "Item, gömmer?"
+    { de: "Spinnst du?", ch: "Spinsch?", category: "Slang" },
+    { de: "Unsinn / Quatsch", ch: "En Seich", category: "Slang" },
+    { de: "Hau ab", ch: "Schliich di", category: "Slang" },
+    { de: "Sicher nicht", ch: "Sicher nöd", category: "Slang" },
+    { de: "Komm jetzt", ch: "Chum jetzt", category: "Slang" },
+    { de: "Schau mal", ch: "Lueg mal", category: "Slang" },
+    { de: "Hör auf", ch: "Hör uf", category: "Slang" },
+    { de: "Wirklich?", ch: "Ächt?", category: "Slang" },
+    { de: "Chaos / Unordnung", ch: "Puff", category: "Slang" }, // "Dis Zimmer isch es Puff"
+    { de: "Mühsam / Nervig", ch: "Müehsam", category: "Slang" },
+
+    // --- PEOPLE & TYPES (LÜÜT) ---
+    { de: "Polizist", ch: "Schugger", category: "People" }, // Classic slang for Police
+    { de: "Französischschweizer", ch: "Welschi", category: "People" },
+    { de: "Spiesser / Kleinkarierter", ch: "Bünzli", category: "People" }, // ESSENTIAL: The stereotype of a rule-following Swiss neighbor
+    { de: "Deutscher", ch: "Dütsche / Schwob", category: "People" }, // 'Schwob' is slang, can be slightly rude but very common
+    { de: "Chef / Boss", ch: "Chef", category: "People" }, // Pronounced 'Scheff'
+    { de: "Leute", ch: "Lüüt", category: "People" },
+    { de: "Ein Typ / Kerl", ch: "En Siech", category: "People" }, // Context depends: "Geile Siech" (Cool guy), "Dumme Siech" (Idiot)
 ];
