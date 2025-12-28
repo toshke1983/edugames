@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
+        .header-logo {
+            height: 1.2em;       /* Scales perfectly with the text size */
+            vertical-align: middle; /* Aligns it vertically with the letters */
+            margin-right: 10px;  /* Pushes the text away slightly */
+            border-radius: 20%;  /* Optional: makes the corners look slightly rounded like an app icon */
+        }
         body { font-family: 'Segoe UI', sans-serif; text-align: center; background: #f4f7f6; padding: 20px; }
         #setup-menu { background: white; padding: 40px; border-radius: 20px; max-width: 600px; margin: 50px auto; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         #game-container { position: relative; margin: 0 auto; max-width: 1000px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
