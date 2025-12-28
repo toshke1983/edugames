@@ -162,5 +162,5 @@ const dictionary = [
     { de: "Wir sehen uns", ch: "Mir gsend eus", category: "Grammar" },
     // Note: "Gehen" often becomes "Gaa"
     { de: "Ich gehe nach Hause", ch: "Ich gaa hei", category: "Grammar" },
-    { de: "Kommst du?", ch: "Chunsch?", category: "Grammar" },    
+    { de: "Kommst du?", ch: "Chunsch?", category: "Grammar" }
 ];
