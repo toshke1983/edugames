@@ -1,72 +1,72 @@
 const dictionary = [
     // --- BASICS & GREETINGS ---
-    { en: "Hallo / Guten Tag", sr: "Grüezi", category: "Basics" }, // en = High German, sr = Swiss (mapping for code)
-    { en: "Auf Wiedersehen", sr: "Uf Wiederluege", category: "Basics" },
-    { en: "Danke", sr: "Merci", category: "Basics" },
-    { en: "Entschuldigung", sr: "Exgüsi", category: "Basics" },
-    { en: "Ein bisschen", sr: "Es Bitzeli", category: "Basics" },
-    { en: "Jemand", sr: "Öpper", category: "Basics" },
-    { en: "Niemand", sr: "Niemer", category: "Basics" },
-    { en: "Nicht", sr: "Nöd", category: "Basics" },
+    { de: "Hallo / Guten Tag", ch: "Grüezi", category: "Basics" }, // en = High German, sr = Swiss (mapping for code)
+    { de: "Auf Wiedersehen", ch: "Uf Wiederluege", category: "Basics" },
+    { de: "Danke", ch: "Merci", category: "Basics" },
+    { de: "Entschuldigung", ch: "Exgüsi", category: "Basics" },
+    { de: "Ein bisschen", ch: "Es Bitzeli", category: "Basics" },
+    { de: "Jemand", ch: "Öpper", category: "Basics" },
+    { de: "Niemand", ch: "Niemer", category: "Basics" },
+    { de: "Nicht", ch: "Nöd", category: "Basics" },
 
     // --- FOOD (ESSEN) ---
-    { en: "Kartoffel", sr: "Härdöpfel", category: "Food" },
-    { en: "Karotte", sr: "Rüebli", category: "Food" },
-    { en: "Apfelkerngehäuse", sr: "Bütschgi", category: "Food" }, // A classic Zurich word!
-    { en: "Butter", sr: "Anke", category: "Food" },
-    { en: "Bonbon", sr: "Täfeli", category: "Food" },
-    { en: "Schokolade", sr: "Schoggi", category: "Food" },
-    { en: "Brotanschnitt", sr: "Mürgu", category: "Food" }, // Or 'Gupf' depending on exact region
-    { en: "Frühstück", sr: "Zmorge", category: "Food" },
-    { en: "Abendessen", sr: "Znacht", category: "Food" },
-    { en: "Zwischenmahlzeit", sr: "Znüni", category: "Food" }, // 9am snack
+    { de: "Kartoffel", ch: "Härdöpfel", category: "Food" },
+    { de: "Karotte", ch: "Rüebli", category: "Food" },
+    { de: "Apfelkerngehäuse", ch: "Bütschgi", category: "Food" }, // A classic Zurich word!
+    { de: "Butter", ch: "Anke", category: "Food" },
+    { de: "Bonbon", ch: "Täfeli", category: "Food" },
+    { de: "Schokolade", ch: "Schoggi", category: "Food" },
+    { de: "Brotanschnitt", ch: "Mürgu", category: "Food" }, // Or 'Gupf' depending on exact region
+    { de: "Frühstück", ch: "Zmorge", category: "Food" },
+    { de: "Abendessen", ch: "Znacht", category: "Food" },
+    { de: "Zwischenmahlzeit", ch: "Znüni", category: "Food" }, // 9am snack
 
     // --- HOUSE & OBJECTS ---
-    { en: "Küche", sr: "Chuchi", category: "House" },
-    { en: "Schrank", sr: "Chäschtli", category: "House" },
-    { en: "Haus", sr: "Huus", category: "House" },
-    { en: "Balkon", sr: "Balkon", category: "House" }, 
-    { en: "Eimer", sr: "Chübel", category: "House" },
-    { en: "Kissen", sr: "Chüssi", category: "House" },
-    { en: "Fahrrad", sr: "Velo", category: "Objects" },
-    { en: "Handy", sr: "Natel", category: "Objects" },
-    { en: "Geldbeutel", sr: "Portemonnaie", category: "Objects" },
-    { en: "Fahrkarte", sr: "Billett", category: "Objects" },
+    { de: "Küche", ch: "Chuchi", category: "House" },
+    { de: "Schrank", ch: "Chäschtli", category: "House" },
+    { de: "Haus", ch: "Huus", category: "House" },
+    { de: "Balkon", ch: "Balkon", category: "House" }, 
+    { de: "Eimer", ch: "Chübel", category: "House" },
+    { de: "Kissen", ch: "Chüssi", category: "House" },
+    { de: "Fahrrad", ch: "Velo", category: "Objects" },
+    { de: "Handy", ch: "Natel", category: "Objects" },
+    { de: "Geldbeutel", ch: "Portemonnaie", category: "Objects" },
+    { de: "Fahrkarte", ch: "Billett", category: "Objects" },
 
     // --- PEOPLE & BODY ---
-    { en: "Kind", sr: "Chind", category: "People" },
-    { en: "Mädchen", sr: "Meitli", category: "People" },
-    { en: "Junge", sr: "Bueb", category: "People" },
-    { en: "Beine", sr: "Bei", category: "Body" },
-    { en: "Kopf", sr: "Chopf", category: "Body" },
-    { en: "Haare", sr: "Haar", category: "Body" },
-    { en: "Hals/Nacken", sr: "Gnick", category: "Body" },
+    { de: "Kind", ch: "Chind", category: "People" },
+    { de: "Mädchen", ch: "Meitli", category: "People" },
+    { de: "Junge", ch: "Bueb", category: "People" },
+    { de: "Beine", ch: "Bei", category: "Body" },
+    { de: "Kopf", ch: "Chopf", category: "Body" },
+    { de: "Haare", ch: "Haar", category: "Body" },
+    { de: "Hals/Nacken", ch: "Gnick", category: "Body" },
 
     // --- VERBS (ACTIONS) ---
-    { en: "Arbeiten", sr: "Schaffe", category: "Verbs" },
-    { en: "Einkaufen", sr: "Poschte", category: "Verbs" },
-    { en: "Schauen", sr: "Luege", category: "Verbs" },
-    { en: "Laufen/Gehen", sr: "Laufe", category: "Verbs" }, // Note: Laufen in CH usually means Walking
-    { en: "Fallen", sr: "Gheie", category: "Verbs" },
-    { en: "Haben", sr: "Ha", category: "Verbs" },
-    { en: "Kommen", sr: "Cho", category: "Verbs" },
-    { en: "Gehen", sr: "Gaa", category: "Verbs" },
+    { de: "Arbeiten", ch: "Schaffe", category: "Verbs" },
+    { de: "Einkaufen", ch: "Poschte", category: "Verbs" },
+    { de: "Schauen", ch: "Luege", category: "Verbs" },
+    { de: "Laufen/Gehen", ch: "Laufe", category: "Verbs" }, // Note: Laufen in CH usually means Walking
+    { de: "Fallen", ch: "Gheie", category: "Verbs" },
+    { de: "Haben", ch: "Ha", category: "Verbs" },
+    { de: "Kommen", ch: "Cho", category: "Verbs" },
+    { de: "Gehen", ch: "Gaa", category: "Verbs" },
 
     // --- ADJECTIVES ---
-    { en: "Klein", sr: "Chli", category: "Adj" },
-    { en: "Fest/Stark", sr: "Fescht", category: "Adj" },
-    { en: "Schön", sr: "Schön", category: "Adj" },
-    { en: "Müde", sr: "Müed", category: "Adj" },
-    { en: "Teuer", sr: "Tüür", category: "Adj" },
+    { de: "Klein", ch: "Chli", category: "Adj" },
+    { de: "Fest/Stark", ch: "Fescht", category: "Adj" },
+    { de: "Schön", ch: "Schön", category: "Adj" },
+    { de: "Müde", ch: "Müed", category: "Adj" },
+    { de: "Teuer", ch: "Tüür", category: "Adj" },
 
     // --- PHRASES ---
-    { en: "Wie geht es dir?", sr: "Wie gaats?", category: "Phrase" },
-    { en: "Ich verstehe nur Bahnhof", sr: "Ich verstah nur Bahnhof", category: "Phrase" },
-    { en: "Einen schönen Tag noch", sr: "En schöne Tag na", category: "Phrase" },
-    { en: "Es regnet stark", sr: "Es schiffet", category: "Phrase" },
-    { en: "Kommst du mit?", sr: "Chunsch mit?", category: "Phrase" },
-    { en: "Wir gehen nach Hause", sr: "Mir gönd hei", category: "Phrase" },
-    { en: "Hast du Zeit?", sr: "Häsch Ziit?", category: "Phrase" },
+    { de: "Wie geht es dir?", ch: "Wie gaats?", category: "Phrase" },
+    { de: "Ich verstehe nur Bahnhof", ch: "Ich verstah nur Bahnhof", category: "Phrase" },
+    { de: "Einen schönen Tag noch", ch: "En schöne Tag na", category: "Phrase" },
+    { de: "Es regnet stark", ch: "Es schiffet", category: "Phrase" },
+    { de: "Kommst du mit?", ch: "Chunsch mit?", category: "Phrase" },
+    { de: "Wir gehen nach Hause", ch: "Mir gönd hei", category: "Phrase" },
+    { de: "Hast du Zeit?", ch: "Häsch Ziit?", category: "Phrase" },
 // --- GREETINGS & SMALL TALK (BEGRÜSSUNG) ---
     { de: "Wie geht es dir?", ch: "Wie gaats der?", category: "Social" },
     { de: "Wie geht es Ihnen?", ch: "Wie gaats Ihne?", category: "Social" },
