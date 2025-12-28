@@ -55,7 +55,7 @@ const dictionary = [
     // --- ADJECTIVES ---
     { de: "Klein", ch: "Chli", category: "Adj" },
     { de: "Fest/Stark", ch: "Fescht", category: "Adj" },
-    { de: "Schön", ch: "Schön", category: "Adj" },
+//    { de: "Schön", ch: "Schön", category: "Adj" },
     { de: "Müde", ch: "Müed", category: "Adj" },
     { de: "Teuer", ch: "Tüür", category: "Adj" },
 
@@ -79,7 +79,7 @@ const dictionary = [
     { de: "Gute Nacht", ch: "Guets Nächtle", category: "Social" },
     { de: "Schlaf gut", ch: "Schlaf guet", category: "Social" },
     { de: "Man sieht sich", ch: "Mär gseht sich", category: "Social" },
-    { de: "Viel Spass", ch: "Viel Spass", category: "Social" },
+//    { de: "Viel Spass", ch: "Viel Spass", category: "Social" },
     { de: "Alles Gute", ch: "Alles Gueti", category: "Social" },
 
     // --- ESSENTIAL PHRASES (WICHTIGES) ---
@@ -91,7 +91,7 @@ const dictionary = [
     { de: "Entschuldigung (beim Durchgehen)", ch: "Exgüsi", category: "Essential" },
     { de: "Können Sie mir helfen?", ch: "Chönd Sie mir hälfe?", category: "Essential" },
     { de: "Einen Moment bitte", ch: "En Momänt bitte", category: "Essential" },
-    { de: "Ja, genau", ch: "Ja, genau", category: "Essential" },
+    // { de: "Ja, genau", ch: "Ja, genau", category: "Essential" },
     { de: "Nein, danke", ch: "Nei, merci", category: "Essential" },
     { de: "Vielleicht", ch: "Villicht", category: "Essential" },
     { de: "Selbstverständlich", ch: "Sälbschtverständlich", category: "Essential" },
