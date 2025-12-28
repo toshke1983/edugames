@@ -275,13 +275,58 @@
         const quizContainer = document.getElementById('quizContainer');
         const gameTitle = document.getElementById('gameTitle');
         
-        // --- AUDIO ENGINE ---
+        // // --- AUDIO ENGINE ---
+        // function speakEnglish(text) {
+        //     if ('speechSynthesis' in window) {
+        //         window.speechSynthesis.cancel();
+        //         const utterance = new SpeechSynthesisUtterance(text);
+        //         utterance.lang = 'en-US'; 
+        //         utterance.rate = 0.9; 
+        //         window.speechSynthesis.speak(utterance);
+        //     }
+        // }
+        
+        
+        // --- AUDIO ENGINE v2.0 (Force English Voice) ---
+        
+        // 1. Variable to store the specific English voice
+        let selectedEnglishVoice = null;
+
+        // 2. Function to find the best English voice available
+        function loadVoices() {
+            const voices = window.speechSynthesis.getVoices();
+            
+            // Priority: en-US (American) -> en-GB (British) -> Any English
+            selectedEnglishVoice = voices.find(voice => voice.lang === 'en-US') || 
+                                   voices.find(voice => voice.lang === 'en-GB') || 
+                                   voices.find(voice => voice.lang.startsWith('en'));
+        }
+
+        // 3. Trigger voice loading immediately
+        if ('speechSynthesis' in window) {
+            // Chrome/Android needs this event listener to load voices asynchronously
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+            // Call it once immediately for browsers that don't wait (Safari)
+            loadVoices();
+        }
+
         function speakEnglish(text) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
+                
+                // If we haven't found a voice yet, try finding it again now
+                if (!selectedEnglishVoice) loadVoices();
+
+                // If we found an English voice, FORCE the browser to use it
+                if (selectedEnglishVoice) {
+                    utterance.voice = selectedEnglishVoice;
+                }
+
+                // Fallback: Set the lang attribute anyway
                 utterance.lang = 'en-US'; 
                 utterance.rate = 0.9; 
+                
                 window.speechSynthesis.speak(utterance);
             }
         }
