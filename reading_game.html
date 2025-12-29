@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rabbit's Reading Journey</title>
+	<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐰</text></svg>">
+
+	<link rel="apple-touch-icon" href="https://img.icons8.com/color/192/rabbit.png">
+
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="apple-mobile-web-app-title" content="Reading Game">
+	
     <style>
         :root {
             --primary-bg: #e3f2fd;
@@ -192,71 +200,72 @@
         { emoji: "🍅", en: "Tomato", de: "Tomate", sr: "Paradajz" },
         { emoji: "🍉", en: "Watermelon", de: "Wassermelone", sr: "Lubenica" },
         { emoji: "🥔", en: "Potato", de: "Kartoffel", sr: "Krompir" },
-        // ANIMALS
-	{ emoji: "🐜", en: "Ant", de: "Ameise", sr: "Mrav" },
-	{ emoji: "🐝", en: "Bee", de: "Biene", sr: "Pčela" },
-	{ emoji: "🦋", en: "Butterfly", de: "Schmetterling", sr: "Leptir" },
-	{ emoji: "🐪", en: "Camel", de: "Kamel", sr: "Kamila" },
-	{ emoji: "🐄", en: "Cow", de: "Kuh", sr: "Krava" },
-	{ emoji: "🐊", en: "Crocodile", de: "Krokodil", sr: "Krokodil" },
-	{ emoji: "🦌", en: "Deer", de: "Hirsch", sr: "Jelen" },
-	{ emoji: "🐬", en: "Dolphin", de: "Delphin", sr: "Delfin" },
-	{ emoji: "🦆", en: "Duck", de: "Ente", sr: "Patka" },
-	{ emoji: "🐸", en: "Frog", de: "Frosch", sr: "Žaba" },
-	{ emoji: "🐐", en: "Goat", de: "Ziege", sr: "Koza" },
-	{ emoji: "🐎", en: "Horse", de: "Pferd", sr: "Konj" },
-	{ emoji: "🦘", en: "Kangaroo", de: "Känguru", sr: "Kengur" },
-	{ emoji: "🐭", en: "Mouse", de: "Maus", sr: "Miš" },
-	{ emoji: "🦉", en: "Owl", de: "Eule", sr: "Sova" },
-	{ emoji: "🐷", en: "Pig", de: "Schwein", sr: "Svinja" },
-	{ emoji: "🐇", en: "Rabbit", de: "Hase", sr: "Zec" },
-	{ emoji: "🦈", en: "Shark", de: "Hai", sr: "Ajkula" },
-	{ emoji: "🐚", en: "Snail", de: "Schnecke", sr: "Puž" },
-	{ emoji: "🐍", en: "Snake", de: "Schlange", sr: "Zmija" },
-	{ emoji: "🐢", en: "Turtle", de: "Schildkröte", sr: "Kornjača" },
-	{ emoji: "🐋", en: "Whale", de: "Wal", sr: "Kit" },
-	{ emoji: "🐺", en: "Wolf", de: "Wolf", sr: "Vuk" },
-
-	// FRUITS & VEGETABLES
-	{ emoji: "🥑", en: "Avocado", de: "Avocado", sr: "Avokado" },
-	{ emoji: "🫐", en: "Blueberry", de: "Blaubeere", sr: "Borovnica" },
-	{ emoji: "🥕", en: "Carrot", de: "Karotte", sr: "Šargarepa" },
-	{ emoji: "🥒", en: "Cucumber", de: "Gurke", sr: "Krastavac" },
-	{ emoji: "🍆", en: "Eggplant", de: "Aubergine", sr: "Plavi patlidžan" },
-	{ emoji: "🫚", en: "Ginger", de: "Ingwer", sr: "Đumbir" },
-	{ emoji: "🥝", en: "Kiwi", de: "Kiwi", sr: "Kivi" },
-	{ emoji: "🥭", en: "Mango", de: "Mango", sr: "Mango" },
-	{ emoji: "🍄", en: "Mushroom", de: "Pilz", sr: "Pečurka" },
-	{ emoji: "🍊", en: "Orange", de: "Orange", sr: "Pomorandža" },
-	{ emoji: "🍑", en: "Peach", de: "Pfirsich", sr: "Breskva" },
-	{ emoji: "🍍", en: "Pineapple", de: "Ananas", sr: "Ananas" },
-	{ emoji: "🎃", en: "Pumpkin", de: "Kürbis", sr: "Bundeva" },
-	{ emoji: "🍇", en: "Raisin", de: "Rosine", sr: "Suvo grožđe" },
-	{ emoji: "🥬", en: "Salad", de: "Salat", sr: "Zelena salata" },
-
-	// HOUSEHOLD & NATURE (Simple for kids)
-	{ emoji: "🎈", en: "Balloon", de: "Ballon", sr: "Balon" },
-	{ emoji: "🛌", en: "Bed", de: "Bett", sr: "Krevet" },
-	{ emoji: "🚲", en: "Bicycle", de: "Fahrrad", sr: "Bicikl" },
-	{ emoji: "📖", en: "Book", de: "Buch", sr: "Knjiga" },
-	{ emoji: "👢", en: "Boot", de: "Stiefel", sr: "Čizma" },
-	{ emoji: "🚌", en: "Bus", de: "Bus", sr: "Autobus" },
-	{ emoji: "🚗", en: "Car", de: "Auto", sr: "Auto" },
-	{ emoji: "☁️", en: "Cloud", de: "Wolke", sr: "Oblak" },
-	{ emoji: "👗", en: "Dress", de: "Kleid", sr: "Haljina" },
-	{ emoji: "🌸", en: "Flower", de: "Blume", sr: "Cvet" },
-	{ emoji: "🧤", en: "Glove", de: "Handschuh", sr: "Rukavica" },
-	{ emoji: "🔨", en: "Hammer", de: "Hammer", sr: "Čekić" },
-	{ emoji: "🎩", en: "Hat", de: "Hut", sr: "Šešir" },
-	{ emoji: "🔑", en: "Key", de: "Schlüssel", sr: "Ključ" },
-	{ emoji: "🌙", en: "Moon", de: "Mond", sr: "Mesec" },
-	{ emoji: "⛰️", en: "Mountain", de: "Berg", sr: "Planina" },
-	{ emoji: "🌈", en: "Rainbow", de: "Regenbogen", sr: "Duga" },
-	{ emoji: "🚀", en: "Rocket", de: "Rakete", sr: "Raketa" },
-	{ emoji: "🚢", en: "Ship", de: "Schiff", sr: "Brod" },
-	{ emoji: "👟", en: "Shoe", de: "Schuh", sr: "Cipela" },
-	{ emoji: "🌟", en: "Star", de: "Stern", sr: "Zvezda" },
-	{ emoji: "🧸", en: "Toy", de: "Spielzeug", sr: "Igračka" }
+        
+		// ANIMALS
+		{ emoji: "🐜", en: "Ant", de: "Ameise", sr: "Mrav" },
+		{ emoji: "🐝", en: "Bee", de: "Biene", sr: "Pčela" },
+		{ emoji: "🦋", en: "Butterfly", de: "Schmetterling", sr: "Leptir" },
+		{ emoji: "🐪", en: "Camel", de: "Kamel", sr: "Kamila" },
+		{ emoji: "🐄", en: "Cow", de: "Kuh", sr: "Krava" },
+		{ emoji: "🐊", en: "Crocodile", de: "Krokodil", sr: "Krokodil" },
+		{ emoji: "🦌", en: "Deer", de: "Hirsch", sr: "Jelen" },
+		{ emoji: "🐬", en: "Dolphin", de: "Delphin", sr: "Delfin" },
+		{ emoji: "🦆", en: "Duck", de: "Ente", sr: "Patka" },
+		{ emoji: "🐸", en: "Frog", de: "Frosch", sr: "Žaba" },
+		{ emoji: "🐐", en: "Goat", de: "Ziege", sr: "Koza" },
+		{ emoji: "🐎", en: "Horse", de: "Pferd", sr: "Konj" },
+		{ emoji: "🦘", en: "Kangaroo", de: "Känguru", sr: "Kengur" },
+		{ emoji: "🐭", en: "Mouse", de: "Maus", sr: "Miš" },
+		{ emoji: "🦉", en: "Owl", de: "Eule", sr: "Sova" },
+		{ emoji: "🐷", en: "Pig", de: "Schwein", sr: "Svinja" },
+		{ emoji: "🐇", en: "Rabbit", de: "Hase", sr: "Zec" },
+		{ emoji: "🦈", en: "Shark", de: "Hai", sr: "Ajkula" },
+		{ emoji: "🐚", en: "Snail", de: "Schnecke", sr: "Puž" },
+		{ emoji: "🐍", en: "Snake", de: "Schlange", sr: "Zmija" },
+		{ emoji: "🐢", en: "Turtle", de: "Schildkröte", sr: "Kornjača" },
+		{ emoji: "🐋", en: "Whale", de: "Wal", sr: "Kit" },
+		{ emoji: "🐺", en: "Wolf", de: "Wolf", sr: "Vuk" },
+	
+		// FRUITS & VEGETABLES
+		{ emoji: "🥑", en: "Avocado", de: "Avocado", sr: "Avokado" },
+		{ emoji: "🫐", en: "Blueberry", de: "Blaubeere", sr: "Borovnica" },
+		{ emoji: "🥕", en: "Carrot", de: "Karotte", sr: "Šargarepa" },
+		{ emoji: "🥒", en: "Cucumber", de: "Gurke", sr: "Krastavac" },
+		{ emoji: "🍆", en: "Eggplant", de: "Aubergine", sr: "Plavi patlidžan" },
+		{ emoji: "🫚", en: "Ginger", de: "Ingwer", sr: "Đumbir" },
+		{ emoji: "🥝", en: "Kiwi", de: "Kiwi", sr: "Kivi" },
+		{ emoji: "🥭", en: "Mango", de: "Mango", sr: "Mango" },
+		{ emoji: "🍄", en: "Mushroom", de: "Pilz", sr: "Pečurka" },
+		{ emoji: "🍊", en: "Orange", de: "Orange", sr: "Pomorandža" },
+		{ emoji: "🍑", en: "Peach", de: "Pfirsich", sr: "Breskva" },
+		{ emoji: "🍍", en: "Pineapple", de: "Ananas", sr: "Ananas" },
+		{ emoji: "🎃", en: "Pumpkin", de: "Kürbis", sr: "Bundeva" },
+		{ emoji: "🍇", en: "Raisin", de: "Rosine", sr: "Suvo grožđe" },
+		{ emoji: "🥬", en: "Salad", de: "Salat", sr: "Zelena salata" },
+	
+		// HOUSEHOLD & NATURE (Simple for kids)
+		{ emoji: "🎈", en: "Balloon", de: "Ballon", sr: "Balon" },
+		{ emoji: "🛌", en: "Bed", de: "Bett", sr: "Krevet" },
+		{ emoji: "🚲", en: "Bicycle", de: "Fahrrad", sr: "Bicikl" },
+		{ emoji: "📖", en: "Book", de: "Buch", sr: "Knjiga" },
+		{ emoji: "👢", en: "Boot", de: "Stiefel", sr: "Čizma" },
+		{ emoji: "🚌", en: "Bus", de: "Bus", sr: "Autobus" },
+		{ emoji: "🚗", en: "Car", de: "Auto", sr: "Auto" },
+		{ emoji: "☁️", en: "Cloud", de: "Wolke", sr: "Oblak" },
+		{ emoji: "👗", en: "Dress", de: "Kleid", sr: "Haljina" },
+		{ emoji: "🌸", en: "Flower", de: "Blume", sr: "Cvet" },
+		{ emoji: "🧤", en: "Glove", de: "Handschuh", sr: "Rukavica" },
+		{ emoji: "🔨", en: "Hammer", de: "Hammer", sr: "Čekić" },
+		{ emoji: "🎩", en: "Hat", de: "Hut", sr: "Šešir" },
+		{ emoji: "🔑", en: "Key", de: "Schlüssel", sr: "Ključ" },
+		{ emoji: "🌙", en: "Moon", de: "Mond", sr: "Mesec" },
+		{ emoji: "⛰️", en: "Mountain", de: "Berg", sr: "Planina" },
+		{ emoji: "🌈", en: "Rainbow", de: "Regenbogen", sr: "Duga" },
+		{ emoji: "🚀", en: "Rocket", de: "Rakete", sr: "Raketa" },
+		{ emoji: "🚢", en: "Ship", de: "Schiff", sr: "Brod" },
+		{ emoji: "👟", en: "Shoe", de: "Schuh", sr: "Cipela" },
+		{ emoji: "🌟", en: "Star", de: "Stern", sr: "Zvezda" },
+		{ emoji: "🧸", en: "Toy", de: "Spielzeug", sr: "Igračka" }
     ];
 
     let currentLanguage = 'en';
