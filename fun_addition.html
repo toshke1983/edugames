@@ -128,6 +128,66 @@
             color: #64748b;
         }
 
+        /* Progress Trail Styles */
+        #trail-container {
+            width: 100%;
+            max-width: 800px;
+            background: #fef3c7; /* Light sandy color */
+            padding: 20px 0;
+            border-radius: 50px;
+            position: relative;
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 4px solid var(--secondary-color);
+        }
+        
+        .step {
+            width: 40px;
+            height: 10px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 5px;
+            flex-grow: 1;
+            margin: 0 5px;
+        }
+        
+        #bee {
+            font-size: 45px;
+            position: absolute;
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            left: 5px;
+            z-index: 10;
+        }
+        
+        #flower { font-size: 50px; margin-right: 15px; }
+        
+        /* Overlay for the finish line */
+        #celebration-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95);
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* The Buzzing Animation */
+        @keyframes buzz {
+            0% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-3px) rotate(-5deg); }
+            50% { transform: translateY(0px) rotate(0deg); }
+            75% { transform: translateY(3px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        
+        .buzzing {
+            animation: buzz 0.2s infinite; /* Fast, vibrating movement */
+        }
+
         @media (max-width: 700px) {
             .number-pad { grid-template-columns: repeat(5, 1fr); }
             .number-display { font-size: 2.5rem; }
@@ -172,6 +232,20 @@
     <div class="number-pad" id="pad"></div>
 </div>
 
+<div id="trail-container">
+    <div id="bee">🐝</div>
+    <div class="step"></div><div class="step"></div><div class="step"></div>
+    <div class="step"></div><div class="step"></div><div class="step"></div>
+    <div class="step"></div><div class="step"></div>
+    <div id="flower">🌻</div>
+</div>
+
+<div id="celebration-overlay">
+    <h1 style="font-size: 4rem;">🌻 YOU DID IT! 🌻</h1>
+    <p style="font-size: 2rem;">The bee got to the flower!</p>
+    <button onclick="resetGame()" style="font-size: 2rem; padding: 20px 40px; cursor: pointer; border-radius: 20px; background: #4ade80; color: white; border: none; box-shadow: 0 5px 0 #16a34a;">Play Again</button>
+</div>
+
 <script>
     // add more frutis
     // make 5 + x, x in the next row
@@ -179,6 +253,9 @@
     let currentAnswer = 0;
     const fruits = ['🍎', '🍊', '🍓', '🍐', '🫐', '🍋', '🍒', '🦒', '🧸', '🍦', '🍩', '🍉', '🍇'];
     let audioCtx = null;
+
+    let currentStep = 0;
+    const totalSteps = 8; // Same as your reading game
 
     // Helper for a "Happy Beep" sound without needing a file
     function playWinSound() {
@@ -278,11 +355,51 @@
                 slot.classList.remove('pulse');
                 generateQuestion();
             }, 2500);
+
+            // MOVE THE BEE
+            currentStep++;
+            updateBee();
+            
+            if (currentStep >= totalSteps) {
+                setTimeout(() => { 
+                    document.getElementById('celebration-overlay').style.display = 'flex'; 
+                }, 1000);
+            } else {
+                setTimeout(generateQuestion, 2500);
+            }
         } else {
             feedback.innerText = "Oops! Try counting again! 😊";
             feedback.style.color = "#ef4444";
         }
     }
+
+    function updateBee() {
+        const trail = document.getElementById('trail-container');
+        const bee = document.getElementById('bee');
+        const width = trail.offsetWidth - 80;
+        const progress = (currentStep / totalSteps) * width;
+        
+        // Start buzzing when moving
+        bee.classList.add('buzzing');
+        
+        // Move the bee
+        bee.style.left = progress + 'px';
+        
+        // Stop buzzing after the transition ends (0.6s is the transition time in CSS)
+        setTimeout(() => {
+            bee.classList.remove('buzzing');
+        }, 600);
+    }
+    
+    function resetGame() {
+        currentStep = 0;
+        updateBee();
+        document.getElementById('celebration-overlay').style.display = 'none';
+        generateQuestion();
+    }
+
+// Ensure the bee stays in the right spot if the tablet rotates
+window.onresize = updateBee;
 
     initGame();
 </script>
