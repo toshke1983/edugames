@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rabbit's Reading Journey</title>
+    <style>
+        :root {
+            --primary-bg: #e3f2fd;
+            --card-bg: #ffffff;
+            --btn-color: #4a90e2;
+            --correct-color: #4caf50;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+            background-color: var(--primary-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        #game-container {
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        /* Language Switcher */
+        .lang-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .lang-btn {
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 2px solid #ddd;
+            border-radius: 15px;
+            background: #fff;
+            transition: all 0.3s;
+        }
+
+        .lang-btn.active {
+            border-color: var(--btn-color);
+            background: var(--btn-color);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        #image-display {
+            font-size: 140px;
+            margin: 10px 0;
+            min-height: 160px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .word-btn {
+            font-size: 2.2rem;
+            font-weight: bold;
+            padding: 15px;
+            cursor: pointer;
+            border: 4px solid #eee;
+            background: white;
+            border-radius: 15px;
+        }
+
+        .first-letter {
+	    font-size: 1.3em; /* 30% larger than the rest of the word */
+	    color: #e91e63;   /* A bright, distinct pink/red color */
+	    margin-right: 2px;
+	}
+
+        .correct { background-color: var(--correct-color) !important; color: white; border-color: #2e7d32; }
+        .wrong { background-color: #ffcdd2 !important; opacity: 0.5; }
+
+        /* Rabbit Trail Gamification */
+        #trail-container {
+            width: 100%;
+            max-width: 700px;
+            background: #dcedc8;
+            padding: 20px 0;
+            border-radius: 50px;
+            position: relative;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 4px solid #8bc34a;
+        }
+
+        .step {
+            width: 40px;
+            height: 10px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 5px;
+            flex-grow: 1;
+            margin: 0 5px;
+        }
+
+        #rabbit {
+            font-size: 50px;
+            position: absolute;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            left: 5px;
+            z-index: 10;
+        }
+
+        #carrot { font-size: 50px; margin-right: 15px; }
+
+        #celebration-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.9);
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div class="lang-tabs">
+        <button class="lang-btn active" id="btn-en" onclick="setLang('en')">English 🇬🇧</button>
+        <button class="lang-btn" id="btn-de" onclick="setLang('de')">Deutsch 🇩🇪</button>
+        <button class="lang-btn" id="btn-sr" onclick="setLang('sr')">Srpski 🇷🇸</button>
+    </div>
+
+    <div id="image-display"></div>
+    <div class="options-grid" id="options-container"></div>
+</div>
+
+<div id="trail-container">
+    <div id="rabbit">🐰</div>
+    <div class="step"></div><div class="step"></div><div class="step"></div>
+    <div class="step"></div><div class="step"></div><div class="step"></div>
+    <div class="step"></div><div class="step"></div>
+    <div id="carrot">🥕</div>
+</div>
+
+<div id="celebration-overlay">
+    <h1 style="font-size: 4rem;">🎉 BRAVO! 🎉</h1>
+    <p style="font-size: 2rem;">The rabbit got the carrot!</p>
+    <button onclick="resetGame()" style="font-size: 2rem; padding: 20px 40px; cursor: pointer; border-radius: 20px; background: #ff9800; color: white; border: none;">Play Again</button>
+</div>
+
+<script>
+    const gameData = [
+        // Animals
+        { emoji: "🍎", en: "Apple", de: "Apfel", sr: "Jabuka" },
+        { emoji: "🐻", en: "Bear", de: "Bär", sr: "Medved" },
+        { emoji: "🐱", en: "Cat", de: "Katze", sr: "Mačka" },
+        { emoji: "🐶", en: "Dog", de: "Hund", sr: "Pas" },
+        { emoji: "🐘", en: "Elephant", de: "Elefant", sr: "Slon" },
+        { emoji: "🐟", en: "Fish", de: "Fisch", sr: "Riba" },
+        { emoji: "🦒", en: "Giraffe", de: "Giraffe", sr: "Žirafa" },
+        { emoji: "🦁", en: "Lion", de: "Löwe", sr: "Lav" },
+        { emoji: "🐒", en: "Monkey", de: "Affe", sr: "Majmun" },
+        { emoji: "🐧", en: "Penguin", de: "Pinguin", sr: "Pingvin" },
+        { emoji: "🐯", en: "Tiger", de: "Tiger", sr: "Tigar" },
+        { emoji: "🦓", en: "Zebra", de: "Zebra", sr: "Zebra" },
+        // Fruits/Veg
+        { emoji: "🍌", en: "Banana", de: "Banane", sr: "Banana" },
+        { emoji: "🥦", en: "Broccoli", de: "Brokkoli", sr: "Brokoli" },
+        { emoji: "🍒", en: "Cherry", de: "Kirsche", sr: "Trešnja" },
+        { emoji: "🌽", en: "Corn", de: "Mais", sr: "Kukuruz" },
+        { emoji: "🍇", en: "Grape", de: "Traube", sr: "Grožđe" },
+        { emoji: "🍋", en: "Lemon", de: "Zitrone", sr: "Limun" },
+        { emoji: "🧅", en: "Onion", de: "Zwiebel", sr: "Luk" },
+        { emoji: "🍐", en: "Pear", de: "Birne", sr: "Kruška" },
+        { emoji: "🍓", en: "Strawberry", de: "Erdbeere", sr: "Jagoda" },
+        { emoji: "🍅", en: "Tomato", de: "Tomate", sr: "Paradajz" },
+        { emoji: "🍉", en: "Watermelon", de: "Wassermelone", sr: "Lubenica" },
+        { emoji: "🥔", en: "Potato", de: "Kartoffel", sr: "Krompir" },
+        // ANIMALS
+	{ emoji: "🐜", en: "Ant", de: "Ameise", sr: "Mrav" },
+	{ emoji: "🐝", en: "Bee", de: "Biene", sr: "Pčela" },
+	{ emoji: "🦋", en: "Butterfly", de: "Schmetterling", sr: "Leptir" },
+	{ emoji: "🐪", en: "Camel", de: "Kamel", sr: "Kamila" },
+	{ emoji: "🐄", en: "Cow", de: "Kuh", sr: "Krava" },
+	{ emoji: "🐊", en: "Crocodile", de: "Krokodil", sr: "Krokodil" },
+	{ emoji: "🦌", en: "Deer", de: "Hirsch", sr: "Jelen" },
+	{ emoji: "🐬", en: "Dolphin", de: "Delphin", sr: "Delfin" },
+	{ emoji: "🦆", en: "Duck", de: "Ente", sr: "Patka" },
+	{ emoji: "🐸", en: "Frog", de: "Frosch", sr: "Žaba" },
+	{ emoji: "🐐", en: "Goat", de: "Ziege", sr: "Koza" },
+	{ emoji: "🐎", en: "Horse", de: "Pferd", sr: "Konj" },
+	{ emoji: "🦘", en: "Kangaroo", de: "Känguru", sr: "Kengur" },
+	{ emoji: "🐭", en: "Mouse", de: "Maus", sr: "Miš" },
+	{ emoji: "🦉", en: "Owl", de: "Eule", sr: "Sova" },
+	{ emoji: "🐷", en: "Pig", de: "Schwein", sr: "Svinja" },
+	{ emoji: "🐇", en: "Rabbit", de: "Hase", sr: "Zec" },
+	{ emoji: "🦈", en: "Shark", de: "Hai", sr: "Ajkula" },
+	{ emoji: "🐚", en: "Snail", de: "Schnecke", sr: "Puž" },
+	{ emoji: "🐍", en: "Snake", de: "Schlange", sr: "Zmija" },
+	{ emoji: "🐢", en: "Turtle", de: "Schildkröte", sr: "Kornjača" },
+	{ emoji: "🐋", en: "Whale", de: "Wal", sr: "Kit" },
+	{ emoji: "🐺", en: "Wolf", de: "Wolf", sr: "Vuk" },
+
+	// FRUITS & VEGETABLES
+	{ emoji: "🥑", en: "Avocado", de: "Avocado", sr: "Avokado" },
+	{ emoji: "🫐", en: "Blueberry", de: "Blaubeere", sr: "Borovnica" },
+	{ emoji: "🥕", en: "Carrot", de: "Karotte", sr: "Šargarepa" },
+	{ emoji: "🥒", en: "Cucumber", de: "Gurke", sr: "Krastavac" },
+	{ emoji: "🍆", en: "Eggplant", de: "Aubergine", sr: "Plavi patlidžan" },
+	{ emoji: "🫚", en: "Ginger", de: "Ingwer", sr: "Đumbir" },
+	{ emoji: "🥝", en: "Kiwi", de: "Kiwi", sr: "Kivi" },
+	{ emoji: "🥭", en: "Mango", de: "Mango", sr: "Mango" },
+	{ emoji: "🍄", en: "Mushroom", de: "Pilz", sr: "Pečurka" },
+	{ emoji: "🍊", en: "Orange", de: "Orange", sr: "Pomorandža" },
+	{ emoji: "🍑", en: "Peach", de: "Pfirsich", sr: "Breskva" },
+	{ emoji: "🍍", en: "Pineapple", de: "Ananas", sr: "Ananas" },
+	{ emoji: "🎃", en: "Pumpkin", de: "Kürbis", sr: "Bundeva" },
+	{ emoji: "🍇", en: "Raisin", de: "Rosine", sr: "Suvo grožđe" },
+	{ emoji: "🥬", en: "Salad", de: "Salat", sr: "Zelena salata" },
+
+	// HOUSEHOLD & NATURE (Simple for kids)
+	{ emoji: "🎈", en: "Balloon", de: "Ballon", sr: "Balon" },
+	{ emoji: "🛌", en: "Bed", de: "Bett", sr: "Krevet" },
+	{ emoji: "🚲", en: "Bicycle", de: "Fahrrad", sr: "Bicikl" },
+	{ emoji: "📖", en: "Book", de: "Buch", sr: "Knjiga" },
+	{ emoji: "👢", en: "Boot", de: "Stiefel", sr: "Čizma" },
+	{ emoji: "🚌", en: "Bus", de: "Bus", sr: "Autobus" },
+	{ emoji: "🚗", en: "Car", de: "Auto", sr: "Auto" },
+	{ emoji: "☁️", en: "Cloud", de: "Wolke", sr: "Oblak" },
+	{ emoji: "👗", en: "Dress", de: "Kleid", sr: "Haljina" },
+	{ emoji: "🌸", en: "Flower", de: "Blume", sr: "Cvet" },
+	{ emoji: "🧤", en: "Glove", de: "Handschuh", sr: "Rukavica" },
+	{ emoji: "🔨", en: "Hammer", de: "Hammer", sr: "Čekić" },
+	{ emoji: "🎩", en: "Hat", de: "Hut", sr: "Šešir" },
+	{ emoji: "🔑", en: "Key", de: "Schlüssel", sr: "Ključ" },
+	{ emoji: "🌙", en: "Moon", de: "Mond", sr: "Mesec" },
+	{ emoji: "⛰️", en: "Mountain", de: "Berg", sr: "Planina" },
+	{ emoji: "🌈", en: "Rainbow", de: "Regenbogen", sr: "Duga" },
+	{ emoji: "🚀", en: "Rocket", de: "Rakete", sr: "Raketa" },
+	{ emoji: "🚢", en: "Ship", de: "Schiff", sr: "Brod" },
+	{ emoji: "👟", en: "Shoe", de: "Schuh", sr: "Cipela" },
+	{ emoji: "🌟", en: "Star", de: "Stern", sr: "Zvezda" },
+	{ emoji: "🧸", en: "Toy", de: "Spielzeug", sr: "Igračka" }
+    ];
+
+    let currentLanguage = 'en';
+    let currentStep = 0;
+    const totalSteps = 8;
+
+    function setLang(lang) {
+        currentLanguage = lang;
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('btn-' + lang).classList.add('active');
+        nextQuestion();
+    }
+
+function nextQuestion() {
+    let item;
+    let correctWord;
+    let attempts = 0;
+
+    // Loop until we find a word with 6 letters or fewer
+    while (attempts < 100) {
+        item = gameData[Math.floor(Math.random() * gameData.length)];
+        correctWord = item[currentLanguage];
+        
+        if (correctWord.length <= 6) {
+            break; // Found one!
+        }
+        attempts++;
+    }
+
+    document.getElementById('image-display').innerText = item.emoji;
+    
+    let options = [correctWord];
+    let usedLetters = [correctWord[0].toUpperCase()];
+
+    // Generate distractors - we should also keep these under 6 letters for consistency
+    while (options.length < 4) {
+        let rand = gameData[Math.floor(Math.random() * gameData.length)];
+        let word = rand[currentLanguage];
+        let firstLetter = word[0].toUpperCase();
+        
+        if (word.length <= 6 && !usedLetters.includes(firstLetter)) {
+            options.push(word);
+            usedLetters.push(firstLetter);
+        }
+    }
+
+    options.sort(() => Math.random() - 0.5);
+    const container = document.getElementById('options-container');
+    container.innerHTML = '';
+    options.forEach(word => {
+        const btn = document.createElement('button');
+        btn.className = 'word-btn';
+        
+        // Split the word: First letter and the rest
+        const first = word.charAt(0).toUpperCase();
+        const rest = word.slice(1).toLowerCase(); // Keep rest lowercase for contrast
+
+        // Use innerHTML to inject the styled span
+        btn.innerHTML = `<span class="first-letter">${first}</span>${rest}`;
+        
+        btn.onclick = () => checkAnswer(btn, word === correctWord);
+        container.appendChild(btn);
+    });
+}
+
+    function checkAnswer(btn, isCorrect) {
+        if (isCorrect) {
+            btn.classList.add('correct');
+            currentStep++;
+            updateRabbit();
+            
+            if (currentStep >= totalSteps) {
+                setTimeout(() => { document.getElementById('celebration-overlay').style.display = 'flex'; }, 500);
+            } else {
+                setTimeout(nextQuestion, 1000);
+            }
+        } else {
+            btn.classList.add('wrong');
+        }
+    }
+
+    function updateRabbit() {
+        const trail = document.getElementById('trail-container');
+        const rabbit = document.getElementById('rabbit');
+        const width = trail.offsetWidth - 80;
+        const progress = (currentStep / totalSteps) * width;
+        rabbit.style.left = progress + 'px';
+    }
+
+    function resetGame() {
+        currentStep = 0;
+        updateRabbit();
+        document.getElementById('celebration-overlay').style.display = 'none';
+        nextQuestion();
+    }
+
+    window.onresize = updateRabbit;
+    nextQuestion();
+</script>
+</body>
+</html>
