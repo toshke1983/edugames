@@ -66,9 +66,9 @@
         }
 
         .fruit-display {
-            font-size: 1.4rem;
-            min-height: 60px;
-            line-height: 1.2;
+            font-size: 1.8rem;
+            min-height: 80px;
+            line-height: 1.1;
             word-wrap: break-word;
             padding: 5px;
         }
@@ -175,7 +175,7 @@
     // make 5 + x, x in the next row
     // make fruits a bit larger
     let currentAnswer = 0;
-    const fruits = ['🍎', '🍊', '🍓', '🍐', '🫐', '🍋', '🍒', '🦒', '🧸'];
+    const fruits = ['🍎', '🍊', '🍓', '🍐', '🫐', '🍋', '🍒', '🦒', '🧸', '🍦', '🍩', '🍉', '🍇'];
     let audioCtx = null;
 
     // Helper for a "Happy Beep" sound without needing a file
@@ -229,8 +229,17 @@
 
         document.getElementById('num1').innerText = n1;
         document.getElementById('num2').innerText = n2;
-        document.getElementById('fruits1').innerText = selectedFruit.repeat(n1);
-        document.getElementById('fruits2').innerText = selectedFruit.repeat(n2);
+
+        const fruitRepeater = (emoji, count) => {
+            let display = "";
+            for (let i = 1; i <= count; i++) {
+                display += emoji;
+                if (i % 5 === 0 && i !== count) display += "\n"; // Add new line every 5 fruits
+            }
+            return display;
+        };
+        document.getElementById('fruits1').innerText = fruitRepeater(selectedFruit, n1);
+        document.getElementById('fruits2').innerText = fruitRepeater(selectedFruit, n2);     
         
         const slot = document.getElementById('answer-slot');
         slot.innerText = '?';
