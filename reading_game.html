@@ -148,11 +148,12 @@
 <body>
 
 <div id="game-container">
-    <div class="lang-tabs">
-        <button class="lang-btn" id="btn-en" onclick="setLang('en')">English 🇬🇧</button>
-        <button class="lang-btn active" id="btn-de" onclick="setLang('de')">Deutsch 🇩🇪</button>
-        <button class="lang-btn" id="btn-sr" onclick="setLang('sr')">Srpski 🇷🇸</button>
-    </div>
+	<div class="lang-tabs">
+	    <button class="lang-btn" id="btn-en" onclick="setLang('en')">English 🇬🇧</button>
+	    <button class="lang-btn" id="btn-de" onclick="setLang('de')">Deutsch 🇩🇪</button>
+	    <button class="lang-btn" id="btn-sr" onclick="setLang('sr')">Srpski (Lat) 🇷🇸</button>
+	    <button class="lang-btn" id="btn-sr-cyr" onclick="setLang('sr-cyr')">Српски (Ћир) 🇷🇸</button>
+	</div>
 
     <div id="image-display"></div>
     <div class="options-grid" id="options-container"></div>
@@ -279,57 +280,77 @@
         nextQuestion();
     }
 
-function nextQuestion() {
-    let item;
-    let correctWord;
-    let attempts = 0;
+	function toCyrillic(text) {
+	    const map = {
+	        'A':'А', 'B':'Б', 'V':'В', 'G':'Г', 'D':'Д', 'Đ':'Ђ', 'E':'Е', 'Ž':'Ж', 'Z':'З', 'I':'И',
+	        'J':'Ј', 'K':'К', 'L':'Л', 'Lj':'Љ', 'M':'М', 'N':'Н', 'Nj':'Њ', 'O':'О', 'P':'П', 'R':'Р',
+	        'S':'С', 'T':'Т', 'Ć':'Ћ', 'U':'У', 'F':'Ф', 'H':'Х', 'C':'Ц', 'Č':'Ч', 'Dž':'Џ', 'Š':'Ш',
+	        'a':'а', 'b':'б', 'v':'в', 'g':'г', 'd':'д', 'đ':'ђ', 'e':'е', 'ž':'ж', 'z':'з', 'i':'и',
+	        'j':'ј', 'k':'к', 'l':'л', 'lj':'љ', 'm':'м', 'n':'н', 'nj':'њ', 'o':'о', 'p':'п', 'r':'р',
+	        's':'с', 't':'т', 'ć':'ћ', 'u':'у', 'f':'ф', 'h':'х', 'c':'ц', 'č':'ч', 'dž':'џ', 'š':'ш'
+	    };
+	    // Handle double letters like Nj, Lj, Dž first
+	    let result = text.replace(/Nj|Lj|Dž|nj|lj|dž/g, m => map[m]);
+	    // Handle single letters
+	    return result.split('').map(char => map[char] || char).join('');
+	}
 
-    // Loop until we find a word with 6 letters or fewer
-    while (attempts < 100) {
-        item = gameData[Math.floor(Math.random() * gameData.length)];
-        correctWord = item[currentLanguage];
-        
-        if (correctWord.length <= 6) {
-            break; // Found one!
-        }
-        attempts++;
-    }
-
-    document.getElementById('image-display').innerText = item.emoji;
-    
-    let options = [correctWord];
-    let usedLetters = [correctWord[0].toUpperCase()];
-
-    // Generate distractors - we should also keep these under 6 letters for consistency
-    while (options.length < 4) {
-        let rand = gameData[Math.floor(Math.random() * gameData.length)];
-        let word = rand[currentLanguage];
-        let firstLetter = word[0].toUpperCase();
-        
-        if (word.length <= 6 && !usedLetters.includes(firstLetter)) {
-            options.push(word);
-            usedLetters.push(firstLetter);
-        }
-    }
-
-    options.sort(() => Math.random() - 0.5);
-    const container = document.getElementById('options-container');
-    container.innerHTML = '';
-    options.forEach(word => {
-        const btn = document.createElement('button');
-        btn.className = 'word-btn';
-        
-        // Split the word: First letter and the rest
-        const first = word.charAt(0).toUpperCase();
-        const rest = word.slice(1).toLowerCase(); // Keep rest lowercase for contrast
-
-        // Use innerHTML to inject the styled span
-        btn.innerHTML = `<span class="first-letter">${first}</span>${rest}`;
-        
-        btn.onclick = () => checkAnswer(btn, word === correctWord);
-        container.appendChild(btn);
-    });
-}
+	function nextQuestion() {
+	    let item;
+	    let correctWord;
+	    let attempts = 0;
+	
+	    // Loop until we find a word with 6 letters or fewer
+	    while (attempts < 100) {
+	        item = gameData[Math.floor(Math.random() * gameData.length)];
+	        // LOGIC FOR CYRILLIC SWITCHING
+	        if (currentLanguage === 'sr-cyr') {
+	            correctWord = toCyrillic(item['sr']);
+	        } else {
+	            correctWord = item[currentLanguage];
+	        }
+	        
+	        if (correctWord.length <= 6) {
+	            break; // Found one!
+	        }
+	        attempts++;
+	    }
+	
+	    document.getElementById('image-display').innerText = item.emoji;
+	    
+	    let options = [correctWord];
+	    let usedLetters = [correctWord[0].toUpperCase()];
+	
+	    // Generate distractors - we should also keep these under 6 letters for consistency
+	    while (options.length < 4) {
+	        let rand = gameData[Math.floor(Math.random() * gameData.length)];
+			let word = (currentLanguage === 'sr-cyr') ? toCyrillic(rand['sr']) : rand[currentLanguage];
+			let firstLetter = word[0].toUpperCase();
+	        
+	        if (word.length <= 6 && !usedLetters.includes(firstLetter)) {
+	            options.push(word);
+	            usedLetters.push(firstLetter);
+	        }
+	    }
+	
+	    options.sort(() => Math.random() - 0.5);
+	    const container = document.getElementById('options-container');
+	    container.innerHTML = '';
+	    options.forEach(word => {
+	        const btn = document.createElement('button');
+	        btn.className = 'word-btn';
+	        
+	        // Split the word: First letter and the rest
+	        const first = word.charAt(0).toUpperCase();
+	        const rest = word.slice(1).toLowerCase(); // Keep rest lowercase for contrast
+	
+	        // Use innerHTML to inject the styled span
+	        btn.innerHTML = `<span class="first-letter">${first}</span>${rest}`;
+	        
+	        btn.onclick = () => checkAnswer(btn, word === correctWord);
+	        container.appendChild(btn);
+	    });
+	}
 
     function checkAnswer(btn, isCorrect) {
         if (isCorrect) {
