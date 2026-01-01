@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spelling Bee Journey</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐝</text></svg>">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/192/bee.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <style>
+        :root {
+            --bee-yellow: #FFD700;
+            --bee-black: #333333;
+            --honey-bg: #FFF9C4;
+            --correct-green: #4CAF50;
+            --wrong-red: #F44336;
+        }
+
+        body {
+            font-family: 'Chalkboard SE', 'Comic Sans MS', sans-serif;
+            background-color: var(--honey-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 10px;
+        }
+
+        #game-container {
+            max-width: 750px;
+            width: 100%;
+            text-align: center;
+            background: white;
+            padding: 25px;
+            border-radius: 40px;
+            box-shadow: 0 12px 0px #e0ca00;
+            border: 4px solid var(--bee-black);
+        }
+
+        .lang-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .lang-btn {
+            font-size: 1rem;
+            padding: 8px 15px;
+            cursor: pointer;
+            border: 3px solid #ddd;
+            border-radius: 20px;
+            background: #fff;
+            font-weight: bold;
+        }
+
+        .lang-btn.active {
+            border-color: var(--bee-black);
+            background: var(--bee-yellow);
+            transform: scale(1.05);
+        }
+
+        #image-display {
+            font-size: 150px;
+            margin: 15px 0;
+            filter: drop-shadow(0 5px 0 rgba(0,0,0,0.1));
+        }
+
+        .options-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .word-btn {
+            width: 90%;
+            max-width: 400px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            padding: 15px;
+            cursor: pointer;
+            border: 4px solid var(--bee-black);
+            background: white;
+            border-radius: 20px;
+            transition: transform 0.1s;
+        }
+
+        .word-btn:active { transform: scale(0.98); }
+
+        .first-letter {
+            font-size: 1.2em;
+            color: #d32f2f;
+            margin-right: 1px;
+        }
+
+        .correct { background-color: var(--correct-green) !important; color: white; border-color: #1b5e20; }
+        .wrong { background-color: var(--wrong-red) !important; color: white; opacity: 0.6; }
+
+        /* Bee Trail Layout */
+        #trail-container {
+            width: 100%;
+            max-width: 750px;
+            background: #fdf5e6;
+            height: 100px;
+            border-radius: 50px;
+            position: relative;
+            margin-top: 30px;
+            display: flex;
+            align-items: center;
+            border: 4px dashed #ffd700;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        #bee {
+            font-size: 50px;
+            position: absolute;
+            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 5;
+        }
+
+        .hex-step {
+            flex-grow: 1;
+            height: 40px;
+            margin: 0 2px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><polygon points="50 1 95 25 95 75 50 99 5 75 5 25" fill="none" stroke="%23FFD700" stroke-width="5"/></svg>');
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        #goal { font-size: 60px; position: absolute; right: 10px; }
+
+        #celebration-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95);
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div class="lang-tabs">
+        <button class="lang-btn" id="btn-en" onclick="setLang('en')">English 🇬🇧</button>
+        <button class="lang-btn" id="btn-de" onclick="setLang('de')">Deutsch 🇩🇪</button>
+        <button class="lang-btn" id="btn-sr" onclick="setLang('sr')">Srpski (Lat) 🇷🇸</button>
+        <button class="lang-btn" id="btn-sr-cyr" onclick="setLang('sr-cyr')">Српски (Ћир) 🇷🇸</button>
+    </div>
+
+    <div id="image-display"></div>
+    <div class="options-stack" id="options-container"></div>
+</div>
+
+<div id="trail-container">
+    <div id="bee">🐝</div>
+    <div class="hex-step"></div><div class="hex-step"></div><div class="hex-step"></div>
+    <div class="hex-step"></div><div class="hex-step"></div><div class="hex-step"></div>
+    <div class="hex-step"></div><div class="hex-step"></div>
+    <div id="goal">🌻</div>
+</div>
+
+<div id="celebration-overlay">
+    <h1 style="font-size: 5rem; margin: 0;">🍯 YUMMY! 🍯</h1>
+    <p style="font-size: 2rem;">The bee found the honey!</p>
+    <button onclick="resetGame()" style="font-size: 2rem; padding: 20px 50px; cursor: pointer; border-radius: 30px; background: var(--bee-black); color: var(--bee-yellow); border: none; font-weight: bold;">Play Again</button>
+</div>
+
+<script>
+    // Data with multiple distractors covering Phonetic, Umlaut, and Palatal traps
+    const gameData = [
+        {
+            emoji: "🍎",
+            en: { word: "Apple", dist: ["Aple", "Appel", "Appple"] },
+            de: { word: "Apfel", dist: ["Abfel", "Apfell", "Affel"] },
+            sr: { word: "Jabuka", dist: ["Jabuca", "Jabka", "Jabuuka"] }
+        },
+        {
+            emoji: "🐻",
+            en: { word: "Bear", dist: ["Bare", "Ber", "Beare"] },
+            de: { word: "Bär", dist: ["Bar", "Ber", "Bähr"] },
+            sr: { word: "Medved", dist: ["Medvet", "Medvjed", "Metved"] }
+        },
+        {
+            emoji: "🍒",
+            en: { word: "Cherry", dist: ["Chery", "Sherry", "Cherrie"] },
+            de: { word: "Kirsche", dist: ["Kirche", "Kiersche", "Kirche"] },
+            sr: { word: "Trešnja", dist: ["Tresnja", "Trešna", "Trešnjia"] }
+        },
+        {
+            emoji: "🐱",
+            en: { word: "Cat", dist: ["Kat", "Catt", "Catt"] },
+            de: { word: "Katze", dist: ["Kaze", "Katse", "Kattze"] },
+            sr: { word: "Mačka", dist: ["Maćka", "Macka", "Mačk"] }
+        },
+        {
+            emoji: "🏠",
+            en: { word: "House", dist: ["Hous", "Howse", "House"] },
+            de: { word: "Haus", dist: ["Hauss", "Hous", "Hauz"] },
+            sr: { word: "Kuća", dist: ["Kuča", "Kuca", "Kuać"] }
+        },
+        {
+            emoji: "🍌",
+            en: { word: "Banana", dist: ["Banan", "Bannana", "Bananna"] },
+            de: { word: "Banane", dist: ["Banan", "Bannane", "Bananen"] },
+            sr: { word: "Banana", dist: ["Bananna", "Banaana", "Banan"] }
+        },
+        {
+            emoji: "🐰",
+            en: { word: "Rabbit", dist: ["Rabit", "Rabbet", "Rabbitt"] },
+            de: { word: "Hase", dist: ["Haase", "Hasse", "Hasen"] },
+            sr: { word: "Zec", dist: ["Zeec", "Zetz", "Zecc"] }
+        },
+        {
+            emoji: "🐝",
+            en: { word: "Bee", dist: ["Be", "Bea", "Beee"] },
+            de: { word: "Biene", dist: ["Bine", "Bihne", "Bienen"] },
+            sr: { word: "Pčela", dist: ["Pcela", "Pćela", "Pčel"] }
+        },
+        // Add many more following this structure...
+        
+	 // --- ANIMALS ---
+	{
+	    emoji: "🐶",
+	    en: { word: "Dog", dist: ["Dogg", "Dogge", "Doog"] },
+	    de: { word: "Hund", dist: ["Hunt", "Hunnd", "Hunde"] },
+	    sr: { word: "Pas", dist: ["Pass", "Pasa", "Paz"] }
+	},
+	{
+	    emoji: "🐘",
+	    en: { word: "Elephant", dist: ["Elefant", "Elefent", "Ellephant"] },
+	    de: { word: "Elefant", dist: ["Ellefant", "Elefandt", "Elefanth"] },
+	    sr: { word: "Slon", dist: ["Sllon", "Slonn", "Slone"] }
+	},
+	{
+	    emoji: "🦁",
+	    en: { word: "Lion", dist: ["Lyon", "Lian", "Liion"] },
+	    de: { word: "Löwe", dist: ["Lowe", "Löve", "Löbe"] },
+	    sr: { word: "Lav", dist: ["Laff", "Llav", "Lave"] }
+	},
+	{
+	    emoji: "🦒",
+	    en: { word: "Giraffe", dist: ["Girafe", "Giraf", "Geraffe"] },
+	    de: { word: "Giraffe", dist: ["Girafe", "Schirafe", "Giraffe"] },
+	    sr: { word: "Žirafa", dist: ["Zirafa", "Žiraffa", "Žirava"] }
+	},
+	{
+	    emoji: "🐒",
+	    en: { word: "Monkey", dist: ["Monky", "Munkey", "Monkie"] },
+	    de: { word: "Affe", dist: ["Afe", "Afffe", "Affen"] },
+	    sr: { word: "Majmun", dist: ["Maimun", "Majmuna", "Majmunn"] }
+	},
+	{
+	    emoji: "🐧",
+	    en: { word: "Penguin", dist: ["Pinguin", "Pengwin", "Penguinne"] },
+	    de: { word: "Pinguin", dist: ["Pingwin", "Pinguinn", "Pingun"] },
+	    sr: { word: "Pingvin", dist: ["Pingwin", "Pinvin", "Pingvinn"] }
+	},
+	{
+	    emoji: "🦓",
+	    en: { word: "Zebra", dist: ["Zibra", "Zebbra", "Zebre"] },
+	    de: { word: "Zebra", dist: ["Zebbra", "Sebran", "Zebre"] },
+	    sr: { word: "Zebra", dist: ["Zebbra", "Sebre", "Zebre"] }
+	},
+	{
+	    emoji: "🐜",
+	    en: { word: "Ant", dist: ["Annt", "And", "Ante"] },
+	    de: { word: "Ameise", dist: ["Ameyse", "Ameize", "Amise"] },
+	    sr: { word: "Mrav", dist: ["Mraf", "Mravv", "Mrave"] }
+	},
+	{
+	    emoji: "🦋",
+	    en: { word: "Butterfly", dist: ["Buterfly", "Butterfliy", "Buterfliy"] },
+	    de: { word: "Falter", dist: ["Valter", "Fallter", "Faltre"] },
+	    sr: { word: "Leptir", dist: ["Lepptir", "Leptiri", "Leptit"] }
+	},
+	{
+	    emoji: "🐪",
+	    en: { word: "Camel", dist: ["Cammel", "Camal", "Kamel"] },
+	    de: { word: "Kamel", dist: ["Camel", "Kammeel", "Kamell"] },
+	    sr: { word: "Kamila", dist: ["Kammila", "Kamilla", "Kamilia"] }
+	},
+	{
+	    emoji: "🐄",
+	    en: { word: "Cow", dist: ["Kow", "Cowe", "Coow"] },
+	    de: { word: "Kuh", dist: ["Ku", "Kue", "Kuhh"] },
+	    sr: { word: "Krava", dist: ["Kravva", "Kravva", "Kravu"] }
+	},
+	{
+	    emoji: "🐊",
+	    en: { word: "Crocodile", dist: ["Crocadile", "Crokodile", "Crocodyle"] },
+	    de: { word: "Krokodil", dist: ["Crokodil", "Krokodyl", "Krokkodil"] },
+	    sr: { word: "Krokodil", dist: ["Crocodil", "Krokodill", "Krokodyle"] }
+	},
+	{
+	    emoji: "🦌",
+	    en: { word: "Deer", dist: ["Deere", "Dear", "Dere"] },
+	    de: { word: "Hirsch", dist: ["Hirch", "Hirsh", "Hiersch"] },
+	    sr: { word: "Jelen", dist: ["Jellen", "Jelene", "Ielen"] }
+	},
+	{
+	    emoji: "🐬",
+	    en: { word: "Dolphin", dist: ["Dolfin", "Dollphin", "Dolphine"] },
+	    de: { word: "Delfin", dist: ["Delphin", "Delfinn", "Delffin"] },
+	    sr: { word: "Delfin", dist: ["Delphin", "Delfinn", "Delfine"] }
+	},
+	{
+	    emoji: "🦆",
+	    en: { word: "Duck", dist: ["Duk", "Ducke", "Duuck"] },
+	    de: { word: "Ente", dist: ["Ende", "Entte", "Enten"] },
+	    sr: { word: "Patka", dist: ["Patcka", "Patca", "Pattka"] }
+	},
+	{
+	    emoji: "🐸",
+	    en: { word: "Frog", dist: ["Frogg", "Frogge", "Froog"] },
+	    de: { word: "Frosch", dist: ["Froch", "Frosh", "Frosche"] },
+	    sr: { word: "Žaba", dist: ["Zaba", "Žabba", "Žave"] }
+	},
+	{
+	    emoji: "🐐",
+	    en: { word: "Goat", dist: ["Gote", "Goate", "Goot"] },
+	    de: { word: "Ziege", dist: ["Zige", "Ziegge", "Zigen"] },
+	    sr: { word: "Koza", dist: ["Kosa", "Kozza", "Koze"] }
+	},
+	{
+	    emoji: "🐎",
+	    en: { word: "Horse", dist: ["Hors", "Horrs", "Hourse"] },
+	    de: { word: "Pferd", dist: ["Pfert", "Pferdt", "Ferd"] },
+	    sr: { word: "Konj", dist: ["Kon", "Konny", "Konnj"] }
+	},
+	{
+	    emoji: "🦘",
+	    en: { word: "Kangaroo", dist: ["Kangaru", "Kangaro", "Kangarooo"] },
+	    de: { word: "Känguru", dist: ["Kanguru", "Känguruh", "Kenguru"] },
+	    sr: { word: "Kengur", dist: ["Kangur", "Kengurr", "Kengure"] }
+	},
+	{
+	    emoji: "🦉",
+	    en: { word: "Owl", dist: ["Owle", "Oul", "Owll"] },
+	    de: { word: "Eule", dist: ["Oile", "Eulle", "Eulen"] },
+	    sr: { word: "Sova", dist: ["Sofa", "Sovva", "Sove"] }
+	},
+	{
+	    emoji: "🐷",
+	    en: { word: "Pig", dist: ["Pigg", "Pige", "Piig"] },
+	    de: { word: "Schwein", dist: ["Schwine", "Shwein", "Schweinn"] },
+	    sr: { word: "Svinja", dist: ["Svinia", "Svinja", "Svinjja"] }
+	},
+	{
+	    emoji: "🦈",
+	    en: { word: "Shark", dist: ["Sharkk", "Sharc", "Sherk"] },
+	    de: { word: "Hai", dist: ["Hay", "Haii", "Haie"] },
+	    sr: { word: "Ajkula", dist: ["Aycula", "Ajkulla", "Aikula"] }
+	},
+	{
+	    emoji: "🐚",
+	    en: { word: "Snail", dist: ["Snale", "Snayl", "Snaill"] },
+	    de: { word: "Schnecke", dist: ["Schneke", "Shnecke", "Schneckke"] },
+	    sr: { word: "Puž", dist: ["Puz", "Pužž", "Puže"] }
+	},
+	{
+	    emoji: "🐍",
+	    en: { word: "Snake", dist: ["Snak", "Snayke", "Snaake"] },
+	    de: { word: "Schlange", dist: ["Shlange", "Schlanke", "Schlangen"] },
+	    sr: { word: "Zmija", dist: ["Zmia", "Zmiija", "Zmija"] }
+	},
+	{
+	    emoji: "🐢",
+	    en: { word: "Turtle", dist: ["Turtel", "Tertle", "Turttle"] },
+	    de: { word: "Schildkröte", dist: ["Schildkrote", "Schiltkröte", "Schildkrötte"] },
+	    sr: { word: "Kornjača", dist: ["Kornjaca", "Kornjača", "Korniaca"] }
+	},
+	{
+	    emoji: "🐋",
+	    en: { word: "Whale", dist: ["Wale", "Whayle", "Whall"] },
+	    de: { word: "Wal", dist: ["Wahl", "Wall", "Wale"] },
+	    sr: { word: "Kit", dist: ["Kitt", "Kite", "Kyt"] }
+	},
+	{
+	    emoji: "🐺",
+	    en: { word: "Wolf", dist: ["Wolfe", "Wulf", "Woolf"] },
+	    de: { word: "Wolf", dist: ["Wolff", "Wulf", "Wolfe"] },
+	    sr: { word: "Vuk", dist: ["Vuuk", "Vuc", "Vuke"] }
+	},
+
+	// --- FRUITS & VEGETABLES ---
+	{
+	    emoji: "🥦",
+	    en: { word: "Broccoli", dist: ["Brocoli", "Broccolli", "Brocolli"] },
+	    de: { word: "Brokkoli", dist: ["Brokoli", "Brokkolli", "Brokoli"] },
+	    sr: { word: "Brokoli", dist: ["Brokkoli", "Brokoli", "Broccoli"] }
+	},
+	{
+	    emoji: "🌽",
+	    en: { word: "Corn", dist: ["Corne", "Korn", "Coorn"] },
+	    de: { word: "Mais", dist: ["Meis", "Maiz", "Mayse"] },
+	    sr: { word: "Kukuruz", dist: ["Kukurus", "Kukuruzz", "Kukuruze"] }
+	},
+	{
+	    emoji: "🍋",
+	    en: { word: "Lemon", dist: ["Leman", "Lemmon", "Lemone"] },
+	    de: { word: "Zitrone", dist: ["Sitrone", "Zitronne", "Zittrone"] },
+	    sr: { word: "Limun", dist: ["Limum", "Limunn", "Limmun"] }
+	},
+	{
+	    emoji: "🧅",
+	    en: { word: "Onion", dist: ["Onyan", "Onyon", "Onnion"] },
+	    de: { word: "Zwiebel", dist: ["Zwiibel", "Swiebel", "Zwiebell"] },
+	    sr: { word: "Luk", dist: ["Luuk", "Luck", "Luke"] }
+	},
+	{
+	    emoji: "🍓",
+	    en: { word: "Strawberry", dist: ["Strawbery", "Strawberrie", "Stroberry"] },
+	    de: { word: "Erdbeere", dist: ["Erdbeere", "Ertbeere", "Erdberre"] },
+	    sr: { word: "Jagoda", dist: ["Jaggoda", "Jagodda", "Jagode"] }
+	},
+	{
+	    emoji: "🍅",
+	    en: { word: "Tomato", dist: ["Tomatoe", "Tomatto", "Tomate"] },
+	    de: { word: "Tomate", dist: ["Tomatte", "Domate", "Tomaten"] },
+	    sr: { word: "Paradajz", dist: ["Paradaiz", "Paradayz", "Paradajs"] }
+	},
+	{
+	    emoji: "🍉",
+	    en: { word: "Watermelon", dist: ["Watermellon", "Watermelon", "Watermellon"] },
+	    de: { word: "Melone", dist: ["Mellone", "Melonne", "Melonen"] },
+	    sr: { word: "Lubenica", dist: ["Lubennica", "Lubenicca", "Lubeniza"] }
+	},
+	{
+	    emoji: "🥔",
+	    en: { word: "Potato", dist: ["Potatoe", "Potatto", "Potatow"] },
+	    de: { word: "Kartoffel", dist: ["Kartofel", "Kartofell", "Cartoffel"] },
+	    sr: { word: "Krompir", dist: ["Kromppir", "Krompir", "Krompirr"] }
+	},
+	{
+	    emoji: "🥑",
+	    en: { word: "Avocado", dist: ["Avocada", "Avokado", "Avocaddo"] },
+	    de: { word: "Avocado", dist: ["Avocada", "Avokado", "Avocaddo"] },
+	    sr: { word: "Avokado", dist: ["Avocado", "Avocaddo", "Avokaddo"] }
+	},
+	{
+	    emoji: "🫐",
+	    en: { word: "Blueberry", dist: ["Bluberry", "Blueberrie", "Bluberry"] },
+	    de: { word: "Blaubeere", dist: ["Blaubere", "Blauberre", "Glaubere"] },
+	    sr: { word: "Borovnica", dist: ["Borovnica", "Borovnicca", "Borovniza"] }
+	},
+	{
+	    emoji: "🥕",
+	    en: { word: "Carrot", dist: ["Carot", "Carrott", "Karrot"] },
+	    de: { word: "Karotte", dist: ["Karote", "Carotte", "Karrotte"] },
+	    sr: { word: "Šargarepa", dist: ["Sargarepa", "Šargareppa", "Šargarep"] }
+	},
+	{
+	    emoji: "🥒",
+	    en: { word: "Cucumber", dist: ["Cucamber", "Cukumber", "Cuccumber"] },
+	    de: { word: "Gurke", dist: ["Gurrke", "Curke", "Gurken"] },
+	    sr: { word: "Krastavac", dist: ["Krastavaz", "Krastavvac", "Krastavce"] }
+	},
+	{
+	    emoji: "🍆",
+	    en: { word: "Eggplant", dist: ["Egplant", "Eggplante", "Egplante"] },
+	    de: { word: "Aubergine", dist: ["Auberchiene", "Oberjine", "Aubergene"] },
+	    sr: { word: "Patlidžan", dist: ["Patlidzan", "Patliđan", "Patlidžann"] }
+	},
+	{
+	    emoji: "🥝",
+	    en: { word: "Kiwi", dist: ["Kivi", "Kiewi", "Kiwie"] },
+	    de: { word: "Kiwi", dist: ["Kiewi", "Kivi", "Kiwie"] },
+	    sr: { word: "Kivi", dist: ["Kiwi", "Kivvi", "Kivvi"] }
+	},
+	{
+	    emoji: "🥭",
+	    en: { word: "Mango", dist: ["Mano", "Mangoe", "Manggo"] },
+	    de: { word: "Mango", dist: ["Mano", "Manggo", "Mangos"] },
+	    sr: { word: "Mango", dist: ["Mano", "Manggo", "Mangou"] }
+	},
+	{
+	    emoji: "🍄",
+	    en: { word: "Mushroom", dist: ["Mushrom", "Musheroom", "Musshroom"] },
+	    de: { word: "Pilz", dist: ["Pils", "Pilss", "Pilze"] },
+	    sr: { word: "Pečurka", dist: ["Pecurka", "Pećurka", "Pečurka"] }
+	},
+	{
+	    emoji: "🍊",
+	    en: { word: "Orange", dist: ["Oranje", "Orenge", "Orrange"] },
+	    de: { word: "Orange", dist: ["Oranche", "Orrange", "Orangen"] },
+	    sr: { word: "Pomorandža", dist: ["Pomorandza", "Pomoranđa", "Pomorandja"] }
+	},
+	{
+	    emoji: "🍑",
+	    en: { word: "Peach", dist: ["Peache", "Peech", "Peche"] },
+	    de: { word: "Pfirsich", dist: ["Pfirsih", "Pfirshich", "Firsich"] },
+	    sr: { word: "Breskva", dist: ["Breskva", "Breksva", "Breskvaa"] }
+	},
+	{
+	    emoji: "🍍",
+	    en: { word: "Pineapple", dist: ["Pinapple", "Pineappel", "Pynapple"] },
+	    de: { word: "Ananas", dist: ["Annanas", "Ananass", "Ananaz"] },
+	    sr: { word: "Ananas", dist: ["Annanas", "Ananass", "Ananaz"] }
+	},
+	{
+	    emoji: "🎃",
+	    en: { word: "Pumpkin", dist: ["Pumkin", "Pumpkine", "Pumkin"] },
+	    de: { word: "Kürbis", dist: ["Kurbis", "Kürbiß", "Kürbiss"] },
+	    sr: { word: "Bundeva", dist: ["Bundeva", "Bundevva", "Bundefe"] }
+	},
+	{
+	    emoji: "🥬",
+	    en: { word: "Salad", dist: ["Sallad", "Salade", "Salat"] },
+	    de: { word: "Salat", dist: ["Sallat", "Salade", "Salate"] },
+	    sr: { word: "Salata", dist: ["Sallata", "Salatta", "Salat"] }
+	},
+
+	// --- OBJECTS & NATURE ---
+	{
+	    emoji: "🎈",
+	    en: { word: "Balloon", dist: ["Baloon", "Ballon", "Ballun"] },
+	    de: { word: "Ballon", dist: ["Balon", "Ballonn", "Ballone"] },
+	    sr: { word: "Balon", dist: ["Ballon", "Balonn", "Balone"] }
+	},
+	{
+	    emoji: "🚲",
+	    en: { word: "Bicycle", dist: ["Bycycle", "Bicicle", "Bicykle"] },
+	    de: { word: "Fahrrad", dist: ["Farad", "Farrad", "Fahrrat"] },
+	    sr: { word: "Bicikl", dist: ["Bicikla", "Bicikll", "Bizikl"] }
+	},
+	{
+	    emoji: "📖",
+	    en: { word: "Book", dist: ["Boke", "Booke", "Boock"] },
+	    de: { word: "Buch", dist: ["Buh", "Buhch", "Buche"] },
+	    sr: { word: "Knjiga", dist: ["Kniga", "Knjigaa", "Knjige"] }
+	},
+	{
+	    emoji: "🚌",
+	    en: { word: "Bus", dist: ["Buss", "Buse", "Buus"] },
+	    de: { word: "Bus", dist: ["Buss", "Buse", "Busse"] },
+	    sr: { word: "Autobus", dist: ["Autobuss", "Autobuz", "Autobuze"] }
+	},
+	{
+	    emoji: "🚗",
+	    en: { word: "Car", dist: ["Carr", "Care", "Caa"] },
+	    de: { word: "Auto", dist: ["Autto", "Autos", "Audto"] },
+	    sr: { word: "Auto", dist: ["Autto", "Autos", "Audto"] }
+	},
+	{
+	    emoji: "☁️",
+	    en: { word: "Cloud", dist: ["Clowd", "Cloude", "Cloud"] },
+	    de: { word: "Wolke", dist: ["Wolcke", "Wollke", "Wolken"] },
+	    sr: { word: "Oblak", dist: ["Olblak", "Oblakk", "Oblake"] }
+	},
+	{
+	    emoji: "🌸",
+	    en: { word: "Flower", dist: ["Flowar", "Flowre", "Flour"] },
+	    de: { word: "Blume", dist: ["Blumme", "Bluhme", "Blumen"] },
+	    sr: { word: "Cvet", dist: ["Cvet", "Zvet", "Cvett"] }
+	},
+	{
+	    emoji: "🎩",
+	    en: { word: "Hat", dist: ["Hatt", "Hate", "Haat"] },
+	    de: { word: "Hut", dist: ["Hutt", "Hute", "Huut"] },
+	    sr: { word: "Šešir", dist: ["Sesir", "Šesir", "Šeširr"] }
+	},
+	{
+	    emoji: "🔑",
+	    en: { word: "Key", dist: ["Kee", "Keye", "Keey"] },
+	    de: { word: "Schlüssel", dist: ["Schlusel", "Shlüssel", "Schlüsel"] },
+	    sr: { word: "Ključ", dist: ["Kluč", "Kljuch", "Kljuć"] }
+	},
+	{
+	    emoji: "🌙",
+	    en: { word: "Moon", dist: ["Moone", "Mone", "Moone"] },
+	    de: { word: "Mond", dist: ["Mont", "Monnd", "Monde"] },
+	    sr: { word: "Mesec", dist: ["Mesec", "Mesez", "Messec"] }
+	},
+	{
+	    emoji: "🌈",
+	    en: { word: "Rainbow", dist: ["Rainbo", "Rainbbow", "Raynbow"] },
+	    de: { word: "Regenbogen", dist: ["Regnbogen", "Regebogen", "Regenbogn"] },
+	    sr: { word: "Duga", dist: ["Dugga", "Dugge", "Duuga"] }
+	},
+	{
+	    emoji: "🚀",
+	    en: { word: "Rocket", dist: ["Roket", "Rockit", "Rokketi"] },
+	    de: { word: "Rakete", dist: ["Rackete", "Rakette", "Raketen"] },
+	    sr: { word: "Raketa", dist: ["Rakketa", "Raketta", "Rakete"] }
+	},
+	{
+	    emoji: "🚢",
+	    en: { word: "Ship", dist: ["Shipp", "Shipe", "Schip"] },
+	    de: { word: "Schiff", dist: ["Schif", "Shiff", "Schiffe"] },
+	    sr: { word: "Brod", dist: ["Brodd", "Brot", "Brode"] }
+	},
+	{
+	    emoji: "🌟",
+	    en: { word: "Star", dist: ["Starr", "Stare", "Staar"] },
+	    de: { word: "Stern", dist: ["Stärn", "Sterren", "Sterne"] },
+	    sr: { word: "Zvezda", dist: ["Zveda", "Zvjezda", "Zvesda"] }
+	}
+    ];
+
+    let availableIndices = []; // To track words not yet used in this round
+
+    let currentLanguage = 'en';
+    let currentStep = 0;
+    const totalSteps = 8;
+    
+    function refreshAvailableWords() {
+        // Fill the array with indices 0, 1, 2, ... gameData.length - 1
+        availableIndices = Array.from(gameData.keys());
+        // Shuffle the indices so the order is random
+        availableIndices.sort(() => Math.random() - 0.5);
+    }
+
+    function setLang(lang) {
+        currentLanguage = lang;
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('btn-' + lang).classList.add('active');
+        nextQuestion();
+    }
+
+    function toCyrillic(text) {
+        const map = {
+            'A':'А', 'B':'Б', 'V':'В', 'G':'Г', 'D':'Д', 'Đ':'Ђ', 'E':'Е', 'Ž':'Ж', 'Z':'З', 'I':'И',
+            'J':'Ј', 'K':'К', 'L':'Л', 'Lj':'Љ', 'M':'М', 'N':'Н', 'Nj':'Њ', 'O':'О', 'P':'П', 'R':'Р',
+            'S':'С', 'T':'Т', 'Ć':'Ћ', 'U':'У', 'F':'Ф', 'H':'Х', 'C':'Ц', 'Č':'Ч', 'Dž':'Џ', 'Š':'Ш',
+            'a':'а', 'b':'б', 'v':'в', 'g':'г', 'd':'д', 'đ':'ђ', 'e':'е', 'ž':'ж', 'z':'з', 'i':'и',
+            'j':'ј', 'k':'к', 'l':'л', 'lj':'љ', 'm':'м', 'n':'н', 'nj':'њ', 'o':'о', 'p':'п', 'r':'р',
+            's':'с', 't':'т', 'ć':'ћ', 'u':'у', 'f':'ф', 'h':'х', 'c':'ц', 'č':'ч', 'dž':'џ', 'š':'ш'
+        };
+        let result = text.replace(/Nj|Lj|Dž|nj|lj|dž/g, m => map[m]);
+        return result.split('').map(char => map[char] || char).join('');
+    }
+
+    function nextQuestion() {
+        // 1. Refill the list if it's empty
+        if (availableIndices.length === 0) {
+            refreshAvailableWords();
+        }
+
+        let item;
+        let correctWord;
+         let indexInAvailable;
+
+        // 2. Find a word that fits the length/language criteria from the available list 
+        for (let i = 0; i < availableIndices.length; i++) {
+            const testIndex = availableIndices[i];
+            const testItem = gameData[testIndex];
+         
+            const langKey = currentLanguage === 'sr-cyr' ? 'sr' : currentLanguage;
+            let baseWord = testItem[langKey].word;
+            let wordToTest = currentLanguage === 'sr-cyr' ? toCyrillic(baseWord) : baseWord;
+
+            // Note: You mentioned you want to allow long words now, 
+            // but I'll keep the logic here in case you want to filter anything else.
+            item = testItem;
+            correctWord = wordToTest;
+            indexInAvailable = i;
+            break; 
+        }
+
+        // 3. Remove the chosen index so it's not used again this round
+        availableIndices.splice(indexInAvailable, 1);
+    
+        document.getElementById('image-display').innerText = item.emoji;
+
+        const langKey = currentLanguage === 'sr-cyr' ? 'sr' : currentLanguage;
+        const correctRaw = item[langKey].word;
+        const correct = currentLanguage === 'sr-cyr' ? toCyrillic(correctRaw) : correctRaw;
+        
+        // Randomly pick 2 distractors from the list
+        let distractorsRaw = [...item[langKey].dist].sort(() => 0.5 - Math.random()).slice(0, 2);
+        let options = [correct];
+        distractorsRaw.forEach(d => {
+            options.push(currentLanguage === 'sr-cyr' ? toCyrillic(d) : d);
+        });
+
+        options.sort(() => Math.random() - 0.5);
+
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        
+        options.forEach(word => {
+            const btn = document.createElement('button');
+            btn.className = 'word-btn';
+            
+            // Highlight first letter
+            const first = word.charAt(0).toUpperCase();
+            const rest = word.slice(1);
+            btn.innerHTML = `<span class="first-letter">${first}</span>${rest}`;
+            
+            btn.onclick = () => checkAnswer(btn, word === correct);
+            container.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(btn, isCorrect) {
+        if (isCorrect) {
+            btn.classList.add('correct');
+            currentStep++;
+            updateBee();
+            if (currentStep >= totalSteps) {
+                setTimeout(() => { document.getElementById('celebration-overlay').style.display = 'flex'; }, 600);
+            } else {
+                setTimeout(nextQuestion, 1000);
+            }
+        } else {
+            btn.classList.add('wrong');
+            btn.style.animation = "shake 0.3s";
+            setTimeout(() => btn.style.animation = "", 300);
+        }
+    }
+
+    function updateBee() {
+        const trail = document.getElementById('trail-container');
+        const bee = document.getElementById('bee');
+        const width = trail.offsetWidth - 100;
+        const progress = (currentStep / totalSteps) * width;
+        bee.style.left = (progress + 10) + 'px';
+        // Add a little flight wobble
+        bee.style.top = (Math.random() * 20 + 10) + 'px';
+    }
+
+    function resetGame() {
+        currentStep = 0;
+        refreshAvailableWords(); // Start with a fresh list of words
+        updateBee();
+        document.getElementById('celebration-overlay').style.display = 'none';
+        nextQuestion();
+    }
+ 
+    // Initial Start
+    refreshAvailableWords();
+    document.getElementById('btn-' + currentLanguage).classList.add('active');
+    updateBee();
+    nextQuestion();
+    window.onresize = updateBee;
+</script>
+
+<style>
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        50% { transform: translateX(10px); }
+        75% { transform: translateX(-10px); }
+        100% { transform: translateX(0); }
+    }
+</style>
+
+</body>
+</html>
