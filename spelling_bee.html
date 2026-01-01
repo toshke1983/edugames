@@ -12,7 +12,7 @@
     <style>
         :root {
             --bee-yellow: #FFD700;
-            --bee-black: #333333;
+            --bee-black: #333333;f
             --honey-bg: #FFF9C4;
             --correct-green: #4CAF50;
             --wrong-red: #F44336;
@@ -116,12 +116,14 @@
             box-sizing: border-box;
         }
 
-        #bee {
-            font-size: 50px;
-            position: absolute;
-            transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            z-index: 5;
-        }
+		#bee {
+		    font-size: 50px;
+		    position: absolute;
+		    transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+		    z-index: 5;
+		    /* This line flips the bee to face Right */
+		    transform: scaleX(-1); 
+		}
 
         .hex-step {
             flex-grow: 1;
@@ -165,7 +167,7 @@
     <div class="hex-step"></div><div class="hex-step"></div><div class="hex-step"></div>
     <div class="hex-step"></div><div class="hex-step"></div><div class="hex-step"></div>
     <div class="hex-step"></div><div class="hex-step"></div>
-    <div id="goal">🌻</div>
+    <div id="goal">🍯</div>
 </div>
 
 <div id="celebration-overlay">
@@ -718,15 +720,18 @@
         }
     }
 
-    function updateBee() {
-        const trail = document.getElementById('trail-container');
-        const bee = document.getElementById('bee');
-        const width = trail.offsetWidth - 100;
-        const progress = (currentStep / totalSteps) * width;
-        bee.style.left = (progress + 10) + 'px';
-        // Add a little flight wobble
-        bee.style.top = (Math.random() * 20 + 10) + 'px';
-    }
+	function updateBee() {
+	    const trail = document.getElementById('trail-container');
+	    const bee = document.getElementById('bee');
+	    const width = trail.offsetWidth - 100;
+	    const progress = (currentStep / totalSteps) * width;
+	    
+	    const xPos = progress + 10;
+	    const yPos = Math.random() * 20 + 10; // Vertical flight wobble
+	
+	    // We MUST include scaleX(-1) here so the bee stays flipped while moving
+	    bee.style.transform = `translate(${xPos}px, ${yPos}px) scaleX(-1)`;
+	}
 
     function resetGame() {
         currentStep = 0;
