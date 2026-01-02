@@ -704,6 +704,7 @@
 
         const container = document.getElementById('options-container');
         container.innerHTML = '';
+		container.dataset.correct = correct;
         
         options.forEach(word => {
             const btn = document.createElement('button');
@@ -759,13 +760,13 @@
 	    let contentHTML = `<h1 style="color: #fbc02d;">${mistakeCount === 0 ? '🏆' : '🐝'}</h1>`;
 	    contentHTML += `<h2>${title}</h2>`;
 	
-	    if (mistakeCount > 0) {
+		if (mistakeCount > 0) {
 	        contentHTML += `<div style="margin: 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;">`;
 	        missedWords.forEach(m => {
 	            contentHTML += `
-	                <div style="background: #fff9c4; padding: 10px; border-radius: 15px; border: 2px solid #ffd700;">
-	                    <span style="font-size: 1.5rem;">${m.emoji}</span>
-	                    <b style="font-size: 1.2rem; margin-left: 5px;">${m.word}</b>
+	                <div style="background: #fff9c4; padding: 15px 25px; border-radius: 20px; border: 3px solid #ffd700; display: flex; align-items: center;">
+	                    <span style="font-size: 2.5rem;">${m.emoji}</span>
+	                    <b style="font-size: 2rem; margin-left: 15px; color: #333;">${m.word}</b>
 	                </div>`;
 	        });
 	        contentHTML += `</div>`;
