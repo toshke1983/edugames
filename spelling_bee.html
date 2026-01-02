@@ -613,6 +613,15 @@
     let currentLanguage = 'en';
     let currentStep = 0;
     const totalSteps = 8;
+
+	let mistakeCount = 0;
+	let missedWords = []; // Stores { emoji: "🍎", word: "Apple" }
+	
+	const uiText = {
+	    en: { perfect: "Perfect! No mistakes!", practice: "Good practice! Remember these words:", playAgain: "Play Again" },
+	    de: { perfect: "Perfekt! Keine Fehler!", practice: "Gut geübt! Merke dir diese Wörter:", playAgain: "Nochmal spielen" },
+	    sr: { perfect: "Savršeno! Bez grešaka!", practice: "Odlična vežba! Zapamti ove reči:", playAgain: "Igraj ponovo" }
+	};
     
     function refreshAvailableWords() {
         // Fill the array with indices 0, 1, 2, ... gameData.length - 1
@@ -621,12 +630,19 @@
         availableIndices.sort(() => Math.random() - 0.5);
     }
 
-    function setLang(lang) {
-        currentLanguage = lang;
-        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('btn-' + lang).classList.add('active');
-        nextQuestion();
-    }
+	function setLang(lang) {
+	    currentLanguage = lang;
+	    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+	    document.getElementById('btn-' + lang).classList.add('active');
+	    
+	    // Reset game state on language switch
+	    currentStep = 0;
+	    mistakeCount = 0;
+	    missedWords = [];
+	    refreshAvailableWords();
+	    updateBee();
+	    nextQuestion();
+	}
 
     function toCyrillic(text) {
         const map = {
@@ -703,33 +719,74 @@
         });
     }
 
-    function checkAnswer(btn, isCorrect) {
-        if (isCorrect) {
-            btn.classList.add('correct');
-            currentStep++;
-            updateBee();
-            if (currentStep >= totalSteps) {
-                setTimeout(() => { document.getElementById('celebration-overlay').style.display = 'flex'; }, 600);
-            } else {
-                setTimeout(nextQuestion, 1000);
-            }
-        } else {
-            btn.classList.add('wrong');
-            btn.style.animation = "shake 0.3s";
-            setTimeout(() => btn.style.animation = "", 300);
-        }
-    }
-
+	function checkAnswer(btn, isCorrect) {
+	    const currentEmoji = document.getElementById('image-display').innerText;
+	    const currentCorrectWord = btn.parentElement.dataset.correct; // We'll store this in the container
+	
+	    if (isCorrect) {
+	        btn.classList.add('correct');
+	        currentStep++;
+	        updateBee();
+	        
+	        if (currentStep >= totalSteps) {
+	            setTimeout(showCelebration, 600);
+	        } else {
+	            setTimeout(nextQuestion, 1000);
+	        }
+	    } else {
+	        if (!btn.classList.contains('wrong')) { // Only count the first time they miss THIS word
+	            mistakeCount++;
+	            // Store the emoji and the correct spelling for the summary
+	            if (!missedWords.some(m => m.emoji === currentEmoji)) {
+	                missedWords.push({ emoji: currentEmoji, word: currentCorrectWord });
+	            }
+	        }
+	        btn.classList.add('wrong');
+	        btn.style.animation = "shake 0.3s";
+	        setTimeout(() => btn.style.animation = "", 300);
+	    }
+	}
+	
+	function showCelebration() {
+	    const overlay = document.getElementById('celebration-overlay');
+	    const langKey = currentLanguage.startsWith('sr') ? 'sr' : currentLanguage;
+	    let baseMsg = uiText[langKey];
+	    
+	    // Convert messages to Cyrillic if needed
+	    let title = (currentLanguage === 'sr-cyr') ? toCyrillic(mistakeCount === 0 ? baseMsg.perfect : baseMsg.practice) : (mistakeCount === 0 ? baseMsg.perfect : baseMsg.practice);
+	    let btnText = (currentLanguage === 'sr-cyr') ? toCyrillic(baseMsg.playAgain) : baseMsg.playAgain;
+	
+	    let contentHTML = `<h1 style="color: #fbc02d;">${mistakeCount === 0 ? '🏆' : '🐝'}</h1>`;
+	    contentHTML += `<h2>${title}</h2>`;
+	
+	    if (mistakeCount > 0) {
+	        contentHTML += `<div style="margin: 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;">`;
+	        missedWords.forEach(m => {
+	            contentHTML += `
+	                <div style="background: #fff9c4; padding: 10px; border-radius: 15px; border: 2px solid #ffd700;">
+	                    <span style="font-size: 1.5rem;">${m.emoji}</span>
+	                    <b style="font-size: 1.2rem; margin-left: 5px;">${m.word}</b>
+	                </div>`;
+	        });
+	        contentHTML += `</div>`;
+	    }
+	
+	    contentHTML += `<button onclick="resetGame()" style="font-size: 1.5rem; padding: 15px 40px; border-radius: 30px; background: #333; color: #ffd700; border: none; cursor: pointer; font-weight: bold;">${btnText}</button>`;
+	    
+	    overlay.innerHTML = contentHTML;
+	    overlay.style.display = 'flex';
+	}
+	
 	function updateBee() {
 	    const trail = document.getElementById('trail-container');
 	    const bee = document.getElementById('bee');
 	    const width = trail.offsetWidth - 100;
 	    const progress = (currentStep / totalSteps) * width;
 	    
-	    const xPos = progress + 10;
-	    const yPos = Math.random() * 20 + 10; // Vertical flight wobble
-	
-	    // We MUST include scaleX(-1) here so the bee stays flipped while moving
+	    const xPos = progress;
+	    const yPos = (Math.sin(currentStep) * 10); // Subtle wave movement
+	    
+	    // scaleX(-1) keeps the bee facing the honey pot (right)
 	    bee.style.transform = `translate(${xPos}px, ${yPos}px) scaleX(-1)`;
 	}
 
