@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Känguru Mathe-Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF9F1C; /* Kangaroo Orange */
+            --secondary: #2EC4B6; /* Teal */
+            --accent: #E71D36; /* Red */
+            --bg: #CBF3F0; /* Light Blue */
+            --card-bg: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background-color: var(--bg);
+            background-image: radial-gradient(#FFBF69 10%, transparent 10%); /* Polka dot pattern */
+            background-size: 30px 30px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* --- Header & Score --- */
+        header {
+            width: 100%;
+            padding: 15px 0;
+            background: var(--primary);
+            box-shadow: 0 4px 0 #E08E18;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            z-index: 100;
+        }
+
+        .score-board {
+            font-size: 1.5rem;
+            color: white;
+            font-weight: 600;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+        }
+
+        #score-val {
+            font-size: 2rem;
+            background: rgba(255,255,255,0.2);
+            padding: 0 10px;
+            border-radius: 10px;
+        }
+
+        /* --- Main Game Area --- */
+        main {
+            margin-top: 100px; /* Space for header */
+            width: 95%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 50px;
+        }
+
+        .task-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border: 4px solid var(--secondary);
+            text-align: center;
+            width: 100%;
+            position: relative;
+            min-height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .task-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            /* Prevent user from dragging image */
+            pointer-events: none; 
+            user-select: none;
+        }
+
+        .task-info {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            background: var(--secondary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+
+        .difficulty-badge {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: var(--accent);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+
+        /* --- Controls --- */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-top: 30px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 3px solid var(--secondary);
+            color: var(--secondary);
+            font-size: 1.5rem;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: bold;
+            padding: 15px 0;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            box-shadow: 0 4px 0 #249A8F;
+        }
+
+        .option-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #249A8F;
+        }
+
+        .option-btn:hover {
+            background: #f0fdfc;
+        }
+
+        /* States for buttons */
+        .option-btn.correct {
+            background: #2ECC71 !important;
+            border-color: #27AE60 !important;
+            color: white !important;
+            box-shadow: 0 4px 0 #219150 !important;
+        }
+
+        .option-btn.wrong {
+            background: #E74C3C !important;
+            border-color: #C0392B !important;
+            color: white !important;
+            box-shadow: 0 4px 0 #96281B !important;
+            animation: shake 0.4s;
+        }
+
+        /* --- Next Button --- */
+        #next-btn {
+            margin-top: 30px;
+            background: var(--primary);
+            color: white;
+            font-size: 1.5rem;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #E08E18;
+            font-family: 'Fredoka', sans-serif;
+            display: block;
+        }
+
+        #next-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* --- Confetti Animation --- */
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            animation: fall linear forwards;
+            z-index: 200;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(720deg); }
+        }
+        
+        /* Mobile adjustment */
+        @media (max-width: 600px) {
+            .options-grid {
+                gap: 8px;
+            }
+            .option-btn {
+                font-size: 1.2rem;
+                padding: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="score-board">
+            Score: <span id="score-val">0</span>
+        </div>
+    </header>
+
+    <main>
+        <div class="task-card">
+            <span class="task-info" id="task-id">Loading...</span>
+            <span class="difficulty-badge" id="task-points">3 Points</span>
+            
+            <img id="task-img" class="task-image" src="" alt="Math Task" onerror="handleImageError()">
+            
+            <div id="loading-msg" style="display:none; color: #888;">Suche Aufgabe...</div>
+        </div>
+
+        <div class="options-grid" id="options-container">
+            <button class="option-btn" onclick="checkAnswer('A')">A</button>
+            <button class="option-btn" onclick="checkAnswer('B')">B</button>
+            <button class="option-btn" onclick="checkAnswer('C')">C</button>
+            <button class="option-btn" onclick="checkAnswer('D')">D</button>
+            <button class="option-btn" onclick="checkAnswer('E')">E</button>
+        </div>
+
+        <button id="next-btn" onclick="loadNewTask()">Nächste Aufgabe ➔</button>
+    </main>
+
+    <script src="solutions.js"></script>
+
+    <script>
+        // --- Configuration ---
+        const IMAGE_FOLDER = "final_tasks_gemini_3_flash";
+        
+        // --- State ---
+        let currentScore = 0;
+        let currentSolution = "";
+        let currentPoints = 0;
+        let isAnswered = false;
+        let firstAttempt = true;
+
+        // --- DOM Elements ---
+        const imgEl = document.getElementById('task-img');
+        const infoEl = document.getElementById('task-id');
+        const pointsEl = document.getElementById('task-points');
+        const nextBtn = document.getElementById('next-btn');
+        const scoreEl = document.getElementById('score-val');
+        const optionBtns = document.querySelectorAll('.option-btn');
+
+        // --- Helpers ---
+        function getRandomInt(max) {
+            return Math.floor(Math.random() * max);
+        }
+
+        function playSound(type) {
+            // Optional: You can add Audio objects here later
+        }
+
+        // --- Game Logic ---
+
+        function loadNewTask() {
+            // Reset UI
+            isAnswered = false;
+            firstAttempt = true;
+            
+            // RESET BUTTON STATE:
+            // Make it look like a "Skip" button initially
+            nextBtn.innerText = "Überspringen ↷"; 
+            nextBtn.style.background = "#ccc"; // Gray for skip
+            nextBtn.style.boxShadow = "0 6px 0 #999";
+            
+            optionBtns.forEach(btn => {
+                btn.className = 'option-btn'; // remove correct/wrong classes
+                btn.disabled = false;
+            });
+            imgEl.style.opacity = '0.5'; // dimmed while loading
+
+            // 1. Pick a random year
+            const years = Object.keys(solutions);
+            const randomYear = years[getRandomInt(years.length)];
+            
+            // 2. Pick a random difficulty
+            const groups = ["A", "B", "C"];
+            const randomGroup = groups[getRandomInt(groups.length)];
+            
+            // 3. Pick a random task
+            const groupTasks = solutions[randomYear][randomGroup];
+            if (!groupTasks) { loadNewTask(); return; }
+            
+            const randomIdx = getRandomInt(groupTasks.length);
+            
+            // 4. Construct Data
+            const taskNum = randomIdx + 1;
+            const filename = `${randomYear}_${randomGroup}${taskNum}.png`;
+            const solutionLetter = groupTasks[randomIdx];
+
+            if (!solutionLetter) { loadNewTask(); return; }
+
+            // 5. Update State
+            currentSolution = solutionLetter;
+            currentPoints = randomGroup === 'A' ? 3 : (randomGroup === 'B' ? 4 : 5);
+
+            // 6. Render
+            imgEl.src = `${IMAGE_FOLDER}/${filename}`;
+            infoEl.innerText = `${randomYear} • ${randomGroup}${taskNum}`;
+            pointsEl.innerText = `${currentPoints} Punkte`;
+            
+            imgEl.onload = () => { imgEl.style.opacity = '1'; };
+        }
+
+        function handleImageError() {
+            console.log("Image missing, skipping...");
+            loadNewTask();
+        }
+
+        function checkAnswer(selectedLetter) {
+            if (isAnswered) return; 
+
+            const btn = Array.from(optionBtns).find(b => b.innerText === selectedLetter);
+
+            if (selectedLetter === currentSolution) {
+                // CORRECT!
+                isAnswered = true;
+                btn.classList.add('correct');
+                
+                // Only add points if first try
+                if (firstAttempt) {
+                    currentScore += currentPoints;
+                    scoreEl.innerText = currentScore;
+                    spawnConfetti();
+                }
+
+                // CHANGE BUTTON TO "NEXT" (Success State)
+                nextBtn.innerText = "Nächste Aufgabe ➔";
+                nextBtn.style.background = "var(--primary)"; // Orange
+                nextBtn.style.boxShadow = "0 6px 0 #E08E18";
+                
+                // Disable other buttons
+                optionBtns.forEach(b => {
+                    if(b !== btn) b.disabled = true; 
+                });
+
+            } else {
+                // WRONG
+                btn.classList.add('wrong');
+                firstAttempt = false; 
+                
+                setTimeout(() => {
+                    btn.classList.remove('wrong');
+                }, 500);
+            }
+        }
+
+        // --- Visual Effects ---
+        function spawnConfetti() {
+            const colors = ['#FF9F1C', '#2EC4B6', '#E71D36', '#CBF3F0'];
+            for (let i = 0; i < 50; i++) {
+                const conf = document.createElement('div');
+                conf.classList.add('confetti');
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.body.appendChild(conf);
+                
+                // Cleanup
+                setTimeout(() => conf.remove(), 4000);
+            }
+        }
+
+        // Start game on load
+        window.onload = loadNewTask;
+
+    </script>
+</body>
+</html>
