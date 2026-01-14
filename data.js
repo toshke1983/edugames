@@ -1,62 +1,91 @@
-// This is your database. 
-// You can add new words here without touching the main app code.
-const APP_DATA = [
-    {
-        code: "en-US",
-        name: "English",
-        datasets: [
-            { 
-                name: "Animals", 
-                items: ["The cat sat on the mat.", "A big elephant.", "The dog barks."] 
-            },
-            { 
-                name: "Nature", 
-                items: ["The sun is very bright.", "The grass is green.", "Rain falls from clouds."] 
-            }
-        ]
-    },
-    {
-        code: "es-ES",
-        name: "Español",
-        datasets: [
-            { 
-                name: "Frutas", 
-                items: ["Me gusta la manzana.", "La pera es verde.", "Quiero una naranja."] 
-            }
-        ]
-    },
-    {
-        code: "fr-FR",
-        name: "Français",
-        datasets: [
-            { 
-                name: "Base", 
-                items: ["Bonjour tout le monde.", "Le chat est noir.", "Il fait beau aujourd'hui."] 
-            }
-        ]
-    },
-    {
-    code: "de-DE",
-    name: "Deutsch",
-    datasets: [
-        { 
-            name: "Tiere und Natur", 
-            items: [
-                "Der Hund spielt im Garten.", 
-                "Die Katze schläft auf dem Sofa.", 
-                "Der Vogel singt ein schönes Lied.",
-                "Der Elefant ist sehr groß."
-            ] 
-        },
-        { 
-            name: "Schule und Alltag", 
-            items: [
-                "Ich gehe gerne in die Schule.", 
-                "Das Wetter ist heute sehr schön.", 
-                "Wir lernen heute lesen und schreiben.",
-                "In der Pause spielen wir Fußball."
-            ] 
+export const gameData = {
+    europe: {
+        svg: 'europe.svg',
+        items: {
+            "AL": { en: "Albania", de: "Albanien", sr: "Albanija", cap: { en: "Tirana", de: "Tirana", sr: "Tirana" }, flag: "🇦🇱" },
+//            "AD": { en: "Andorra", de: "Andorra", sr: "Andora", cap: { en: "Andorra la Vella", de: "Andorra la Vella", sr: "Andora la Velja" }, flag: "🇦🇩" },
+            "AT": { en: "Austria", de: "Österreich", sr: "Austrija", cap: { en: "Vienna", de: "Wien", sr: "Beč" }, flag: "🇦🇹" },
+            "BY": { en: "Belarus", de: "Belarus", sr: "Belorusija", cap: { en: "Minsk", de: "Minsk", sr: "Minsk" }, flag: "🇧🇾" },
+            "BE": { en: "Belgium", de: "Belgien", sr: "Belgija", cap: { en: "Brussels", de: "Brüssel", sr: "Brisel" }, flag: "🇧🇪" },
+            "BA": { en: "Bosnia and Herzegovina", de: "Bosnien und Herzegowina", sr: "Bosna i Hercegovina", cap: { en: "Sarajevo", de: "Sarajevo", sr: "Sarajevo" }, flag: "🇧🇦" },
+            "BG": { en: "Bulgaria", de: "Bulgarien", sr: "Bugarska", cap: { en: "Sofia", de: "Sofia", sr: "Sofija" }, flag: "🇧🇬" },
+            "HR": { en: "Croatia", de: "Kroatien", sr: "Hrvatska", cap: { en: "Zagreb", de: "Zagreb", sr: "Zagreb" }, flag: "🇭🇷" },
+            "CY": { en: "Cyprus", de: "Zypern", sr: "Kipar", cap: { en: "Nicosia", de: "Nikosia", sr: "Nikozija" }, flag: "🇨🇾" },
+            "CZ": { en: "Czech Republic", de: "Tschechien", sr: "Češka", cap: { en: "Prague", de: "Prag", sr: "Prag" }, flag: "🇨🇿" },
+            "DK": { en: "Denmark", de: "Dänemark", sr: "Danska", cap: { en: "Copenhagen", de: "Kopenhagen", sr: "Kopenhagen" }, flag: "🇩🇰" },
+            "EE": { en: "Estonia", de: "Estland", sr: "Estonija", cap: { en: "Tallinn", de: "Tallinn", sr: "Talin" }, flag: "🇪🇪" },
+            "FI": { en: "Finland", de: "Finnland", sr: "Finska", cap: { en: "Helsinki", de: "Helsinki", sr: "Helsinki" }, flag: "🇫🇮" },
+            "FR": { en: "France", de: "Frankreich", sr: "Francuska", cap: { en: "Paris", de: "Paris", sr: "Pariz" }, flag: "🇫🇷" },
+            "DE": { en: "Germany", de: "Deutschland", sr: "Nemačka", cap: { en: "Berlin", de: "Berlin", sr: "Berlin" }, flag: "🇩🇪" },
+            "GR": { en: "Greece", de: "Griechenland", sr: "Grčka", cap: { en: "Athens", de: "Athen", sr: "Atina" }, flag: "🇬🇷" },
+            "HU": { en: "Hungary", de: "Ungarn", sr: "Mađarska", cap: { en: "Budapest", de: "Budapest", sr: "Budimpešta" }, flag: "🇭🇺" },
+            "IS": { en: "Iceland", de: "Island", sr: "Island", cap: { en: "Reykjavik", de: "Reykjavík", sr: "Rejkjavik" }, flag: "🇮🇸" },
+            "IE": { en: "Ireland", de: "Irland", sr: "Irska", cap: { en: "Dublin", de: "Dublin", sr: "Dablin" }, flag: "🇮🇪" },
+            "IT": { en: "Italy", de: "Italien", sr: "Italija", cap: { en: "Rome", de: "Rom", sr: "Rim" }, flag: "🇮🇹" },
+            "XK": { en: "Kosovo", de: "Kosovo", sr: "Kosovo", cap: { en: "Pristina", de: "Pristina", sr: "Priština" }, flag: "🇽🇰" },
+            "LV": { en: "Latvia", de: "Lettland", sr: "Letonija", cap: { en: "Riga", de: "Riga", sr: "Riga" }, flag: "🇱🇻" },
+//            "LI": { en: "Liechtenstein", de: "Liechtenstein", sr: "Lihtenštajn", cap: { en: "Vaduz", de: "Vaduz", sr: "Vaduc" }, flag: "🇱🇮" },
+            "LT": { en: "Lithuania", de: "Litauen", sr: "Litvanija", cap: { en: "Vilnius", de: "Vilnius", sr: "Vilnjus" }, flag: "🇱🇹" },
+//            "LU": { en: "Luxembourg", de: "Luxemburg", sr: "Luksemburg", cap: { en: "Luxembourg", de: "Luxemburg", sr: "Luksemburg" }, flag: "🇱🇺" },
+//            "MT": { en: "Malta", de: "Malta", sr: "Malta", cap: { en: "Valletta", de: "Valletta", sr: "Valeta" }, flag: "🇲🇹" },
+            "MD": { en: "Moldova", de: "Moldau", sr: "Moldavija", cap: { en: "Chisinau", de: "Chișinău", sr: "Kišinjev" }, flag: "🇲🇩" },
+//            "MC": { en: "Monaco", de: "Monaco", sr: "Monako", cap: { en: "Monaco", de: "Monaco", sr: "Monako" }, flag: "🇲🇨" },
+            "ME": { en: "Montenegro", de: "Montenegro", sr: "Crna Gora", cap: { en: "Podgorica", de: "Podgorica", sr: "Podgorica" }, flag: "🇲🇪" },
+            "NL": { en: "Netherlands", de: "Niederlande", sr: "Holandija", cap: { en: "Amsterdam", de: "Amsterdam", sr: "Amsterdam" }, flag: "🇳🇱" },
+            "MK": { en: "North Macedonia", de: "Nordmazedonien", sr: "Severna Makedonija", cap: { en: "Skopje", de: "Skopje", sr: "Skoplje" }, flag: "🇲🇰" },
+            "NO": { en: "Norway", de: "Norwegen", sr: "Norveška", cap: { en: "Oslo", de: "Oslo", sr: "Oslo" }, flag: "🇳🇴" },
+            "PL": { en: "Poland", de: "Polen", sr: "Poljska", cap: { en: "Warsaw", de: "Warschau", sr: "Varšava" }, flag: "🇵🇱" },
+            "PT": { en: "Portugal", de: "Portugal", sr: "Portugalija", cap: { en: "Lisbon", de: "Lissabon", sr: "Lisabon" }, flag: "🇵🇹" },
+            "RO": { en: "Romania", de: "Rumänien", sr: "Rumunija", cap: { en: "Bucharest", de: "Bukarest", sr: "Bukurešt" }, flag: "🇷🇴" },
+            "RS": { en: "Serbia", de: "Serbien", sr: "Srbija", cap: { en: "Belgrade", de: "Belgrad", sr: "Beograd" }, flag: "🇷🇸" },
+            "SK": { en: "Slovakia", de: "Slowakei", sr: "Slovačka", cap: { en: "Bratislava", de: "Bratislava", sr: "Bratislava" }, flag: "🇸🇰" },
+            "SI": { en: "Slovenia", de: "Slowenien", sr: "Slovenija", cap: { en: "Ljubljana", de: "Ljubljana", sr: "Ljubljana" }, flag: "🇸🇮" },
+            "ES": { en: "Spain", de: "Spanien", sr: "Španija", cap: { en: "Madrid", de: "Madrid", sr: "Madrid" }, flag: "🇪🇸" },
+            "SE": { en: "Sweden", de: "Schweden", sr: "Švedska", cap: { en: "Stockholm", de: "Stockholm", sr: "Stokholm" }, flag: "🇸🇪" },
+            "CH": { en: "Switzerland", de: "Schweiz", sr: "Švajcarska", cap: { en: "Bern", de: "Bern", sr: "Bern" }, flag: "🇨🇭" },
+            "UA": { en: "Ukraine", de: "Ukraine", sr: "Ukrajina", cap: { en: "Kyiv", de: "Kiew", sr: "Kijev" }, flag: "🇺🇦" },
+            "GB": { en: "United Kingdom", de: "Vereinigtes Königreich", sr: "Ujedinjeno Kraljevstvo", cap: { en: "London", de: "London", sr: "London" }, flag: "🇬🇧" },
+            "TR": { en: "Turkey", de: "Türkei", sr: "Turska", cap: { en: "Ankara", de: "Ankara", sr: "Ankara" }, flag: "🇹🇷" },
+            "GE": { en: "Georgia", de: "Georgien", sr: "Gruzija", cap: { en: "Tbilisi", de: "Tiflis", sr: "Tbilisi" }, flag: "🇬🇪" },
+//            "AZ": { en: "Azerbaijan", de: "Aserbaidschan", sr: "Azerbejdžan", cap: { en: "Baku", de: "Baku", sr: "Baku" }, flag: "🇦🇿" },
+            "AM": { en: "Armenia", de: "Armenien", sr: "Jermenija", cap: { en: "Yerevan", de: "Jerewan", sr: "Jerevan" }, flag: "🇦🇲" }
         }
-    ]
-}
-];
+    },
+    switzerland: {
+        svg: 'ch.svg',
+        items: {
+            "CHZH": { en: "Zurich", de: "Zürich", sr: "Cirih", cap: { en: "Zurich", de: "Zürich", sr: "Cirih" }, flag: "🇨🇭" },
+            "CHBE": { en: "Bern", de: "Bern", sr: "Bern", cap: { en: "Bern", de: "Bern", sr: "Bern" }, flag: "🇨🇭" },
+            "CHLU": { en: "Lucerne", de: "Luzern", sr: "Lucern", cap: { en: "Lucerne", de: "Luzern", sr: "Lucern" }, flag: "🇨🇭" },
+            "CHUR": { en: "Uri", de: "Uri", sr: "Uri", cap: { en: "Altdorf", de: "Altdorf", sr: "Altdorf" }, flag: "🇨🇭" },
+            "CHSZ": { en: "Schwyz", de: "Schwyz", sr: "Švic", cap: { en: "Schwyz", de: "Schwyz", sr: "Švic" }, flag: "🇨🇭" },
+            "CHOW": { en: "Obwalden", de: "Obwalden", sr: "Obvalden", cap: { en: "Sarnen", de: "Sarnen", sr: "Sarnen" }, flag: "🇨🇭" },
+            "CHNW": { en: "Nidwalden", de: "Nidwalden", sr: "Nidvalden", cap: { en: "Stans", de: "Stans", sr: "Stans" }, flag: "🇨🇭" },
+            "CHGL": { en: "Glarus", de: "Glarus", sr: "Glarus", cap: { en: "Glarus", de: "Glarus", sr: "Glarus" }, flag: "🇨🇭" },
+            "CHZG": { en: "Zug", de: "Zug", sr: "Cug", cap: { en: "Zug", de: "Zug", sr: "Cug" }, flag: "🇨🇭" },
+            "CHFR": { en: "Fribourg", de: "Freiburg", sr: "Friburg", cap: { en: "Fribourg", de: "Freiburg", sr: "Friburg" }, flag: "🇨🇭" },
+            "CHSO": { en: "Solothurn", de: "Solothurn", sr: "Soloturn", cap: { en: "Solothurn", de: "Solothurn", sr: "Soloturn" }, flag: "🇨🇭" },
+            "CHBS": { en: "Basel-Stadt", de: "Basel-Stadt", sr: "Bazel-grad", cap: { en: "Basel", de: "Basel", sr: "Bazel" }, flag: "🇨🇭" },
+            "CHBL": { en: "Basel-Landschaft", de: "Basel-Landschaft", sr: "Bazel-provincija", cap: { en: "Liestal", de: "Liestal", sr: "Listal" }, flag: "🇨🇭" },
+            "CHSH": { en: "Schaffhausen", de: "Schaffhausen", sr: "Šafhauzen", cap: { en: "Schaffhausen", de: "Schaffhausen", sr: "Šafhauzen" }, flag: "🇨🇭" },
+            "CHAR": { en: "Appenzell Ausserrhoden", de: "Appenzell Ausserrhoden", sr: "Apencel Auseroden", cap: { en: "Herisau", de: "Herisau", sr: "Herisau" }, flag: "🇨🇭" },
+            "CHAI": { en: "Appenzell Innerrhoden", de: "Appenzell Innerrhoden", sr: "Apencel Ineroden", cap: { en: "Appenzell", de: "Appenzell", sr: "Apencel" }, flag: "🇨🇭" },
+            "CHSG": { en: "St. Gallen", de: "St. Gallen", sr: "Sent Galen", cap: { en: "St. Gallen", de: "St. Gallen", sr: "Sent Galen" }, flag: "🇨🇭" },
+            "CHGR": { en: "Graubünden", de: "Graubünden", sr: "Graubinden", cap: { en: "Chur", de: "Chur", sr: "Kur" }, flag: "🇨🇭" },
+            "CHAG": { en: "Aargau", de: "Aargau", sr: "Argau", cap: { en: "Aarau", de: "Aarau", sr: "Arau" }, flag: "🇨🇭" },
+            "CHTG": { en: "Thurgau", de: "Thurgau", sr: "Turgau", cap: { en: "Frauenfeld", de: "Frauenfeld", sr: "Frauenfeld" }, flag: "🇨🇭" },
+            "CHTI": { en: "Ticino", de: "Tessin", sr: "Tičino", cap: { en: "Bellinzona", de: "Bellinzona", sr: "Belincona" }, flag: "🇨🇭" },
+            "CHVD": { en: "Vaud", de: "Waadt", sr: "Vo", cap: { en: "Lausanne", de: "Lausanne", sr: "Lozana" }, flag: "🇨🇭" },
+            "CHVS": { en: "Valais", de: "Wallis", sr: "Vale", cap: { en: "Sion", de: "Sitten", sr: "Sion" }, flag: "🇨🇭" },
+            "CHNE": { en: "Neuchâtel", de: "Neuenburg", sr: "Nešatel", cap: { en: "Neuchâtel", de: "Neuenburg", sr: "Nešatel" }, flag: "🇨🇭" },
+            "CHGE": { en: "Geneva", de: "Genf", sr: "Ženeva", cap: { en: "Geneva", de: "Genf", sr: "Ženeva" }, flag: "🇨🇭" },
+            "CHJU": { en: "Jura", de: "Jura", sr: "Jura", cap: { en: "Delémont", de: "Delsberg", sr: "Delemon" }, flag: "🇨🇭" }
+        }
+    }
+};
+
+export const uiStrings = {
+    en: { score: "Score", streak: "Streak", best: "Best", find: "Find the country", capital: "Find the country with capital", skip: "Skip" },
+    de: { score: "Punktzahl", streak: "Serie", best: "Bestleistung", find: "Suche das Land", capital: "Suche das Land mit Hauptort", skip: "Überspringen" },
+    sr: { score: "Poeni", streak: "Niz", best: "Najbolje", find: "Pronađi državu", capital: "Pronađi državu čiji je glavni grad", skip: "Preskoči" }
+};
