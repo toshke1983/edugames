@@ -34,5 +34,29 @@ const APP_DATA = [
                 items: ["Bonjour tout le monde.", "Le chat est noir.", "Il fait beau aujourd'hui."] 
             }
         ]
-    }
+    },
+    {
+    code: "de-DE",
+    name: "Deutsch",
+    datasets: [
+        { 
+            name: "Tiere und Natur", 
+            items: [
+                "Der Hund spielt im Garten.", 
+                "Die Katze schläft auf dem Sofa.", 
+                "Der Vogel singt ein schönes Lied.",
+                "Der Elefant ist sehr groß."
+            ] 
+        },
+        { 
+            name: "Schule und Alltag", 
+            items: [
+                "Ich gehe gerne in die Schule.", 
+                "Das Wetter ist heute sehr schön.", 
+                "Wir lernen heute lesen und schreiben.",
+                "In der Pause spielen wir Fußball."
+            ] 
+        }
+    ]
+}
 ];
