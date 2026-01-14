@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids Dictation Partner</title>
+    <script src="data.js"></script>
+    <style>
+        :root { --primary: #0284c7; --primary-dark: #0369a1; --accent: #7dd3fc; --success: #16a34a; --danger: #ef4444; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f9ff; display: flex; justify-content: center; padding: 20px; color: #1e293b; }
+        .card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); width: 100%; max-width: 500px; position: relative; }
+        h1 { color: var(--primary); text-align: center; margin-top: 0; }
+        .hidden { display: none; }
+        .space-y { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+        select, textarea, button { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 16px; box-sizing: border-box; }
+        textarea { resize: vertical; min-height: 80px; }
+        
+        /* Buttons */
+        button { background: var(--primary); color: white; border: none; cursor: pointer; font-weight: bold; transition: background 0.2s; margin-bottom: 8px; }
+        button:hover { background: var(--primary-dark); }
+        button.secondary { background: var(--accent); color: var(--primary-dark); }
+        button.home-btn { background: #f1f5f9; color: #64748b; font-size: 0.8rem; padding: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
+        button.home-btn:hover { background: #e2e8f0; color: #475569; }
+        
+        .score-box { text-align: center; margin-top: 15px; padding: 15px; border-radius: 8px; font-size: 1.2rem; font-weight: 800; border: 2px solid transparent; }
+        .solution { background: #fffbeb; padding: 15px; border-left: 4px solid #facc15; margin-top: 15px; border-radius: 4px; }
+        .progress-text { text-align: center; font-size: 0.8rem; color: #64748b; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>🎧 Dictation Fun</h1>
+
+    <div id="setup-screen">
+        <div class="space-y">
+            <label>1. Select Language</label>
+            <select id="lang-select"></select>
+        </div>
+        <div class="space-y">
+            <label>2. Select Dataset</label>
+            <select id="data-select"></select>
+        </div>
+        <button onclick="startApp()">Start Learning! 🚀</button>
+    </div>
+
+    <div id="exercise-screen" class="hidden">
+        <button class="home-btn" onclick="goHome()">🏠 Change Language / Dataset</button>
+        
+        <button class="secondary" onclick="speak()">🔊 Listen to Sentence</button>
+        
+        <div class="space-y">
+            <label>Type what you hear:</label>
+            <textarea id="user-input" placeholder="Enter text here..."></textarea>
+        </div>
+        
+        <button onclick="checkAnswer()">Show Solution & Score</button>
+        
+        <div id="result-area" class="hidden">
+            <div id="score-display" class="score-box"></div>
+            <div class="solution">
+                <strong>Correct Answer:</strong>
+                <p id="correct-text" style="margin: 5px 0 0 0;"></p>
+            </div>
+            <button onclick="nextSentence()" style="background: var(--success); margin-top: 15px;">Next Sentence ➡️</button>
+        </div>
+        <div id="progress" class="progress-text"></div>
+    </div>
+</div>
+
+<script>
+    let currentLangCode = "";
+    let currentItems = [];
+    let currentIndex = -1;
+
+    window.onload = () => {
+        if (typeof APP_DATA === 'undefined') {
+            alert("Error: data.js not found or APP_DATA is missing.");
+            return;
+        }
+        const langSelect = document.getElementById('lang-select');
+        APP_DATA.forEach((lang, idx) => {
+            langSelect.add(new Option(lang.name, idx));
+        });
+        updateDatasetDropdown();
+    };
+
+    document.getElementById('lang-select').onchange = updateDatasetDropdown;
+
+    function updateDatasetDropdown() {
+        const langIdx = document.getElementById('lang-select').value;
+        const dataSelect = document.getElementById('data-select');
+        dataSelect.innerHTML = '<option value="random">🎲 Random Mix</option>';
+        APP_DATA[langIdx].datasets.forEach((ds, idx) => {
+            dataSelect.add(new Option(ds.name, idx));
+        });
+    }
+
+    function startApp() {
+        const langIdx = document.getElementById('lang-select').value;
+        const dataIdx = document.getElementById('data-select').value;
+        currentLangCode = APP_DATA[langIdx].code;
+        
+        currentItems = dataIdx === "random" 
+            ? APP_DATA[langIdx].datasets.flatMap(d => d.items)
+            : [...APP_DATA[langIdx].datasets[dataIdx].items];
+        
+        currentItems.sort(() => Math.random() - 0.5);
+        currentIndex = -1;
+
+        document.getElementById('setup-screen').classList.add('hidden');
+        document.getElementById('exercise-screen').classList.remove('hidden');
+        nextSentence();
+    }
+
+    // New Home Function
+    function goHome() {
+        window.speechSynthesis.cancel(); // Stop any reading
+        if (confirm("Go back to the start? Your current progress will be lost.")) {
+            document.getElementById('exercise-screen').classList.add('hidden');
+            document.getElementById('setup-screen').classList.remove('hidden');
+            document.getElementById('result-area').classList.add('hidden');
+            document.getElementById('user-input').value = "";
+        }
+    }
+
+    function speak() {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(currentItems[currentIndex]);
+        utterance.lang = currentLangCode;
+        utterance.rate = 0.85;
+        window.speechSynthesis.speak(utterance);
+    }
+
+    function nextSentence() {
+        currentIndex++;
+        if(currentIndex >= currentItems.length) {
+            alert("Great job! You finished this set.");
+            location.reload();
+            return;
+        }
+        document.getElementById('user-input').value = "";
+        document.getElementById('result-area').classList.add('hidden');
+        document.getElementById('progress').innerText = `Sentence ${currentIndex + 1} of ${currentItems.length}`;
+        speak();
+    }
+
+    // Scoring logic (Levenshtein)
+    function getEditDistance(a, b) {
+        const tmp = [];
+        for (let i = 0; i <= a.length; i++) { tmp[i] = [i]; }
+        for (let j = 0; j <= b.length; j++) { tmp[0][j] = j; }
+        for (let i = 1; i <= a.length; i++) {
+            for (let j = 1; j <= b.length; j++) {
+                tmp[i][j] = b.charAt(j-1) === a.charAt(i-1) 
+                    ? tmp[i-1][j-1] 
+                    : Math.min(tmp[i-1][j-1]+1, tmp[i][j-1]+1, tmp[i-1][j]+1);
+            }
+        }
+        return tmp[a.length][b.length];
+    }
+
+function checkAnswer() {
+    const rawTarget = currentItems[currentIndex];
+    const rawUser = document.getElementById('user-input').value;
+    
+    // 1. Cleaning
+    const clean = (str) => str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").trim();
+    const targetWords = clean(rawTarget).split(/\s+/);
+    const userWords = clean(rawUser).split(/\s+/);
+    
+    document.getElementById('correct-text').innerText = rawTarget;
+    document.getElementById('result-area').classList.remove('hidden');
+    const scoreBox = document.getElementById('score-display');
+
+    // Handle Notebook Mode
+    if (!rawUser.trim()) {
+        scoreBox.innerText = "Check your notebook! 📝";
+        scoreBox.style.cssText = "background: #f1f5f9; border-color: #cbd5e1; color: #475569;";
+        return;
+    }
+
+    let totalScore = 0;
+    const STRICTNESS_FACTOR = 2.0; // Higher = harsher. 1.0 was the old version.
+    
+    // We iterate through the maximum number of words to penalize extra words too
+    const maxLength = Math.max(targetWords.length, userWords.length);
+
+    for (let i = 0; i < maxLength; i++) {
+        const tW = targetWords[i] || "";
+        const uW = userWords[i] || "";
+
+        // If one word is missing entirely (extra word or missing word)
+        if (tW === "" || uW === "") {
+            totalScore += 0; 
+            continue;
+        }
+
+        const dist = getEditDistance(tW, uW);
+        
+        // STRICTOR FORMULA: 
+        // We multiply the distance by our strictness factor.
+        // If dist is 1 and word length is 3, old score was 6.6. New score is 3.3.
+        let wordScore = 10 * (1 - (dist * STRICTNESS_FACTOR / tW.length));
+        
+        // Ensure word score doesn't go below 0
+        totalScore += Math.max(0, wordScore);
+    }
+
+    // Average based on the longest version (penalizes for missing/extra words)
+    const finalScore = (totalScore / maxLength).toFixed(1);
+    
+    scoreBox.innerText = `Score: ${finalScore} / 10`;
+    
+    // Color thresholds
+    if (finalScore >= 9.5) {
+        scoreBox.style.cssText = "background: #dcfce7; border-color: #22c55e; color: #166534;"; // Perfect/Great
+    } else if (finalScore >= 7.5) {
+        scoreBox.style.cssText = "background: #fef9c3; border-color: #eab308; color: #854d0e;"; // Okay
+    } else {
+        scoreBox.style.cssText = "background: #fee2e2; border-color: #ef4444; color: #991b1b;"; // Needs work
+    }
+}
+</script>
+</body>
+</html>
