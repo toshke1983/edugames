@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kids Dictation Partner</title>
-    <script src="data.js"></script>
+    <script src="dictation_data.js"></script>
     <style>
         :root { --primary: #0284c7; --primary-dark: #0369a1; --accent: #7dd3fc; --success: #16a34a; --danger: #ef4444; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f9ff; display: flex; justify-content: center; padding: 20px; color: #1e293b; }
@@ -76,7 +76,7 @@
 
     window.onload = () => {
         if (typeof APP_DATA === 'undefined') {
-            alert("Error: data.js not found or APP_DATA is missing.");
+            alert("Error: dictation_data.js not found or APP_DATA is missing.");
             return;
         }
         const langSelect = document.getElementById('lang-select');
