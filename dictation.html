@@ -65,6 +65,7 @@
             </div>
             <button onclick="nextSentence()" style="background: var(--success); margin-top: 15px;">Next Sentence ➡️</button>
         </div>
+        <div id="stats-bar" class="progress-text" style="font-weight: bold; color: var(--primary); margin-top: 20px;"></div>
         <div id="progress" class="progress-text"></div>
     </div>
 </div>
@@ -73,6 +74,12 @@
     let currentLangCode = "";
     let currentItems = [];
     let currentIndex = -1;
+    
+    // --- NEW TRACKING VARIABLES ---
+    let sessionTotalScore = 0;
+    let sentencesCheckedCount = 0;
+    let flawlessCount = 0;
+    let hasCheckedCurrent = false; // Prevents double-counting if they click "Check" twice
 
     window.onload = () => {
         if (typeof APP_DATA === 'undefined') {
@@ -108,10 +115,16 @@
         
         currentItems.sort(() => Math.random() - 0.5);
         currentIndex = -1;
-
+     
+	// --- RESET STATS FOR NEW SESSION ---
+        sessionTotalScore = 0;
+        sentencesCheckedCount = 0;
+        flawlessCount = 0;
+        updateStatsDisplay();
+        
         document.getElementById('setup-screen').classList.add('hidden');
         document.getElementById('exercise-screen').classList.remove('hidden');
-        nextSentence();
+        nextSentence();        
     }
 
     // New Home Function
@@ -135,6 +148,7 @@
 
     function nextSentence() {
         currentIndex++;
+	hasCheckedCurrent = false; // Allow tracking for the new sentence
         if(currentIndex >= currentItems.length) {
             alert("Great job! You finished this set.");
             location.reload();
@@ -211,6 +225,21 @@ function checkAnswer() {
     // Average based on the longest version (penalizes for missing/extra words)
     const finalScore = (totalScore / maxLength).toFixed(1);
     
+    if (rawUser.trim()) {
+        // Only count the score the FIRST time they check this specific sentence
+        if (!hasCheckedCurrent) {
+            sentencesCheckedCount++;
+            sessionTotalScore += parseFloat(finalScore);
+            
+            if (parseFloat(finalScore) >= 10.0) {
+                flawlessCount++;
+            }
+            
+            hasCheckedCurrent = true;
+            updateStatsDisplay();
+        }
+    }
+    
     scoreBox.innerText = `Score: ${finalScore} / 10`;
     
     // Color thresholds
@@ -222,6 +251,15 @@ function checkAnswer() {
         scoreBox.style.cssText = "background: #fee2e2; border-color: #ef4444; color: #991b1b;"; // Needs work
     }
 }
+
+    function updateStatsDisplay() {
+        const avg = sentencesCheckedCount > 0 
+            ? (sessionTotalScore / sentencesCheckedCount).toFixed(1) 
+            : "0.0";
+            
+        document.getElementById('stats-bar').innerText = 
+            `⭐ Flawless: ${flawlessCount}  |  📈 Session Avg: ${avg}/10`;
+    }
 </script>
 </body>
 </html>
