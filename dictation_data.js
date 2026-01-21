@@ -351,7 +351,7 @@ const APP_DATA = [
         ]
     },
     {
-        code: "en-US",
+        code: "en-GB",
         name: "English 🇬🇧",
         datasets: [
             { 
