@@ -43,7 +43,15 @@
             <select id="data-select"></select>
         </div>
         <button onclick="startApp()">Start Learning! 🚀</button>
-		<button onclick="testVoices()">Debug Voices</button>
+		<button onclick="showVoices()">🔍 Show available voices</button>
+		<pre id="voicesOutput" style="
+		  text-align:left;
+		  font-size:12px;
+		  max-height:300px;
+		  overflow:auto;
+		  background:#f4f4f4;
+		  padding:10px;
+		"></pre>
     </div>
 
     <div id="exercise-screen" class="hidden">
@@ -177,14 +185,22 @@
     }
 
 	// Debugging if the loal voices are available.
-	function testVoices() {
+	function showVoices() {
+	  const out = document.getElementById("voicesOutput");
+	
 	  const voices = speechSynthesis.getVoices();
-	  console.table(voices.map(v => ({
-	    name: v.name,
-	    lang: v.lang,
-	    local: v.localService
-	  })));
+	  if (!voices.length) {
+	    out.textContent = "⚠️ No voices loaded yet.\nTry again in a moment.";
+	    return;
+	  }
+	
+	  out.textContent = voices
+	    .map(v =>
+	      `${v.lang.padEnd(7)} | ${v.localService ? "LOCAL" : "REMOTE"} | ${v.name}`
+	    )
+	    .join("\n");
 	}
+
 
 
 function checkAnswer() {
