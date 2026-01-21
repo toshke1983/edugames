@@ -43,6 +43,7 @@
             <select id="data-select"></select>
         </div>
         <button onclick="startApp()">Start Learning! 🚀</button>
+		<button onclick="testVoices()">Debug Voices</button>
     </div>
 
     <div id="exercise-screen" class="hidden">
@@ -174,6 +175,17 @@
         }
         return tmp[a.length][b.length];
     }
+
+	// Debugging if the loal voices are available.
+	function testVoices() {
+	  const voices = speechSynthesis.getVoices();
+	  console.table(voices.map(v => ({
+	    name: v.name,
+	    lang: v.lang,
+	    local: v.localService
+	  })));
+	}
+
 
 function checkAnswer() {
     const rawTarget = currentItems[currentIndex];
