@@ -3,7 +3,7 @@
 const APP_DATA = [
     {
     code: "de-DE",
-    name: "Deutsch 🇨🇭",
+    name: "Deutsch",
     datasets: [
         {
             "name": "Wörter 17 bis 32",
@@ -352,7 +352,7 @@ const APP_DATA = [
     },
     {
         code: "en-GB",
-        name: "English 🇬🇧",
+        name: "English",
         datasets: [
             { 
                 name: "Animals", 
@@ -366,7 +366,7 @@ const APP_DATA = [
     },
     {
         code: "fr-FR",
-        name: "Français 🇫🇷",
+        name: "Français",
         datasets: [
             { 
                 name: "Base", 
