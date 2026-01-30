@@ -27,6 +27,29 @@ const APP_DATA = [
             ]
         },
         {
+            "name": "Wörter 33 bis 50",
+            "items": [
+                "Ich muss mein Zimmer noch aufräumen.",
+                "Wir haben heute viel gearbeitet.",
+                "Margit band dem Kind die Schuhe zu.",
+                "Hubert schaute ihn ohne Furcht an.",
+                "Alles hat ein Ende, nur die Wurst hat zwei.",
+                "Der Baum fällt gleich um.",
+                "Sie hat uns ein bisschen geärgert.",
+                "Alexander spielt mit seiner Eisenbahn.",
+                "Unser Lehrer ist sehr nett.",
+                "Sven schloss schnell die Tür.",
+                "Ulla ist jetzt meine Freundin.",
+                "Ich hatte es ganz vergessen.",
+                "Er kommt nicht mit.",
+                "Wir bleiben hier.",
+                "Er rennt so schnell er kann.",
+                "Sie fährt gleich nach Hause.",
+                "Das lassen wir uns nicht gefallen.",
+                "Die Hütte sieht ziemlich alt aus."
+            ]
+        },
+        {
             name: "Fehlerwörter 300",
             items: [
                 "Wie gross ist er?",
