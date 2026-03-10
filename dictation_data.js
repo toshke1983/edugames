@@ -50,6 +50,22 @@ const APP_DATA = [
             ]
         },
         {
+            "name": "Wörter 60 bis 70",
+            "items": [
+                "Katja rief mir etwas zu.",
+                "Sie lachten ihn aus.",
+                "Tobias kam uns zur Hilfe.",
+                "Fabian geht einkaufen.",
+                "Er kauft sich ein Radio, wenn er wieder Geld hat.",
+                "Wir haben alles auf einmal erledigt.",
+                "Die Grube war voll Wasser.",
+                "Sie bog in die nächste Strasse ein.",
+                "Dennis nimmt sich ein paar Kekse.",
+                "Von aussen sah der Apfel sehr lecker aus.",
+                "Es wird immer schwieriger.",
+            ]
+        },
+        {
             name: "Fehlerwörter 300",
             items: [
                 "Wie gross ist er?",
