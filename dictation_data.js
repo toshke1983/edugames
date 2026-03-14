@@ -66,6 +66,22 @@ const APP_DATA = [
             ]
         },
         {
+            "name": "Wörter 70 bis 80",
+            "items": [
+                "Es wird immer schwieriger.",
+                "Sandra hat es uns nämlich nicht gesagt.",
+                "Alle wissen es.",
+                "Jeder kriegt ein Stück Kuchen.",
+                "Jasmin sah mich lachend an.",
+                "Konnte man ihnen nicht helfen?",
+                "Jeden Tag musste er früh aufstehen.",
+                "Er hat immer die Wahrheit gesagt.",
+                "Sie haben keine Kraft mehr.",
+                "Warum sagt er so etwas?",
+                "Ich kann Laura gut leiden.",
+            ]
+        },
+        {
             name: "Fehlerwörter 300",
             items: [
                 "Wie gross ist er?",
