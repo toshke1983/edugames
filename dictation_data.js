@@ -416,7 +416,19 @@ const APP_DATA = [
             { 
                 name: "Nature", 
                 items: ["The sun is very bright.", "The grass is green.", "Rain falls from clouds."] 
-            }
+            },
+            name: "Y as a Vowel",
+            items: [
+                "We still see each other every now and then.",
+                "The jury was ready to listen to the case.",
+                "I feel a little funny.",
+                "She has lots of energy.",
+                "The test was easy.",
+                "What type of book do you like to read?",
+                "We saw a nest with a tiny baby bird.",
+                "I can carry the heavy box myself.",
+                "I am very happy for him."
+            ]
         ]
     },
     {
