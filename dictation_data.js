@@ -82,6 +82,22 @@ const APP_DATA = [
             ]
         },
         {
+            "name": "Wörter 80 bis 90",
+            "items": [
+                "Ich kann Laura gut leiden.",
+                "Manuel stellt den alten Schrank in den Keller.",
+                "Ich wünsche mir ein blaues Fahrrad.",
+                "Tobias ist wieder ganz gesund.",
+                "Sie sahen am Abend fern.",
+                "Er bekam viele Geschenke.",
+                "Anika fuhr allein nach Köln.",
+                "Er fiel die Treppe hinunter.",
+                "Malte isst sich satt.",
+                "Er ging zum Fussballplatz.",
+                "Der Indianer schlich sich ganz nah an seine Feinde heran.",
+            ]
+        },        
+        {
             name: "Fehlerwörter 300",
             items: [
                 "Wie gross ist er?",
