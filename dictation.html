@@ -102,6 +102,35 @@
         updateDatasetDropdown();
     };
 
+	let availableVoices = [];
+
+	// Load voices when the browser triggers the event
+	window.speechSynthesis.onvoiceschanged = () => {
+	    availableVoices = window.speechSynthesis.getVoices();
+	};
+
+	function getBestVoice(langCode) {
+	    // Failsafe in case onvoiceschanged hasn't fired yet
+	    if (!availableVoices.length) {
+	        availableVoices = window.speechSynthesis.getVoices();
+	    }
+	
+	    // Filter down to voices that match the language (e.g., 'en' or 'de')
+	    let matchedVoices = availableVoices.filter(v => 
+	        v.lang.toLowerCase().startsWith(langCode.toLowerCase())
+	    );
+	
+	    if (matchedVoices.length === 0) return null;
+	
+	    // Look specifically for iOS premium/enhanced downloaded voices
+	    let premiumVoice = matchedVoices.find(v => 
+	        v.name.includes('Premium') || v.name.includes('Enhanced')
+	    );
+	
+	    // Return the premium voice if found, otherwise fallback to the first match
+	    return premiumVoice ? premiumVoice : matchedVoices[0];
+	}
+
     document.getElementById('lang-select').onchange = updateDatasetDropdown;
 
     function updateDatasetDropdown() {
@@ -148,16 +177,25 @@
     }
 
     function speak() {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(currentItems[currentIndex]);
-        utterance.lang = currentLangCode;
-        utterance.rate = 0.85;
-        window.speechSynthesis.speak(utterance);
+		window.speechSynthesis.cancel();
+	    const utterance = new SpeechSynthesisUtterance(currentItems[currentIndex]);
+	    
+	    // Explicitly grab and assign the best voice object
+	    const bestVoice = getBestVoice(currentLangCode);
+	    if (bestVoice) {
+	        utterance.voice = bestVoice;
+	    } else {
+	        // Fallback to just the language code if no voice object is found
+	        utterance.lang = currentLangCode; 
+	    }
+	
+	    utterance.rate = 0.85;
+	    window.speechSynthesis.speak(utterance);
     }
 
     function nextSentence() {
         currentIndex++;
-	hasCheckedCurrent = false; // Allow tracking for the new sentence
+		hasCheckedCurrent = false; // Allow tracking for the new sentence
         if(currentIndex >= currentItems.length) {
             alert("Great job! You finished this set.");
             location.reload();
