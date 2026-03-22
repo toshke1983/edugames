@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kids Dictation Partner</title>
-    <script src="dictation_data.js"></script>
+    <script src="dictation_data_with_audio.js"></script>
     <style>
         :root { --primary: #0284c7; --primary-dark: #0369a1; --accent: #7dd3fc; --success: #16a34a; --danger: #ef4444; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f9ff; display: flex; justify-content: center; padding: 20px; color: #1e293b; }
@@ -83,6 +83,7 @@
     let currentLangCode = "";
     let currentItems = [];
     let currentIndex = -1;
+    let currentAudio = null;
     
     // --- NEW TRACKING VARIABLES ---
     let sessionTotalScore = 0;
@@ -139,6 +140,7 @@
     // New Home Function
     function goHome() {
         window.speechSynthesis.cancel(); // Stop any reading
+        if (currentAudio) currentAudio.pause();
         if (confirm("Go back to the start? Your current progress will be lost.")) {
             document.getElementById('exercise-screen').classList.add('hidden');
             document.getElementById('setup-screen').classList.remove('hidden');
@@ -148,8 +150,31 @@
     }
 
     function speak() {
+        // Stop any currently playing audio or TTS
         window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(currentItems[currentIndex]);
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+        }
+
+        const currentItem = currentItems[currentIndex];
+        
+        // Attempt to play the pre-generated MP3
+        if (currentItem.audio_file) {
+            currentAudio = new Audio(currentItem.audio_file);
+            
+            currentAudio.play().catch(error => {
+                console.warn("⚠️ MP3 missing or failed to play. Falling back to TTS.", error);
+                fallbackTTS(currentItem.text);
+            });
+        } else {
+            // Failsafe if the audio_file property doesn't exist
+            fallbackTTS(currentItem.text);
+        }
+    }
+
+    function fallbackTTS(textToSpeak) {
+        const utterance = new SpeechSynthesisUtterance(textToSpeak);
         utterance.lang = currentLangCode;
         utterance.rate = 0.85;
         window.speechSynthesis.speak(utterance);
@@ -157,7 +182,7 @@
 
     function nextSentence() {
         currentIndex++;
-	hasCheckedCurrent = false; // Allow tracking for the new sentence
+	      hasCheckedCurrent = false; // Allow tracking for the new sentence
         if(currentIndex >= currentItems.length) {
             alert("Great job! You finished this set.");
             location.reload();
@@ -204,7 +229,7 @@
 
 
 function checkAnswer() {
-    const rawTarget = currentItems[currentIndex];
+    const rawTarget = currentItems[currentIndex].text;
     const rawUser = document.getElementById('user-input').value;
     
     // 1. Cleaning
