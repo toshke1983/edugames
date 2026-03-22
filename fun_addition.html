@@ -347,7 +347,7 @@
     function checkAnswer(val) {
         const feedback = document.getElementById('feedback');
         const slot = document.getElementById('answer-slot');
-        const buttons = document.querySelectorAll('.num-btn');
+        buttons = document.querySelectorAll('.num-btn');
 
         buttons.forEach(btn => btn.disabled = true);
 
