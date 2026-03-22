@@ -1,328 +1,572 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kids Dictation Partner</title>
-    <script src="dictation_data.js"></script>
+    <title>Uči Engleski</title>
+    <!-- <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🇬🇧</text></svg>"> 
+    -->
+    <link rel="icon" type="image/png" href="https://img.icons8.com/color/96/great-britain.png">
+    
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/180/great-britain.png">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
     <style>
-        :root { --primary: #0284c7; --primary-dark: #0369a1; --accent: #7dd3fc; --success: #16a34a; --danger: #ef4444; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f9ff; display: flex; justify-content: center; padding: 20px; color: #1e293b; }
-        .card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); width: 100%; max-width: 500px; position: relative; }
-        h1 { color: var(--primary); text-align: center; margin-top: 0; }
-        .hidden { display: none; }
-        .space-y { margin-bottom: 1.5rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
-        select, textarea, button { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 16px; box-sizing: border-box; }
-        textarea { resize: vertical; min-height: 80px; }
+        :root {
+            --bg-color: #f0f2f5;
+            --card-back: #4a90e2; 
+            --card-front: #ffffff;
+            --text-color: #2c3e50;
+            --match-color: #2ecc71;
+            --error-color: #e74c3c;
+            --quiz-btn-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 { color: #333; margin-bottom: 5px; }
         
-        /* Buttons */
-        button { background: var(--primary); color: white; border: none; cursor: pointer; font-weight: bold; transition: background 0.2s; margin-bottom: 8px; }
-        button:hover { background: var(--primary-dark); }
-        button.secondary { background: var(--accent); color: var(--primary-dark); }
-        button.home-btn { background: #f1f5f9; color: #64748b; font-size: 0.8rem; padding: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
-        button.home-btn:hover { background: #e2e8f0; color: #475569; }
+        /* --- START SCREEN --- */
+        #startScreen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255, 0.98);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .btn-mode {
+            padding: 20px;
+            font-size: 1.3rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-easy { background-color: #3498db; } /* Blue */
+        .btn-hard { background-color: #9b59b6; } /* Purple */
+        .btn-quiz { background-color: #e67e22; } /* Orange */
+
+        .btn-mode:active { transform: scale(0.95); }
+
+        /* --- SHARED UI --- */
+        .status-bar {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            color: #444;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .btn-back {
+            margin-top: 30px;
+            padding: 10px 20px;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        /* --- MEMORY GAME STYLES --- */
+        .grid-container {
+            display: none; /* Hidden by default */
+            gap: 10px;
+            width: 100%;
+            max-width: 600px;
+            perspective: 1000px; 
+            margin: 0 auto;
+        }
+        .grid-4x3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-5x6 { grid-template-columns: repeat(5, 1fr); }
+
+        .card {
+            background-color: transparent;
+            aspect-ratio: 3/4;
+            perspective: 1000px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+
+        .card.flipped .card-inner { transform: rotateY(180deg); }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: clamp(0.8rem, 2.5vw, 1.2rem);
+            padding: 5px;
+            box-sizing: border-box; 
+            overflow: hidden;
+            word-wrap: break-word;
+            flex-direction: column;
+        }
+
+        .card-back { background-color: var(--card-back); color: white; font-size: 2rem;}
+        .card-front {
+            background-color: var(--card-front);
+            color: var(--text-color);
+            transform: rotateY(180deg);
+            border: 2px solid #ddd;
+        }
+
+        .card.matched .card-inner .card-front {
+            background-color: var(--match-color);
+            color: white;
+            border-color: var(--match-color);
+        }
         
-        .score-box { text-align: center; margin-top: 15px; padding: 15px; border-radius: 8px; font-size: 1.2rem; font-weight: 800; border: 2px solid transparent; }
-        .solution { background: #fffbeb; padding: 15px; border-left: 4px solid #facc15; margin-top: 15px; border-radius: 4px; }
-        .progress-text { text-align: center; font-size: 0.8rem; color: #64748b; margin-top: 10px; }
+        .speaker-icon { font-size: 0.8rem; color: #3498db; margin-bottom: 2px; }
+        .lang-label { font-size: 0.6rem; color: #999; margin-bottom: 4px; text-transform: uppercase; }
+
+        @media (max-height: 700px) { .grid-5x6 .card { aspect-ratio: 1/1; } }
+
+
+        /* --- NEW QUIZ GAME STYLES --- */
+        #quizContainer {
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            width: 100%;
+            max-width: 500px;
+            gap: 20px;
+        }
+
+        .quiz-question-card {
+            background: white;
+            padding: 40px 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            border-bottom: 5px solid #3498db;
+        }
+
+        .quiz-options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2x2 grid */
+            gap: 15px;
+        }
+
+        .quiz-btn {
+            background: white;
+            border: 2px solid #ddd;
+            padding: 20px 10px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #444;
+            transition: all 0.2s;
+            font-weight: 600;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quiz-btn:active { transform: scale(0.98); }
+        
+        /* Feedback States */
+        .quiz-btn.correct { background-color: var(--match-color); color: white; border-color: var(--match-color); }
+        .quiz-btn.wrong { background-color: var(--error-color); color: white; border-color: var(--error-color); animation: shake 0.4s; }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h1>🎧 Dictation Pro</h1>
+    <div id="startScreen">
+        <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Uči Engleski</h1>
+        <p style="margin-bottom: 30px; font-size: 1.2rem; color: #666;">Izaberi igru / Choose Game</p>
+        
+        <div class="menu-container">
+            <button class="btn-mode btn-easy" onclick="initMemory(6, 'grid-4x3')">
+                Memorija (Lako)<br><span style="font-size:1rem">12 karata</span>
+            </button>
+            
+            <button class="btn-mode btn-hard" onclick="initMemory(15, 'grid-5x6')">
+                Memorija (Teško)<br><span style="font-size:1rem">30 karata</span>
+            </button>
 
-    <div id="setup-screen">
-        <div class="space-y">
-            <label>1. Select Language</label>
-            <select id="lang-select"></select>
+            <button class="btn-mode btn-quiz" onclick="initQuiz()">
+                Kviz (4 Odgovora)<br><span style="font-size:1rem">Pogodi pravu reč</span>
+            </button>
         </div>
-        <div class="space-y">
-            <label>2. Select Dataset</label>
-            <select id="data-select"></select>
-        </div>
-        <button onclick="startApp()">Start Learning! 🚀</button>
-		<button onclick="showVoices()">🔍 Show available voices</button>
-		<pre id="voicesOutput" style="
-		  text-align:left;
-		  font-size:12px;
-		  max-height:300px;
-		  overflow:auto;
-		  background:#f4f4f4;
-		  padding:10px;
-		"></pre>
     </div>
 
-    <div id="exercise-screen" class="hidden">
-        <button class="home-btn" onclick="goHome()">🏠 Change Language / Dataset</button>
-        
-        <button class="secondary" onclick="speak()">🔊 Listen to Sentence</button>
-        
-        <div class="space-y">
-            <label>Type what you hear:</label>
-            <textarea id="user-input" placeholder="Enter text here..."></textarea>
+    <h1 id="gameTitle">Igra</h1>
+    <div class="status-bar" id="statusBar">
         </div>
-        
-        <button onclick="checkAnswer()">Show Solution & Score</button>
-        
-        <div id="result-area" class="hidden">
-            <div id="score-display" class="score-box"></div>
-            <div class="solution">
-                <strong>Correct Answer:</strong>
-                <p id="correct-text" style="margin: 5px 0 0 0;"></p>
+
+    <div class="grid-container" id="gameGrid"></div>
+
+    <div id="quizContainer">
+        <div class="quiz-question-card" id="questionText">
             </div>
-            <button onclick="nextSentence()" style="background: var(--success); margin-top: 15px;">Next Sentence ➡️</button>
-        </div>
-        <div id="stats-bar" class="progress-text" style="font-weight: bold; color: var(--primary); margin-top: 20px;"></div>
-        <div id="progress" class="progress-text"></div>
+        <div class="quiz-options-grid" id="optionsGrid">
+            </div>
     </div>
-</div>
 
-<script>
-    let currentLangCode = "";
-    let currentItems = [];
-    let currentIndex = -1;
-    
-    // --- NEW TRACKING VARIABLES ---
-    let sessionTotalScore = 0;
-    let sentencesCheckedCount = 0;
-    let flawlessCount = 0;
-    let hasCheckedCurrent = false; // Prevents double-counting if they click "Check" twice
+    <button class="btn-back" onclick="location.reload()">Nazad na meni</button>
 
-    window.onload = () => {
-        if (typeof APP_DATA === 'undefined') {
-            alert("Error: dictation_data.js not found or APP_DATA is missing.");
-            return;
-        }
-        const langSelect = document.getElementById('lang-select');
-        APP_DATA.forEach((lang, idx) => {
-            langSelect.add(new Option(lang.name, idx));
-        });
-        updateDatasetDropdown();
-    };
+    <script src="words.js"></script>
 
-	let availableVoices = [];
-
-	// Load voices when the browser triggers the event
-	window.speechSynthesis.onvoiceschanged = () => {
-	    availableVoices = window.speechSynthesis.getVoices();
-	};
-
-	function getBestVoice(langCode) {
-		if (!availableVoices.length) {
-	        availableVoices = window.speechSynthesis.getVoices();
-	    }
-	
-	    // Filter for the correct language
-	    let matchedVoices = availableVoices.filter(v => 
-	        v.lang.toLowerCase().startsWith(langCode.toLowerCase())
-	    );
-	
-	    if (matchedVoices.length === 0) return null;
-	
-	    // First try to find a voice explicitly marked as local/default
-	    let bestLocal = matchedVoices.find(v => v.localService === true);
-	    
-	    // Return the local voice, or just the first match if no local flag is found
-	    return bestLocal ? bestLocal : matchedVoices[0];
-	}
-
-    document.getElementById('lang-select').onchange = updateDatasetDropdown;
-
-    function updateDatasetDropdown() {
-        const langIdx = document.getElementById('lang-select').value;
-        const dataSelect = document.getElementById('data-select');
-        dataSelect.innerHTML = '<option value="random">🎲 Random Mix</option>';
-        APP_DATA[langIdx].datasets.forEach((ds, idx) => {
-            dataSelect.add(new Option(ds.name, idx));
-        });
-    }
-
-    function startApp() {
-        const langIdx = document.getElementById('lang-select').value;
-        const dataIdx = document.getElementById('data-select').value;
-        currentLangCode = APP_DATA[langIdx].code;
+    <script>
+        // --- SHARED VARS ---
+        const startScreen = document.getElementById('startScreen');
+        const statusBar = document.getElementById('statusBar');
+        const gameGrid = document.getElementById('gameGrid');
+        const quizContainer = document.getElementById('quizContainer');
+        const gameTitle = document.getElementById('gameTitle');
         
-        currentItems = dataIdx === "random" 
-            ? APP_DATA[langIdx].datasets.flatMap(d => d.items)
-            : [...APP_DATA[langIdx].datasets[dataIdx].items];
+        // // --- AUDIO ENGINE ---
+        // function speakEnglish(text) {
+        //     if ('speechSynthesis' in window) {
+        //         window.speechSynthesis.cancel();
+        //         const utterance = new SpeechSynthesisUtterance(text);
+        //         utterance.lang = 'en-US'; 
+        //         utterance.rate = 0.9; 
+        //         window.speechSynthesis.speak(utterance);
+        //     }
+        // }
         
-        currentItems.sort(() => Math.random() - 0.5);
-        currentIndex = -1;
-     
-	// --- RESET STATS FOR NEW SESSION ---
-        sessionTotalScore = 0;
-        sentencesCheckedCount = 0;
-        flawlessCount = 0;
-        updateStatsDisplay();
         
-        document.getElementById('setup-screen').classList.add('hidden');
-        document.getElementById('exercise-screen').classList.remove('hidden');
-        nextSentence();        
-    }
+        // --- AUDIO ENGINE v2.0 (Force English Voice) ---
+        
+        // 1. Variable to store the specific English voice
+        let selectedEnglishVoice = null;
 
-    // New Home Function
-    function goHome() {
-        window.speechSynthesis.cancel(); // Stop any reading
-        if (confirm("Go back to the start? Your current progress will be lost.")) {
-            document.getElementById('exercise-screen').classList.add('hidden');
-            document.getElementById('setup-screen').classList.remove('hidden');
-            document.getElementById('result-area').classList.add('hidden');
-            document.getElementById('user-input').value = "";
+        // 2. Function to find the best English voice available
+        function loadVoices() {
+            const voices = window.speechSynthesis.getVoices();
+            
+            // Priority: en-US (American) -> en-GB (British) -> Any English
+            selectedEnglishVoice = voices.find(voice => voice.lang === 'en-US') || 
+                                   voices.find(voice => voice.lang === 'en-GB') || 
+                                   voices.find(voice => voice.lang.startsWith('en'));
         }
-    }
 
-    function speak() {
-		window.speechSynthesis.cancel();
-	    const utterance = new SpeechSynthesisUtterance(currentItems[currentIndex]);
-	    
-	    // Explicitly grab and assign the best voice object
-	    const bestVoice = getBestVoice(currentLangCode);
-	    if (bestVoice) {
-	        utterance.voice = bestVoice;
-	    } else {
-	        // Fallback to just the language code if no voice object is found
-	        utterance.lang = currentLangCode; 
-	    }
-	
-	    utterance.rate = 0.85;
-	    window.speechSynthesis.speak(utterance);
-    }
-
-    function nextSentence() {
-        currentIndex++;
-		hasCheckedCurrent = false; // Allow tracking for the new sentence
-        if(currentIndex >= currentItems.length) {
-            alert("Great job! You finished this set.");
-            location.reload();
-            return;
+        // 3. Trigger voice loading immediately
+        if ('speechSynthesis' in window) {
+            // Chrome/Android needs this event listener to load voices asynchronously
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+            // Call it once immediately for browsers that don't wait (Safari)
+            loadVoices();
         }
-        document.getElementById('user-input').value = "";
-        document.getElementById('result-area').classList.add('hidden');
-        document.getElementById('progress').innerText = `Sentence ${currentIndex + 1} of ${currentItems.length}`;
-        speak();
-    }
 
-    // Scoring logic (Levenshtein)
-    function getEditDistance(a, b) {
-        const tmp = [];
-        for (let i = 0; i <= a.length; i++) { tmp[i] = [i]; }
-        for (let j = 0; j <= b.length; j++) { tmp[0][j] = j; }
-        for (let i = 1; i <= a.length; i++) {
-            for (let j = 1; j <= b.length; j++) {
-                tmp[i][j] = b.charAt(j-1) === a.charAt(i-1) 
-                    ? tmp[i-1][j-1] 
-                    : Math.min(tmp[i-1][j-1]+1, tmp[i][j-1]+1, tmp[i-1][j]+1);
+        function speakEnglish(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                // If we haven't found a voice yet, try finding it again now
+                if (!selectedEnglishVoice) loadVoices();
+
+                // If we found an English voice, FORCE the browser to use it
+                if (selectedEnglishVoice) {
+                    utterance.voice = selectedEnglishVoice;
+                }
+
+                // Fallback: Set the lang attribute anyway
+                utterance.lang = 'en-US'; 
+                utterance.rate = 0.9; 
+                
+                window.speechSynthesis.speak(utterance);
             }
         }
-        return tmp[a.length][b.length];
-    }
 
-	// Debugging if the loal voices are available.
-	function showVoices() {
-	  const out = document.getElementById("voicesOutput");
-	
-	  const voices = speechSynthesis.getVoices();
-	  if (!voices.length) {
-	    out.textContent = "⚠️ No voices loaded yet.\nTry again in a moment.";
-	    return;
-	  }
-	
-	  out.textContent = voices
-	    .map(v =>
-	      `${v.lang.padEnd(7)} | ${v.localService ? "LOCAL" : "REMOTE"} | ${v.name}`
-	    )
-	    .join("\n");
-	}
+        // ==========================================
+        // GAME LOGIC: MEMORY (Card Game)
+        // ==========================================
+        let memoryState = { first: null, second: null, lock: false, moves: 0, pairs: 0, total: 0 };
 
+        function initMemory(pairsNeeded, gridClass) {
+            startScreen.style.display = 'none';
+            gameGrid.style.display = 'grid';
+            quizContainer.style.display = 'none';
+            gameGrid.className = 'grid-container ' + gridClass;
+            gameTitle.innerText = "Memorija";
+            
+            // Randomly select words
+            let availableWords = [...dictionary]; 
+            availableWords.sort(() => 0.5 - Math.random());
+            const selectedWords = availableWords.slice(0, pairsNeeded);
 
+            memoryState = { first: null, second: null, lock: false, moves: 0, pairs: 0, total: pairsNeeded };
+            updateMemoryStats();
 
-function checkAnswer() {
-    const rawTarget = currentItems[currentIndex];
-    const rawUser = document.getElementById('user-input').value;
-    
-    // 1. Cleaning
-    const clean = (str) => str.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").trim();
-    const targetWords = clean(rawTarget).split(/\s+/);
-    const userWords = clean(rawUser).split(/\s+/);
-    
-    document.getElementById('correct-text').innerText = rawTarget;
-    document.getElementById('result-area').classList.remove('hidden');
-    const scoreBox = document.getElementById('score-display');
-
-    // Handle Notebook Mode
-    if (!rawUser.trim()) {
-        scoreBox.innerText = "Check your notebook! 📝";
-        scoreBox.style.cssText = "background: #f1f5f9; border-color: #cbd5e1; color: #475569;";
-        return;
-    }
-
-    let totalScore = 0;
-    const STRICTNESS_FACTOR = 2.0; // Higher = harsher. 1.0 was the old version.
-    
-    // We iterate through the maximum number of words to penalize extra words too
-    const maxLength = Math.max(targetWords.length, userWords.length);
-
-    for (let i = 0; i < maxLength; i++) {
-        const tW = targetWords[i] || "";
-        const uW = userWords[i] || "";
-
-        // If one word is missing entirely (extra word or missing word)
-        if (tW === "" || uW === "") {
-            totalScore += 0; 
-            continue;
+            createMemoryBoard(selectedWords);
         }
 
-        const dist = getEditDistance(tW, uW);
-        
-        // STRICTOR FORMULA: 
-        // We multiply the distance by our strictness factor.
-        // If dist is 1 and word length is 3, old score was 6.6. New score is 3.3.
-        let wordScore = 10 * (1 - (dist * STRICTNESS_FACTOR / tW.length));
-        
-        // Ensure word score doesn't go below 0
-        totalScore += Math.max(0, wordScore);
-    }
+        function updateMemoryStats() {
+            statusBar.innerHTML = `
+                <span>Parovi: ${memoryState.pairs}/${memoryState.total}</span>
+                <span>Potezi: ${memoryState.moves}</span>
+            `;
+        }
 
-    // Average based on the longest version (penalizes for missing/extra words)
-    const finalScore = (totalScore / maxLength).toFixed(1);
-    
-    if (rawUser.trim()) {
-        // Only count the score the FIRST time they check this specific sentence
-        if (!hasCheckedCurrent) {
-            sentencesCheckedCount++;
-            sessionTotalScore += parseFloat(finalScore);
-            
-            if (parseFloat(finalScore) >= 10.0) {
-                flawlessCount++;
+        function createMemoryBoard(words) {
+            gameGrid.innerHTML = '';
+            const gamePairs = [];
+            words.forEach(item => {
+                gamePairs.push({ text: item.en, pairId: item.en, lang: 'en', label: 'ENG', hasAudio: true });
+                gamePairs.push({ text: item.sr, pairId: item.en, lang: 'sr', label: 'SRB', hasAudio: false });
+            });
+            gamePairs.sort(() => 0.5 - Math.random());
+
+            gamePairs.forEach(item => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.pairId = item.pairId;
+                card.dataset.text = item.text;
+                card.dataset.lang = item.lang;
+
+                // Inner HTML structure
+                let iconHtml = item.hasAudio ? '<div class="speaker-icon">🔈</div>' : '';
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-front">
+                            ${iconHtml}<span style="display:block">${item.text}</span>
+                            <span class="lang-label">${item.label}</span>
+                        </div>
+                        <div class="card-back">?</div>
+                    </div>
+                `;
+                
+                card.addEventListener('click', flipMemoryCard);
+                gameGrid.appendChild(card);
+            });
+        }
+
+        function flipMemoryCard() {
+            if (memoryState.lock) return;
+            if (this === memoryState.first) return;
+
+            this.classList.add('flipped');
+            if (this.dataset.lang === 'en') speakEnglish(this.dataset.text);
+
+            if (!memoryState.first) {
+                memoryState.first = this;
+                return;
             }
-            
-            hasCheckedCurrent = true;
-            updateStatsDisplay();
-        }
-    }
-    
-    scoreBox.innerText = `Score: ${finalScore} / 10`;
-    
-    // Color thresholds
-    if (finalScore >= 9.5) {
-        scoreBox.style.cssText = "background: #dcfce7; border-color: #22c55e; color: #166534;"; // Perfect/Great
-    } else if (finalScore >= 7.5) {
-        scoreBox.style.cssText = "background: #fef9c3; border-color: #eab308; color: #854d0e;"; // Okay
-    } else {
-        scoreBox.style.cssText = "background: #fee2e2; border-color: #ef4444; color: #991b1b;"; // Needs work
-    }
-}
 
-    function updateStatsDisplay() {
-        const avg = sentencesCheckedCount > 0 
-            ? (sessionTotalScore / sentencesCheckedCount).toFixed(1) 
-            : "0.0";
+            memoryState.second = this;
+            memoryState.moves++;
+            updateMemoryStats();
             
-        document.getElementById('stats-bar').innerText = 
-            `⭐ Flawless: ${flawlessCount}  |  📈 Session Avg: ${avg}/10`;
-    }
-</script>
+            // Match Check
+            if (memoryState.first.dataset.pairId === memoryState.second.dataset.pairId) {
+                disableMemoryCards();
+            } else {
+                unflipMemoryCards();
+            }
+        }
+
+        function disableMemoryCards() {
+            memoryState.first.classList.add('matched');
+            memoryState.second.classList.add('matched');
+            memoryState.pairs++;
+            updateMemoryStats();
+
+            let enText = memoryState.first.dataset.lang === 'en' ? memoryState.first.dataset.text : memoryState.second.dataset.text;
+            setTimeout(() => speakEnglish("Correct! " + enText), 600);
+
+            if (memoryState.pairs === memoryState.total) {
+                setTimeout(() => { alert("Bravo!"); location.reload(); }, 2000);
+            }
+            resetMemoryBoard();
+        }
+
+        function unflipMemoryCards() {
+            memoryState.lock = true;
+            setTimeout(() => {
+                memoryState.first.classList.remove('flipped');
+                memoryState.second.classList.remove('flipped');
+                resetMemoryBoard();
+            }, 1200);
+        }
+
+        function resetMemoryBoard() {
+            [memoryState.first, memoryState.second, memoryState.lock] = [null, null, false];
+        }
+
+
+        // ==========================================
+        // GAME LOGIC: QUIZ (Multiple Choice)
+        // ==========================================
+        let quizState = { score: 0, currentQuestion: 0, currentTarget: null };
+
+        function initQuiz() {
+            startScreen.style.display = 'none';
+            gameGrid.style.display = 'none';
+            quizContainer.style.display = 'flex';
+            gameTitle.innerText = "Kviz";
+            
+            quizState.score = 0;
+            quizState.currentQuestion = 0;
+            
+            nextQuizQuestion();
+        }
+
+        function nextQuizQuestion() {
+            quizState.currentQuestion++;
+            statusBar.innerHTML = `<span>Pitanje: ${quizState.currentQuestion}</span> <span>Poeni: ${quizState.score}</span>`;
+
+            // 1. Pick a random word from dictionary
+            const target = dictionary[Math.floor(Math.random() * dictionary.length)];
+            quizState.currentTarget = target;
+
+            // 2. Decide direction (50% chance En->Sr, 50% chance Sr->En)
+            const isEnglishQuestion = Math.random() > 0.5;
+            const questionText = isEnglishQuestion ? target.en : target.sr;
+            const correctText = isEnglishQuestion ? target.sr : target.en;
+            
+            // If question is English, speak it
+            if (isEnglishQuestion) speakEnglish(target.en);
+
+            // 3. Find Distractors (Wrong answers)
+            // Strategy: Filter dictionary for same category, exclude target
+            let sameCategoryWords = dictionary.filter(w => w.category === target.category && w.en !== target.en);
+            
+            // Shuffle them
+            sameCategoryWords.sort(() => 0.5 - Math.random());
+            
+            // Take 3. If not enough, take random words from dictionary
+            let distractors = sameCategoryWords.slice(0, 3);
+            
+            while (distractors.length < 3) {
+                let randomWord = dictionary[Math.floor(Math.random() * dictionary.length)];
+                if (randomWord.en !== target.en && !distractors.includes(randomWord)) {
+                    distractors.push(randomWord);
+                }
+            }
+
+            // 4. Create Options Array (1 correct + 3 wrong)
+            let options = [
+                { text: correctText, isCorrect: true },
+                { text: isEnglishQuestion ? distractors[0].sr : distractors[0].en, isCorrect: false },
+                { text: isEnglishQuestion ? distractors[1].sr : distractors[1].en, isCorrect: false },
+                { text: isEnglishQuestion ? distractors[2].sr : distractors[2].en, isCorrect: false }
+            ];
+
+            // Shuffle options so correct isn't always first
+            options.sort(() => 0.5 - Math.random());
+
+            // 5. Render UI
+            const qCard = document.getElementById('questionText');
+            qCard.innerHTML = `
+                <div style="font-size:1rem; color:#999; text-transform:uppercase; margin-bottom:5px">
+                    ${isEnglishQuestion ? 'Prevedi na srpski' : 'Translate to English'}
+                </div>
+                ${questionText}
+            `;
+            
+            const optGrid = document.getElementById('optionsGrid');
+            optGrid.innerHTML = ''; // Clear old buttons
+
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-btn';
+                btn.innerText = opt.text;
+                btn.onclick = () => handleQuizAnswer(btn, opt.isCorrect, target);
+                optGrid.appendChild(btn);
+            });
+        }
+
+        function handleQuizAnswer(btn, isCorrect, targetWord) {
+            // Prevent double clicking
+            const allBtns = document.querySelectorAll('.quiz-btn');
+            allBtns.forEach(b => b.disabled = true);
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                quizState.score++;
+                
+                // AUDIO: Always speak the English variant on success
+                speakEnglish("Correct! " + targetWord.en);
+
+                setTimeout(() => {
+                    nextQuizQuestion();
+                }, 1500);
+            } else {
+                btn.classList.add('wrong');
+                // Highlight the correct one
+                allBtns.forEach(b => {
+                    // Logic to find the correct text button to highlight it green
+                    // Simplified: We assume text match or we could store logic in dataset
+                    // For now, let's just wait and let user try again? 
+                    // No, better to show answer and move on.
+                    if (b.innerText === (targetWord.en === quizState.currentTarget.en ? targetWord.sr : targetWord.en) 
+                        || b.innerText === targetWord.en 
+                        || b.innerText === targetWord.sr) {
+                        b.classList.add('correct');
+                    }
+                });
+
+                speakEnglish("The answer is " + targetWord.en);
+
+                setTimeout(() => {
+                    nextQuizQuestion();
+                }, 2000);
+            }
+        }
+
+    </script>
 </body>
 </html>
