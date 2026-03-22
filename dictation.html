@@ -110,25 +110,22 @@
 	};
 
 	function getBestVoice(langCode) {
-	    // Failsafe in case onvoiceschanged hasn't fired yet
-	    if (!availableVoices.length) {
+		if (!availableVoices.length) {
 	        availableVoices = window.speechSynthesis.getVoices();
 	    }
 	
-	    // Filter down to voices that match the language (e.g., 'en' or 'de')
+	    // Filter for the correct language
 	    let matchedVoices = availableVoices.filter(v => 
 	        v.lang.toLowerCase().startsWith(langCode.toLowerCase())
 	    );
 	
 	    if (matchedVoices.length === 0) return null;
 	
-	    // Look specifically for iOS premium/enhanced downloaded voices
-	    let premiumVoice = matchedVoices.find(v => 
-	        v.name.includes('Premium') || v.name.includes('Enhanced')
-	    );
-	
-	    // Return the premium voice if found, otherwise fallback to the first match
-	    return premiumVoice ? premiumVoice : matchedVoices[0];
+	    // First try to find a voice explicitly marked as local/default
+	    let bestLocal = matchedVoices.find(v => v.localService === true);
+	    
+	    // Return the local voice, or just the first match if no local flag is found
+	    return bestLocal ? bestLocal : matchedVoices[0];
 	}
 
     document.getElementById('lang-select').onchange = updateDatasetDropdown;
