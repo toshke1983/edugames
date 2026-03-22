@@ -120,6 +120,14 @@
             box-shadow: 0 2px 0 #16a34a;
         }
 
+        .num-btn:disabled {
+            background-color: #cbd5e1; /* Greyed out color */
+            box-shadow: 0 3px 0 #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.7;
+        }
+
         .feedback {
             height: 60px;
             font-size: 1.8rem;
@@ -339,6 +347,9 @@
     function checkAnswer(val) {
         const feedback = document.getElementById('feedback');
         const slot = document.getElementById('answer-slot');
+        const buttons = document.querySelectorAll('.num-btn');
+
+        buttons.forEach(btn => btn.disabled = true);
 
         if (val === currentAnswer) {
             // Sound and Confetti
@@ -378,6 +389,8 @@
             feedback.innerText = "Oops! Try counting again! 😊";
             feedback.style.color = "#ef4444";
         }
+        buttons.forEach(btn => btn.disabled = false);
+        
     }
 
     function updateBee() {
