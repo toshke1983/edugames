@@ -297,6 +297,55 @@ const APP_DATA = [
                 ]
             },
             {
+                "name": "Wörter 90 bis 100",
+                "items": [
+                    {
+                        "text": "Der Indianer schlich sich ganz nah an seine Feinde heran.",
+                        "audio_file": "audio/2701b8ccf69acd006c86fc5d423243bf.mp3"
+                    },
+                    {
+                        "text": "Das hätte auch nichts genützt.",
+                        "audio_file": "audio/d10720fb1438c632e343a5371121d6f1.mp3"
+                    },
+                    {
+                        "text": "Sie half ihm aus dem Mantel.",
+                        "audio_file": "audio/fbbfcd72706764581d32fe4170a3cfe2.mp3"
+                    },
+                    {
+                        "text": "Heidi kennt mich nicht.",
+                        "audio_file": "audio/df75090f5b98dc497f56c102d5f103f8.mp3"
+                    },
+                    {
+                        "text": "Er hat es vielleicht schon erraten.",
+                        "audio_file": "audio/0d6bb7268ca1cc25d5e97d000db31bb8.mp3"
+                    },
+                    {
+                        "text": "Toni lässt uns nicht hinein.",
+                        "audio_file": "audio/b6d966b30427a31f7a7c724a65809b2e.mp3"
+                    },
+                    {
+                        "text": "Sie stand vor dem Fenster.",
+                        "audio_file": "audio/e2062a1bc05851d18e7a31dff71e253d.mp3"
+                    },
+                    {
+                        "text": "David fragt nach, denn er hat es nicht verstanden.",
+                        "audio_file": "audio/bae24e3d6606d11f21d092e2e0eea70b.mp3"
+                    },
+                    {
+                        "text": "Sie hat nur wenig Vertrauen zu uns.",
+                        "audio_file": "audio/992eb180b83b5d9975c9857f85311166.mp3"
+                    },
+                    {
+                        "text": "Er will es gar nicht wissen.",
+                        "audio_file": "audio/def168085c1b80097657ddd378d930a1.mp3"
+                    },
+                    {
+                        "text": "Vor der Schule stehen viele Fahrräder.",
+                        "audio_file": "audio/5cc98312256987be0327b3ebd2372dc3.mp3"
+                    }
+                ]
+            },
+            {
                 "name": "Fehlerwörter 300",
                 "items": [
                     {
@@ -1579,6 +1628,51 @@ const APP_DATA = [
                     {
                         "text": "I am very happy for him.",
                         "audio_file": "audio/8d605780382638c7461800daaade9f31.mp3"
+                    }
+                ]
+            },
+            {
+                "name": "Spring / Easter Sentences Blue Group",
+                "items": [
+                    {
+                        "text": "The gardener planted tulips in the sunshine.",
+                        "audio_file": "audio/f3dc8de5d411c933c009c97bd51b5772.mp3"
+                    },
+                    {
+                        "text": "I bought a chocolate bunny for the holiday.",
+                        "audio_file": "audio/3234deb1e709034626692d607928cbe3.mp3"
+                    },
+                    {
+                        "text": "The children saw a butterfly near the daffodils.",
+                        "audio_file": "audio/01efce4fbea7ba5f929a56e42b224a53.mp3"
+                    },
+                    {
+                        "text": "We had a delicious brunch on Sunday.",
+                        "audio_file": "audio/2aacfc596ccd61153a87c7e50d95f9eb.mp3"
+                    },
+                    {
+                        "text": "Please decorate the eggs with pastels.",
+                        "audio_file": "audio/9c6a3e9395b8506c403e785b23ee18cb.mp3"
+                    },
+                    {
+                        "text": "The bunny will hop in the grass.",
+                        "audio_file": "audio/4501aef4b59a6cd328426f48d98f0185.mp3"
+                    },
+                    {
+                        "text": "I found a blue egg in the basket.",
+                        "audio_file": "audio/c201a72879ed00ea7861162c4eb1a7f2.mp3"
+                    },
+                    {
+                        "text": "The chick is very soft and yellow.",
+                        "audio_file": "audio/5f142f809a5b1f63f4b8e4d2d38a5c3a.mp3"
+                    },
+                    {
+                        "text": "Spring is a lovely time of year.",
+                        "audio_file": "audio/72c335638adf2dee8d3becfd712984ef.mp3"
+                    },
+                    {
+                        "text": "We can paint and hide eggs.",
+                        "audio_file": "audio/a8f0d9a5ce9365e3e3c671efecdf8d85.mp3"
                     }
                 ]
             }
